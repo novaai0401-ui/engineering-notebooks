@@ -1,0 +1,15 @@
+# lab: stable_probabilities
+import numpy as np
+def softmax(logits):
+    shifted = np.asarray(logits, dtype=float)-np.max(logits)
+    exp = np.exp(shifted)
+    return exp/exp.sum()
+def logsumexp(values):
+    values=np.asarray(values,dtype=float)
+    maximum=values.max()
+    return maximum+np.log(np.exp(values-maximum).sum())
+p=softmax([1000,1001,1002])
+assert np.isfinite(p).all() and np.isclose(p.sum(),1)
+assert np.allclose(p,softmax([0,1,2]))
+assert np.isfinite(logsumexp([1000,1001]))
+print('Large logits produce finite normalized probabilities')

@@ -1,0 +1,105 @@
+# Notebook 15 — Graded interviews, debugging rounds and answer keys
+
+Reading an answer feels easier than producing it. Close the explanation, work under a time limit, then compare your reasoning with the rubric. Give partial credit for a sound approach even when implementation is unfinished; do not award full credit for a memorized phrase with no mechanism. These are original practice questions, not a leaked question bank or a guarantee of an exam result.
+
+## 1. A repeatable practice method
+
+For each attempt record the date, question, assumptions, solution, tests, complexity or tradeoffs, score, and one correction. Revisit the correction after two days and one week without reading your old answer first. Explain the solution aloud. If you cannot explain an assertion in the tests, rerunning the tests has not yet taught you the idea.
+
+Use a 0–4 scale per criterion: 0 absent; 1 vocabulary only; 2 partly correct with a significant gap; 3 correct and explained; 4 correct with edge cases and a justified tradeoff. A useful practice target is consistently earning at least 3 across criteria on unseen variants. This is a learning target, not a standardized hiring threshold.
+
+## 2. Round A — Python and numerical reasoning, 45 minutes
+
+**A1, 10 points:** Implement stable softmax for a nonempty list of finite numbers. Reject invalid values. Explain why subtracting the maximum preserves probabilities. **Answer:** Divide every exponential by the same positive factor `exp(maximum)`, which cancels between numerator and denominator. Award 3 for validation, 3 for stable implementation, 2 for normalization/shift-invariance tests and 2 for the explanation. Compare with the installable `coach_math` package.
+
+**A2, 10 points:** A prediction has shape `(100,1)` and labels have shape `(100,)`. Why does subtraction create 10,000 values? **Answer:** Broadcasting aligns dimensions and expands one row-like and one column-like dimension, producing `(100,100)`. Reshape both to the intended shared contract before computing loss. Award 4 for the mechanism, 3 for the correction, 3 for an assertion that catches recurrence.
+
+**A3, 10 points:** Your model improves after standardizing the entire dataset before splitting. Is the comparison valid? **Answer:** The transformation used information from held-out examples. Fit preprocessing on training data, preferably inside a pipeline applied separately within each cross-validation fold. The leakage may change results in either direction; the issue is invalid evaluation, not a promise that accuracy always inflates. Award 4 for identifying leakage, 4 for a correct pipeline, 2 for grouped/time-aware split considerations.
+
+**A4, 10 points:** Memory rises while processing a large array in small slices. Why might slices retain the original allocation? **Answer:** A view references the underlying base memory. Keeping even a small view can keep the base alive. Measure ownership and lifetime, decide whether a copy is worthwhile, and examine native/process memory as well as Python allocations. Award 4 for views, 3 for a reasoned fix, 3 for measurement limitations.
+
+**Follow-up:** Why not copy every slice? Copies consume time and extra memory; use evidence about lifetime and workload rather than an absolute rule.
+
+## 3. Round B — Algorithms, 60 minutes
+
+**B1, 15 points, 20 minutes:** Return the shortest unweighted route between two nodes, or no route. **Answer outline:** BFS with a queue, mark visited when enqueued, record one predecessor, stop when the target is reached, reconstruct backwards. Handle source=target and unreachable targets. Award 5 for algorithm/invariant, 5 for implementation, 3 for cases, 2 for `O(V+E)` time and `O(V)` auxiliary space.
+
+**B2, 15 points, 20 minutes:** Determine whether a binary tree is a valid strict BST. **Answer outline:** Carry ancestor lower/upper bounds, not only parent comparisons. Empty tree is valid under this convention; duplicates are rejected. Award 5 for the global invariant, 5 for implementation, 3 for a misleading grandchild test, 2 for `O(n)` time and height-dependent space.
+
+**B3, 20 points, 20 minutes:** Solve 0/1 knapsack and explain a space optimization. **Answer outline:** State `(item,remaining_capacity)` with include/exclude choices; memoize or fill a table. For one-row DP, iterate capacity downward. Award 6 for recurrence, 6 for code, 4 for boundary/one-use tests, 4 for pseudo-polynomial complexity and reconstruction tradeoff.
+
+**Alternative-solution discussion:** DFS finds a route but not necessarily the shortest unweighted route. Sorting a tree's values cannot validate its original structure. Greedy value/weight ratio fails for indivisible items. A candidate who knows when an alternative fails understands more than one who merely recites the preferred algorithm.
+
+## 4. Round C — Agents and MCP, 45 minutes
+
+**C1, 10 points:** An agent wrote an external record, then crashed before checkpointing. What happens on resume? **Answer:** The step may replay. Use receiver-side idempotency with a stable key and payload binding; a workflow checkpoint alone cannot atomically cover an unrelated service. Award 4 for uncertainty/replay, 4 for the receiver contract, 2 for a crash-window test.
+
+**C2, 10 points:** A LangGraph approval survives a restart, but an edited action executes using the old approval. What is wrong? **Answer:** Approval was not bound to the exact proposal and relevant resource version. Require an authenticated approver, immutable action digest/version and expiry; changed content needs reapproval. Award 4 for binding, 3 for identity, 3 for a stale-approval test.
+
+**C3, 10 points:** A tool is hidden from a reader's MCP discovery list. Is access controlled? **Answer:** Only if direct calls also enforce authorization. Check validated credential scopes and resource ownership. Never trust an owner passed by the model. Award 4 for enforcement at invocation, 3 for identity/ownership, 3 for a guessed-tool-name test.
+
+**C4, 10 points:** Three parallel agents generate answers; one fails. Should the orchestrator return success? **Answer:** It depends on the declared aggregation contract. All-required work fails or retries within budget; best-effort work may return partial results with missing coverage made explicit. Cancel unnecessary work, preserve useful traces, and bound concurrency and cost. Award 4 for explicit semantics, 3 for cleanup/budgets, 3 for a failure test.
+
+**Follow-up:** How would you prove a multi-agent design improves quality? Compare against a simpler baseline on a held-out task set under equal budgets, measure success and critical failures, repeat stochastic cases, and report uncertainty and cost.
+
+## 5. Round D — Java and Spring, 45 minutes
+
+**D1, 10 points:** Why does `volatile int count` not make `count++` safe? **Answer:** Increment is a compound read-modify-write; visibility does not make the sequence atomic. Use an appropriate atomic operation or a lock protecting the invariant. Award 4 for distinction, 3 for correction, 3 for multi-variable limitations.
+
+**D2, 10 points:** A `@Transactional` method called from another method on the same object does not behave as expected. **Answer:** In the usual proxy-based setup, self-invocation bypasses the proxy. Place the boundary on a managed service called through the proxy or use an appropriate explicit transaction mechanism. Also inspect rollback rules and transaction propagation. Award 5 for proxy reasoning, 3 for valid redesign, 2 for an integration test.
+
+**D3, 10 points:** Loading 100 courses executes 101 queries. **Answer:** A relationship is likely loaded once per course. Measure actual SQL, choose fetch join/projection/entity graph/batching, and consider pagination and row multiplication. Award 4 for N+1, 3 for a justified remedy, 3 for a query-count test with a cleared persistence context.
+
+**D4, 10 points:** A database insert succeeds but its Kafka notification is missing. **Answer:** The database and broker commits were not atomic. Use an outbox for the producer boundary and an idempotent consumer for duplicate delivery. A relay crash can publish twice. Award 4 for the crash window, 4 for the outbox/inbox reasoning, 2 for failure tests.
+
+**Follow-up:** Why not use one JVM lock to enforce inventory across replicas? Other JVMs do not share that lock. The invariant needs a shared transactional or otherwise coordinated authority.
+
+## 6. Round E — React debugging and browser behavior, 40 minutes
+
+**E1, 10 points:** Three calls to `setCount(count+1)` increase the value by one. **Answer:** Each call uses the same render's captured value. Functional updates compose on pending state when that is the intended behavior. Award 4 for snapshot reasoning, 3 for the fix, 3 for an interaction test.
+
+**E2, 10 points:** Search for A, then B. A completes last and replaces B. **Answer:** Guard against stale completions and cancel obsolete requests. Include query/user identity in server-state cache keys. Test with deliberately reversed response order. Award 4 for race explanation, 3 for correction, 3 for the deterministic test.
+
+**E3, 10 points:** Hydration warns after the server and browser independently render the current time. **Answer:** The initial outputs differ. Pass a consistent initial value or render browser-only changes after hydration where appropriate. Do not use warning suppression as a general repair. Award 4 for matching markup, 3 for solution, 3 for recognizing server/browser boundaries.
+
+**E4, 10 points:** A styled `div` submits a form with mouse click but not keyboard. **Answer:** Use a native button with the appropriate type, accessible name and visible focus. If a custom control is truly necessary, implement its complete keyboard/semantic contract. Award 4 for native semantics, 3 for focus/labels, 3 for an actual keyboard test. Axe alone cannot prove every interaction works.
+
+## 7. Round F — Full-stack system design, 60 minutes
+
+**Prompt:** Design a tutoring system that accepts questions, retrieves private documents, optionally uses an LLM, requires approval before external actions, streams progress, and survives worker crashes.
+
+Spend the first 10 minutes clarifying users, scale, latency, privacy, external actions and acceptable failure behavior. Spend 15 on interfaces and data ownership, 15 on request/failure paths, 10 on security and evaluation, and 10 on tradeoffs and evolution. A beautiful diagram without a failure path is incomplete.
+
+**Answer outline:** Authenticate at the boundary. Authorize object access. Persist a request with an idempotency key. Keep approval bound to an action version. Dispatch through a bounded durable queue. Claim jobs with a lease and protect stale writes. Retrieve only permitted evidence. Treat source text as untrusted. Call the model with budgets and timeouts. Validate proposed actions in ordinary code. Execute external effects through idempotent contracts. Stream replayable events or replaceable snapshots. Record traces and evaluate outcomes.
+
+**Rubric, 40 points:** requirements 5; contracts/data ownership 5; authorization and privacy 5; durable execution/idempotency 7; streaming and reconnect 4; evaluation/observability 5; capacity and cost 4; justified simplicity and limitations 5.
+
+**Follow-ups with answers:**
+
+- **Queue grows while CPU is low.** Inspect external latency, connection pools, locks and concurrency limits before buying more CPU.
+- **A user requests deletion.** Identify source records, indexes, caches, logs, backups and retention rules; a vector-index delete alone is incomplete.
+- **The model is fluent but wrong.** Measure grounding and task success, inspect retrieval failures, improve evidence and refusal behavior, and compare model changes on held-out cases.
+- **A client disconnects.** Decide whether the durable job continues; reconnect by job ID under authorization. Disconnect and cancellation are different commands.
+- **A new schema breaks old paused jobs.** Version state and execution definitions, migrate carefully or retain compatible workers, and test historical paused states.
+
+## 8. Design-pattern selection round
+
+**Question:** You need two export formats and three scoring rules. Should you create six subclasses? **Answer:** Independent strategies or a bridge-like separation avoid the Cartesian product if the two dimensions vary independently. Award credit for explaining the axes, not merely naming Bridge.
+
+**Question:** When does Singleton make testing harder? **Answer:** Hidden global state creates ordering dependence and makes replacement/lifetime control difficult. Inject an ordinary shared object when that meets the requirement.
+
+**Question:** When is Visitor awkward? **Answer:** When new element types appear frequently, every visitor needs changes. It favors stable element structures and adding new operations.
+
+**Question:** Is a decorator retrying a payment safe? **Answer:** Only with an idempotent operation contract and correctly classified retry conditions. A design pattern does not make side effects safe.
+
+## 9. A complete mock interview day
+
+Use three sessions with breaks: 60 minutes algorithms, 45 minutes debugging across Python/Java/React, and 60 minutes system design. Reserve 30 minutes afterwards for scoring and correcting one weak area. Choose unseen variants rather than repeating the identical inputs until memorized.
+
+For a second attempt, change the constraints: limited memory, multiple tenants, a slow upstream, a negative edge, a changed approval, or a reordered UI list. Explain which assumption of the original solution is no longer true and how the design changes. That is the central skill for unfamiliar interviews.
+
+## 10. Your completion standard
+
+You are ready to move beyond a lesson when you can explain it simply, implement the essential mechanism without copying, predict a failure, write a meaningful test, and discuss a reasonable alternative. If you only recognize the terminology, repeat a smaller exercise. If you can implement it but cannot justify it, practice the invariant or tradeoff aloud.
+
+This collection now provides worked material for every requested area, a connected application, and graded practice. It does not claim that every algorithm, employer, exam syllabus or future framework release is covered. Keep an error log and use new problems to measure transfer of understanding rather than counting pages read.

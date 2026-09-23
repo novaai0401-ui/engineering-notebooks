@@ -1,0 +1,17 @@
+{
+  "review_method": "Tutor inspection of generated claims against the exact evidence stored in live-report.json; two development cases, not a held-out benchmark",
+  "cases": [
+    {
+      "id": "two-hop-team",
+      "status": "passed",
+      "finding": "Mira leads Payments and Payments maintains Orion. The answer cites both d1 and d2 and preserves the relationship chain."
+    },
+    {
+      "id": "checkpoint-boundary",
+      "status": "needs_correction",
+      "finding": "Correctly rejects checkpointing as sufficient for side-effect idempotency, but says reconciliation is used to achieve idempotency. Reconciliation detects/repairs discrepancies and does not itself guarantee idempotent execution. The source wording is also too compressed and should distinguish those mechanisms.",
+      "corrected_answer": "A checkpoint saves workflow progress. Repeated external operations need an appropriate deduplication/idempotency contract. When execution outcome is uncertain, reconciliation can detect and repair discrepancies; that does not make the original operation idempotent."
+    }
+  ],
+  "release_decision": "Keep extractive default. Do not advertise all generated factual cases as passing. Improve source/prompt and evaluate a larger independent set before relying on generated answers."
+}

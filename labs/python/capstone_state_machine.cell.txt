@@ -1,0 +1,12 @@
+# lab: capstone_state_machine
+allowed={'queued':{'running','cancelled'},'running':{'completed','failed','cancelled'},
+         'failed':{'queued'},'completed':set(),'cancelled':set()}
+job={'state':'queued','version':0}
+def change(expected_version,target):
+    if job['version']!=expected_version or target not in allowed[job['state']]:return False
+    job.update(state=target,version=expected_version+1);return True
+assert change(0,'running')
+assert not change(0,'cancelled')
+assert change(1,'completed')
+assert not change(2,'running')
+print(job)

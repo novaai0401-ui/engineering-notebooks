@@ -1,0 +1,10 @@
+{
+  "status": "partial_pass",
+  "passed": [
+    "Two application instances completed initial OIDC/PKCE logins with one confidential client",
+    "Forged logout token was rejected by both endpoints",
+    "Provider logout revoked independently established sessions on both reachable instances"
+  ],
+  "failed": "After secret rotation and restart, the browser did not reach the Study question form within 30 seconds. No secret-cutover success is claimed by this attempt.",
+  "limitations": "Loopback HTTP, independent classroom databases and synchronous non-durable logout relay. This is not a shared-session production cluster."
+}

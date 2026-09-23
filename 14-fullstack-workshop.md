@@ -1,0 +1,105 @@
+# Notebook 14 — Build and defend a complete connected system
+
+The earlier full-stack notebook described a design. This workshop includes the implementation in `labs/study-coach`: a React/TypeScript browser application, a Spring Boot service, a migrated database, a background worker and a Python AI service. Read the project's README for exact build/run commands. The source files are intentionally small enough to follow one request without a large framework scaffold.
+
+## 1. Begin with requirements, not boxes
+
+A learner signs in, submits a question, approves computation, sees evidence arrive, and can cancel. Work survives a Java process restart. One learner cannot read another learner's jobs or private evidence. A repeated submission key returns the same job, while using that key for a different question conflicts. An unavailable AI service must not make the worker retry forever.
+
+Non-goals matter too: the classroom app is not a public identity provider, distributed message broker or generative model host. Its actual AI component uses TF-IDF retrieval and extractive answers. That lets you verify every evidence source offline. Replacing it with a generative model is an explicit architectural extension, not a hidden simulation.
+
+The request path is:
+
+```text
+React page
+  | Basic credentials + CSRF token + idempotency key
+  v
+Spring Security -> owner-scoped API -> H2 job record
+                                      |
+                               approve / cancel
+                                      |
+                               leased worker
+                                      | internal service credential
+                                      v
+                          Python authorized retrieval
+                                      | newline-delimited answer chunks
+                                      v
+                         fenced database answer updates
+                                      | SSE snapshots
+                                      v
+                                React answer view
+```
+
+## 2. Why three languages here?
+
+React handles browser interaction. Java owns identity-facing business operations and durable job state. Python owns numerical text retrieval. These choices demonstrate boundaries, not a rule that every AI product needs three services. For a small team, one backend might be simpler. Separate services add network failures, deployments, contracts and operational work; the educational benefit here is making those issues explicit.
+
+The Python service does not trust a user field from an arbitrary browser. Only the authenticated Java service calls it with an internal credential and a user name derived from Spring's authenticated principal. The browser never receives the internal service token. In a larger system use appropriate workload identity, audience restrictions and rotation rather than one indefinitely shared secret.
+
+## 3. Authentication is only the first boundary
+
+Spring Security authenticates the local classroom users and hashes their configured password. A CSRF token is fetched and supplied on mutations. The application does not disable CSRF merely because it uses Basic authentication; browsers and credential behavior still matter. The same-origin frontend avoids an unnecessary cross-origin API policy.
+
+Every job query binds `id` and `owner_name`. Returning 404 for another owner's ID avoids confirming that a private object exists. The approve and cancel routes perform the same ownership check. SQL parameters bind data rather than concatenating user input into SQL. The network tests exercise all of these boundaries instead of assuming the UI buttons are sufficient protection.
+
+For public use, move to a suitable identity system and TLS, manage account lifecycle and logout/revocation, and review session and CSRF behavior as a complete design. The “Forget page credentials” control intentionally states its limited behavior; it does not claim to revoke server sessions.
+
+## 4. Idempotency and transaction boundaries
+
+The database has a unique constraint on `(owner_name,request_key)`. Creating a duplicate catches the uniqueness conflict and returns the existing job if the question matches. The same key with a different question returns 409. This matters because a client can lose a response after the database successfully commits.
+
+A client should preserve its submission key when retrying an uncertain request. The included page creates a key for each deliberate new submission; the API test demonstrates retries using the same key. Adding automatic client retries would require retaining that key through the retry flow, not generating a new one each time.
+
+The worker performs short conditional database updates around remote I/O. It does not hold a database transaction open for an entire model call. For a workflow that charges money, idempotency must also exist at the payment receiver; protecting only the job table does not protect an external charge.
+
+## 5. The durable job lifecycle
+
+`approval → pending → running → done` is the ordinary path. `running → retry → running` handles temporary failures, with at most three attempts. `failed` and `cancelled` are terminal. A lease allows a running job to be reclaimed after a crash. Each claim receives a fresh token, and answer/status updates include that token and `status='running'` in their condition.
+
+Cancelling clears the token and sets a terminal state. A worker already computing may finish a remote read, but its next database write is rejected. Cancellation therefore prevents publishing further work in this application; it is not a claim that every upstream CPU instruction stops instantly. The remote HTTP read and whole-job deadlines bound how long abandoned work can occupy the worker.
+
+The automated system test kills Java while a job is running, restarts with the same file database and checks that the job completes with a later attempt. This tests an actual process boundary. It is stronger than simply constructing a second in-memory object, but does not simulate every storage failure or whole-machine power loss.
+
+## 6. Migrations and rollback planning
+
+Flyway applies versioned SQL migrations: jobs, error reporting, then classroom JPA/outbox tables. Hibernate validates the mapped schema rather than creating it silently. Never edit an already-applied migration to change a deployed database; add a new migration. For a rename used by old and new application versions, use an expand-and-contract rollout: add compatible fields, deploy code that can coexist, migrate data, then remove old fields later.
+
+Code rollback does not automatically undo a destructive schema change. Backups must be restorable, and migration tests need representative existing data, not only an empty database. The current tests verify applying the included migrations on H2. They do not certify another database engine or a large real dataset.
+
+## 7. Streaming across two boundaries
+
+Python yields newline-delimited JSON chunks. Java reads incrementally with connection/read timeouts and a total processing deadline, appending accepted chunks to the database. An SSE endpoint emits changed job snapshots. The browser reads the response stream and parses complete event frames. This is actual incremental delivery, not a timer replaying a fully received answer.
+
+Snapshots contain the current full answer. A reconnect can replace the view without duplicating text. Delta-only designs save bandwidth but need event IDs, ordering, replay history and deduplication. A production stream parser should handle the full framing contract, maximum frame sizes and malformed events. This teaching server emits a constrained format generated by its own serializer.
+
+Slow consumers, dropped connections and proxy buffering can affect streaming. The endpoint has a bounded lifetime, and the UI offers “Refresh and reconnect.” Closing a browser stream does not cancel the durable job; cancellation is a separate authenticated command. That distinction makes reconnecting possible.
+
+## 8. Retrieval, evidence and the generative extension
+
+Python filters documents by owner before ranking. It builds TF-IDF vectors and computes similarity, returns up to two positive-scoring items, and quotes them with IDs. A query with no overlap gets an explicit no-evidence response. This is a small extractive baseline, not proof that all questions can be answered accurately.
+
+To add an LLM, keep retrieval and authorization before prompt construction. Delimit source text as untrusted evidence, require citations, bound context and output, and retain a no-evidence path. Version the prompt/model/retrieval configuration and evaluate factual support, not just fluent wording. A malicious document must not grant the model tools or change who owns a request. Provider calls need credentials, cost limits, timeouts, retention review and failure tests. No external provider was silently used in the supplied tests.
+
+## 9. Observability you can connect to behavior
+
+The worker logs a job ID and duration. `/api/metrics` returns status counts scoped to the authenticated learner. Tests inspect attempt counts, errors and final states. These are useful starting signals; they are not a complete telemetry platform. A production system would add structured traces, queue age, throughput, latency percentiles, resource saturation, dependency failures and alert thresholds.
+
+Keep high-cardinality identifiers out of metric label sets when they would create unbounded series. Put a job ID in logs/traces instead. Do not log credentials, complete prompts or private retrieved text by default. A correlation ID connects events without requiring sensitive payloads.
+
+Define a service objective around user-visible success: for example, the proportion of valid authorized jobs completed within a chosen deadline. The exact target must follow requirements and measurements. Reporting only HTTP 200 responses can hide jobs that later fail in the background.
+
+## 10. Deployment, capacity and failure recovery
+
+Local execution uses two subprocesses and a persistent H2 directory. Dockerfiles and Compose describe non-root services, a private internal AI connection and a retained data volume. They are a deployment recipe; the validation report distinguishes local tests from container execution. No service is published to the internet by this workbook.
+
+One worker deliberately processes one job at a time. To scale, measure queue age and per-job cost first. Multiple workers require safe claims, suitable database concurrency and shared durable storage. A single embedded file database is not a multi-host distributed queue. Consider a dedicated broker or database queue design when the workload justifies it.
+
+The outage test stops Python, verifies a three-attempt terminal failure, restarts Python and verifies that new work succeeds. An operator retry of a failed job should be an explicit authorized operation with an audit trail and a defined budget; automatically resetting every failed job forever would defeat the attempt limit.
+
+## 11. Acceptance checklist and design defense
+
+The automated suite checks authentication, CSRF, ownership, idempotency conflicts, approval, partial/final streaming, evidence filtering, cancellation, keyboard interaction, automated accessibility rules, process restart recovery, bounded outage failure and restored service operation. The Java tests additionally check migrations, stale writes, optimistic locking, query counts, isolation and transaction/outbox rollback.
+
+**Interview, 20 points:** Explain one complete question from browser to answer (4), identify trust boundaries (4), explain crash recovery and duplicate handling (4), describe a streaming reconnect (3), and state capacity/deployment limitations with a justified next step (5).
+
+**Model answer to “is this production-ready?”:** It is a tested local educational integration. Production readiness requires requirements-specific identity, deployment, storage, capacity, security, monitoring and operational evidence. Its explicit boundaries and failure tests make it a useful foundation, but a passing classroom suite is not a production certification.

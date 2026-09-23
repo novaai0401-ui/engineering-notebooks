@@ -1,0 +1,115 @@
+# 27 — Reliability: prove what happens when things go wrong
+
+## 1. The fire-drill principle
+
+A school is not prepared merely because its evacuation plan looks tidy. People must rehearse it, record what happened and correct failures. Software reliability works the same way. Separate a design, an executable test, an observed passing result and a production guarantee. Each is a different strength of evidence.
+
+The library includes local native integration tests and recipes for environments that are unavailable here. Inspect VALIDATION before interpreting a badge or passing code cell. A mocked response proves the behavior around the mock, not the reliability of the real provider.
+
+## 2. Define the user-visible invariant
+
+For a study job: only its owner can see it; the same logical submission does not create duplicate work; accepted work has a durable record; the UI never describes incomplete work as complete; generated claims must be supported, not merely decorated with a citation.
+
+Turn each invariant into a failure test. Drop the HTTP response after commit and retry. Stop the worker after receiving an event. Disconnect a stream before the completion message. Revoke the session while a connection remains open. Change a document permission after indexing. This approach reveals architectural gaps faster than adding random retries.
+
+## 3. Timeouts, retries and budgets
+
+A timeout bounds waiting, not necessarily execution at the remote side. A retry can repeat an effect that already happened. Retry only classified transient failures and use idempotency where the operation can change state. Set an overall deadline, an attempt limit, bounded exponential backoff and jitter. Respect cancellation and provider rate-limit signals.
+
+```python
+# lab: retry_budget_model
+def schedule(deadline,attempt_cost,delays):
+    elapsed=0;attempts=0
+    for delay in [0]+delays:
+        if elapsed+delay+attempt_cost>deadline:break
+        elapsed+=delay+attempt_cost;attempts+=1
+    return attempts,elapsed
+assert schedule(5,1,[1,2,4])==(2,3)
+assert schedule(10,1,[1,2,4])==(3,6)
+print('A total deadline can reject a retry even when the attempt counter has room.')
+```
+
+The model assumes a known attempt cost; real clients pass the remaining deadline to each operation. Circuit breakers stop repeated calls to a failing dependency under a policy, while bulkheads bound how much capacity one dependency may occupy. Neither repairs data corruption.
+
+## 4. Metrics, traces and logs
+
+Metrics answer how often and how slow. Traces show the path of one operation. Logs describe selected events. Propagate trace context across HTTP and messages, but do not use a client-provided trace identifier as authorization. Correlate by a safe job/request ID and avoid storing prompts, access tokens or personal data in routine telemetry.
+
+Use counters for cumulative events, gauges for current values and histograms for distributions. Report p50, p95 and p99 alongside throughput, concurrency, errors, dataset size and duration. A p95 measured over eighty local writes is not a cloud capacity estimate. Keep metric labels bounded; request IDs and raw prompts create excessive cardinality.
+
+An OTLP collector receives, processes and exports telemetry. A successful SDK call is weaker evidence than observing the expected trace at the collector. The collector lab sends a real span and checks its trace ID and name in debug output. A debug exporter is a test destination, not a durable observability backend. [Collector overview](https://opentelemetry.io/docs/collector/).
+
+## 5. SLOs and burn rates
+
+An SLI measures user-visible behavior; an SLO specifies its target over a window. Suppose the target is 99.9% successful eligible requests over thirty days. The error budget is 0.1% of those requests. Define exclusions carefully; excluding all hard failures makes the number meaningless.
+
+```python
+# lab: slo_error_budget
+eligible=100000;failed=80;target=.999
+allowed=eligible*(1-target)
+remaining=allowed-failed
+assert round(allowed)==100 and round(remaining)==20
+burn=(failed/eligible)/(1-target)
+assert abs(burn-.8)<1e-9
+print({'allowed_failures':round(allowed),'remaining':round(remaining),'window_burn':round(burn,2)})
+```
+
+Burn rate compares observed failure rate with the permitted rate. Alert windows must balance detection speed and noise. An SLO cannot be inferred from the classroom's brief local test; it requires an agreed indicator and sustained measurement.
+
+## 6. Load, endurance and recovery
+
+Load testing measures behavior under specified demand. Stress testing searches for the breaking point. Endurance testing runs long enough to reveal leaks, accumulating queues and expiring credentials. Recovery testing verifies that state and service return after a specific failure. Record the exact scope rather than calling every concurrent test “stress tested.”
+
+Increase load gradually, monitor dependencies and stop on defined safety thresholds. Use isolated data and authorized environments. Test a dependency slowdown as well as complete unavailability. After restart, verify business counts, duplicate effects and stuck jobs, not just /health. Container and cloud tests remain pending until an actual runtime and destination are available.
+
+## 7. Identity rotation and multi-instance revocation
+
+Rotating a client secret in the identity provider changes provider state. Successful application cutover additionally requires the application to use the new credential and complete a fresh authorization-code exchange. A still-valid old browser session does not test that exchange. Depending on provider capabilities, overlap old/new credentials for a controlled transition or accept an explicitly planned restart window.
+
+Revoking an identity-provider session is different from expiring every application session. With multiple instances, local registries need a shared store or a reliable revocation distribution design. Test sessions established through different instances, revoke centrally, and attempt protected requests and long-lived streams on each. Include one unavailable instance, replayed logout messages and restart. A one-instance back-channel logout test cannot establish all of this.
+
+The added identity-cluster report records a final isolated pass for two-instance logout and fresh login after secret rotation. Earlier runs failed, including Invalid credentials on the second instance; the intermittent cause is not established. The classroom relay requires both instances to be reachable and is not a durable shared-session design. Keep these boundaries visible rather than assuming sticky sessions solve them. TLS, secret management, audit logging, privileged role changes and session lifetime must be specified for deployment.
+
+## 8. AI evaluation beyond valid citations
+
+The real-model integration produced an answer incorrectly suggesting that checkpointing ensures idempotent side effects. Its citation existed, but the claim was wrong. A checkpoint records progress; it does not automatically deduplicate external payments or writes. The factual review remains failed and the app defaults to extractive retrieval.
+
+The separate RAG lab later clarified its source and passed four tutor-reviewed development questions, including the distinction between reconciliation and idempotency. Both its initial flawed answer and a runtime timeout are preserved. That improvement does not retroactively change the earlier Study Coach result or establish general accuracy.
+
+Create cases with question, allowed source text, expected claims, forbidden claims, acceptable abstention and ownership. Grade retrieval separately from generated answers. Check each material claim for support, answer relevance, contradictions and dangerous omissions. A regex can catch a known phrase; it cannot establish general entailment. An LLM judge can assist, but needs calibration against human-reviewed examples and cannot be treated as infallible.
+
+Maintain a development set for fixes and a held-out set for honest evaluation. Version the model, prompt, source corpus and scorer. Include unanswerable questions, conflicting sources, prompt injection in documents, stale facts and cross-tenant retrieval attempts. Report category scores and concrete failures rather than a single reassuring average.
+
+## 9. Accessibility and personal assessment
+
+Automated axe checks find useful rule violations but cannot establish reading order quality, comprehensible announcements or every keyboard interaction. Browser-engine WebKit testing is not a physical Safari/iOS test. A manual screen-reader audit needs an actual assistive-technology session, task script, observed announcements and recorded defects.
+
+Interview readiness similarly requires your own unaided work. Answer a timed prompt, explain tradeoffs, debug a planted failure and revise the answer after feedback. Reading the answer key is learning; it is not a scored demonstration that you can produce the answer independently. The course provides rubrics but cannot honestly award you a personal grade before you submit an attempt.
+
+## 10. Crash recovery you can reproduce
+
+Think of a logout message as a registered letter. Writing down its delivery plan before saying “accepted” prevents a crash from erasing the promise. The durable relay verifies the signature, issuer, audience and logout claims; encrypts the message in a SQLite journal; and records delivery separately for each receiver. A repeated message ID must carry identical content. An unavailable receiver remains pending while reachable receivers proceed. The actual test kills and restarts the relay and verifies the pending receiver eventually revokes its fixture session. These are signed network fixtures, not a claim that the full Spring cluster has a durable shared session store. An expired delivery is a failure requiring reconciliation, not a success to hide.
+
+Kafka provides a different recovery mechanism: replicated logs. The added three-process test uses replication factor three and minimum in-sync replicas two, kills the actual partition leader, verifies new writes and reads all twenty acknowledged records. Restart restores three in-sync replicas. Three processes on one computer are still one machine failure domain. Explain which failure this test survives and which failure stops all brokers.
+
+The five-minute HTTP/cache soak completed 1,127 logical writes and 3,382 requests, with stable sampled handle counts. Every repeated idempotency key returned the original sequence. The measured cycle includes write, duplicate submission and snapshot read. Its 95th-percentile cycle time was 156 milliseconds in this run. These are observations from one local client, not a production service-level objective or a multi-day leak certificate.
+
+The telemetry experiment distinguishes two promises: the collector accepting a span and the destination committing it. The collector retries after a destination outage; the teaching SQLite sink retains the exact trace IDs after a process restart. Queue durability is tested separately from destination durability. Consult the reports before assuming a collector crash preserves buffered spans.
+
+All commands, prerequisites and boundaries are in [Reliability extensions](labs/RELIABILITY-EXTENSIONS.md). Predict each result, run the test, then deliberately explain how the result would change if the journal, broker quorum or destination disk disappeared.
+
+The stronger telemetry variant also passed: the contrib collector's file_storage queue recovered all five buffered spans after a hard collector restart while the destination remained unavailable. This adds queue durability to the separate sink-durability check. It still does not test loss of the computer or its disk.
+
+## 11. Diagnose intermittent login without guessing
+
+A fresh browser can issue several requests at once. If an anonymous API request creates a saved-request session while an OIDC authorization request creates another session, competing cookies can interfere with login state. This application always returns to the home page after login, so it does not need saved-request caching. The OIDC configuration now disables that cache and records only the error code on a failed callback, rather than logging credentials or whole token claims.
+
+The retained rotated-secret fixture reproduced one failure in ten logins before this change. The client-secret probe was accepted by the identity provider. After the change, ten fresh logins across both instances passed, including concurrent anonymous API probes that must return 401 without creating a JSESSIONID cookie. This supports the session-race mitigation; it does not conclusively explain every historical failure. Keep the before/after reports and use failure codes for further diagnosis. A successful rerun alone is not a root-cause proof.
+
+## 12. Deliver real provider logout after a network outage
+
+The next test connects actual Keycloak-issued signed logout messages to two actual Spring applications through the durable relay. A proxy returns 503 for the second logout destination while its application remains available. After provider logout, the reachable application rejects the original browser session, while the isolated one still accepts it. The relay is killed and restarted with the same encrypted journal, then the proxy recovers. The second application now rejects its retained browser session too.
+
+Two fresh provider sessions create two events, each delivered to two destinations: four delivery records. Before relay restart, two deliveries were complete and two pending. After recovery, all four were complete and none expired. This verifies the previously missing real application integration. It does not promise immediate revocation during a network partition: the test deliberately observes that temporary gap. Long outages beyond token validity require readiness reconciliation or a different shared-session design.
+
+The first attempt retained old identity-provider sessions and checked the current browser before its event had arrived. That harness failure is recorded. The corrected experiment clears old fixture sessions before creating new ones and waits for the relevant delivery condition. Tests need correct synchronization just as applications do.

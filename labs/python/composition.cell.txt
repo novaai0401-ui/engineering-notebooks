@@ -1,0 +1,19 @@
+# lab: composition
+from dataclasses import dataclass
+from typing import Protocol
+
+class Scorer(Protocol):
+    def score(self, text: str) -> int: ...
+
+@dataclass(frozen=True)
+class LengthScorer:
+    def score(self, text: str) -> int:
+        return len(text.split())
+
+def choose_longest(texts: list[str], scorer: Scorer) -> str:
+    if not texts:
+        raise ValueError("at least one text required")
+    return max(texts, key=scorer.score)
+
+assert choose_longest(["hello", "hello learner"], LengthScorer()) == "hello learner"
+print("A scorer was supplied as a dependency")

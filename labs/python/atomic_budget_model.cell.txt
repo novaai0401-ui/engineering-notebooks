@@ -1,0 +1,15 @@
+# lab: atomic_budget_model
+class Budget:
+    def __init__(self,limit):self.remaining=limit
+    def reserve(self,amount):
+        if amount<0 or amount>self.remaining:raise ValueError('budget exhausted')
+        self.remaining-=amount
+    def refund(self,amount):
+        if amount<0:raise ValueError('negative refund')
+        self.remaining+=amount
+b=Budget(200);b.reserve(128)
+try:b.reserve(128)
+except ValueError:pass
+else:raise AssertionError('overspend')
+b.refund(128-40);assert b.remaining==160
+print('Reserve before work; reconcile actual usage afterwards. Shared storage needs a transaction.')

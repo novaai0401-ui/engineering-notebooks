@@ -1,0 +1,120 @@
+# Notebook 11 — React, TypeScript, browser behavior and real tests
+
+A React screen is a picture calculated from current inputs. Events request new inputs; React calculates another picture. The browser still handles HTML, focus, network requests and its event loop. Understanding those layers makes framework behavior less mysterious.
+
+## 1. Closures capture bindings and render snapshots
+
+A closure is a function that keeps access to its lexical environment. In React, each render creates its own bindings. A callback created during an old render may still read that render's state value. That is often intentional, but can surprise you in timers and asynchronous callbacks. A functional state update asks React to calculate from the pending state rather than an old captured number.
+
+```javascript
+// lab: closure_snapshot
+import assert from 'node:assert/strict';
+function makeRender(count){return {later:()=>count,increment:previous=>previous+1};}
+const first=makeRender(0),second=makeRender(1);
+assert.equal(first.later(),0);assert.equal(second.later(),1);
+const updates=[first.increment,first.increment,first.increment];
+assert.equal(updates.reduce((value,update)=>update(value),0),3);
+console.log('Old callbacks retain their render binding; functional updates compose');
+```
+
+This JavaScript model illustrates closures; it is not an implementation of React's scheduler. In a component, use `setCount(c => c + 1)` when the next value depends on previous state. If an effect needs current reactive values, declare its dependencies or redesign the effect. Suppressing the dependency warning does not repair stale data.
+
+## 2. Event loop, promises and rendering opportunities
+
+JavaScript executes the current task until it yields. Promise callbacks run as microtasks after the current synchronous work, before the next task. A timer schedules later work; a zero delay does not mean immediate execution. Long synchronous work prevents input handling and painting, even if it is inside an `async` function before its first meaningful await.
+
+```javascript
+// lab: event_loop_order
+import assert from 'node:assert/strict';
+const events=[];
+events.push('sync-start');
+Promise.resolve().then(()=>events.push('microtask'));
+const timer=new Promise(resolve=>setTimeout(()=>{events.push('timer');resolve();},0));
+events.push('sync-end');
+await timer;
+assert.deepEqual(events,['sync-start','sync-end','microtask','timer']);
+console.log(events.join(' -> '));
+```
+
+Node and browsers have additional scheduling details that differ. This example tests only the basic ordering it asserts. Use a Web Worker for suitable CPU-heavy browser computation rather than assuming a promise moves work to another CPU thread. React transitions prioritize certain state updates; they do not turn arbitrary synchronous code into parallel computation.
+
+## 3. TypeScript makes impossible combinations harder to express
+
+Instead of independent `loading`, `error` and `data` booleans that can contradict each other, use a discriminated union. A request is idle, loading, successful with data, or failed with an error. Narrow on its `kind` before accessing fields. TypeScript checks compile-time consistency; parse and validate external JSON because a cast does not establish runtime truth.
+
+```typescript recipe
+type Remote<T> =
+ | {kind:'idle'}
+ | {kind:'loading'}
+ | {kind:'success'; data:T}
+ | {kind:'error'; message:string};
+function caption<T>(state:Remote<T>):string {
+ switch(state.kind){
+  case 'idle': return 'Ready';
+  case 'loading': return 'Loading';
+  case 'success': return 'Loaded';
+  case 'error': return state.message;
+ }
+}
+```
+
+The Study Coach frontend is actual `.tsx` compiled with strict TypeScript. Its `Job` and `Session` types describe the Java contract. A next production step is runtime response validation or a generated contract shared with the API, with explicit compatibility tests when fields evolve. TypeScript alone cannot detect a backend returning a malformed answer.
+
+## 4. Local state versus server state
+
+Local state belongs to the interaction: the typed question, a selected tab, whether a dialog is open. Server state is a cached observation of remote truth: job status, permissions, persisted answers. A network request can fail, become stale or finish out of order. Keep an explicit policy for retries, refetching and invalidation.
+
+```javascript
+// lab: stale_response_guard
+import assert from 'node:assert/strict';
+let generation=0,display='';
+function startRequest(){const mine=++generation;return value=>{if(mine===generation)display=value;};}
+const finishOld=startRequest(),finishNew=startRequest();
+finishNew('new answer');finishOld('old answer');
+assert.equal(display,'new answer');
+console.log('A generation check prevents an old response overwriting a newer one');
+```
+
+Cancellation saves unnecessary work where supported. A generation check protects correctness even when cancellation arrives too late. Query-cache libraries can manage deduplication and stale/refetch policies, but their keys must include relevant identity and query parameters. Clear or partition cached data when the signed-in user changes. An optimistic update needs rollback or reconciliation if the server rejects it.
+
+The connected app uses a deliberately small explicit fetch implementation: create a job, approve it, receive server snapshots, and reconnect by reading current state. It sends full answer snapshots instead of append-only deltas, so reconnecting cannot duplicate already displayed text. That increases bandwidth but simplifies this teaching example.
+
+## 5. Effects synchronize with external systems
+
+An effect is appropriate for connecting to a stream, subscribing to browser events, or synchronizing an external widget. Calculating a filtered list from props generally belongs in render, not an effect that sets another state variable. User-triggered submission belongs in the event handler. The official [effect guidance](https://react.dev/learn/you-might-not-need-an-effect) explains why unnecessary effects introduce additional render cycles and synchronization problems.
+
+The app's route effect subscribes to `hashchange` and removes the same listener on cleanup. Its unmount cleanup aborts the answer stream. Starting a second stream aborts the previous one. A production implementation should also guard any final update from a previous session and validate received events. React development checks that rerun setup and cleanup help expose missing cleanup; they are not a reason to disable correctness checks.
+
+## 6. Routing, URLs and state restoration
+
+A route should identify a meaningful view. The app has `#learn` and `#architecture`, with browser back/forward behavior supplied by hash navigation. This small implementation is enough to demonstrate routing without a routing library. A larger application needs nested routes, unknown-route handling, loaders, permission-aware navigation and perhaps server fallback configuration.
+
+A job ID in the URL could restore selection after a refresh, but the backend must still authorize every read. A hidden link is not a security boundary. Never put passwords or bearer tokens in URLs, where history and logs can retain them. A resource identifier may be public-looking and still require authorization.
+
+## 7. Rendering performance and keys
+
+Before optimizing, reproduce a slow interaction and inspect a profiler trace. Expensive computation, excessive DOM nodes, repeated network calls and unnecessary component renders have different fixes. Memoization stores a result to avoid recomputation; it adds comparison and memory costs. `useMemo` is not a semantic guarantee that a value is permanent, and `useCallback` does not prevent work unless referential identity actually matters downstream.
+
+Stable keys identify sibling items across renders. Array-index keys are dangerous for reorderable editable lists because component state can attach to the wrong item after reordering. Use a stable domain ID. For long lists, virtualization reduces mounted elements but introduces keyboard, measurement and accessibility concerns. Avoid optimizing a ten-row list while ignoring a two-second network waterfall.
+
+## 8. SSR and hydration
+
+Server rendering produces initial HTML. Hydration connects React's behavior to compatible existing HTML. The server and first client render must agree; rendering the current time or random value independently on both sides can cause a mismatch. Browser-only APIs do not exist during server rendering. Serialize required initial data safely and keep server secrets out of client bundles.
+
+The [hydrateRoot reference](https://react.dev/reference/react-dom/client/hydrateRoot) documents the API's expectations. Study Coach uses client rendering with `createRoot`; it does not pretend to be an SSR deployment. Its separate hydration test renders a deterministic component on the server and hydrates the same tree in a DOM test, checking that an interaction still works. A complete framework SSR deployment additionally needs routing, asset manifests, streaming, caching and request isolation.
+
+## 9. Accessibility is behavior as well as markup
+
+Use native buttons, inputs and links when their behavior fits. Associate labels with controls, preserve visible focus, choose heading levels by structure, and provide status/error announcements. A clickable `div` does not acquire keyboard semantics automatically. Color alone should not convey completion or failure. Test zoom, reflow and keyboard operation as well as automated rules.
+
+The real Chromium test signs in with Enter, creates a job, focuses the approval button and activates it with Enter, waits for the answer, checks routing, and runs axe against the completed page. Another browser test cancels before approval. Passing those tests does not establish accessibility of every conceivable future page; they verify the included flows and automated rule set.
+
+## 10. Test selection and interview exercise
+
+Use pure-function tests for transformations, component tests for rendered behavior, integration tests for actual API contracts, and browser tests for important journeys. Prefer selecting by role and accessible name rather than implementation-specific CSS. Do not mock the exact boundary whose integration you are trying to prove.
+
+**Debugging round, 10 points:** Search results sometimes jump back to an old query. Award 3 points for identifying out-of-order completion, 2 for cancellation, 2 for a generation/identity guard, 2 for a test that completes the second request first, and 1 for separating the displayed query from the request that produced the result.
+
+**Design round, 10 points:** Explain why React state is not the authoritative payment record (3), how the server validates and deduplicates submission (3), how pending/error states are shown accessibly (2), and how retry differs from a new purchase (2).
+
+**Mastery task:** Add a job-history route backed by an owner-filtered API. Preserve keyboard focus when navigating, handle an empty history, test authorization, and avoid keeping one user's cached history after switching users.

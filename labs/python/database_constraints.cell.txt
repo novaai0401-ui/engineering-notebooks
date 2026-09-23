@@ -1,0 +1,20 @@
+# lab: database_constraints
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('PRAGMA foreign_keys=ON')
+db.executescript('''
+CREATE TABLE customer(id INTEGER PRIMARY KEY, email TEXT NOT NULL UNIQUE);
+CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER NOT NULL REFERENCES customer(id),
+                    total_cents INTEGER NOT NULL CHECK(total_cents>=0));
+INSERT INTO customer VALUES(1,'alice@example.test');
+INSERT INTO orders VALUES(10,1,1250);
+''')
+for statement in ["INSERT INTO orders VALUES(11,99,100)",
+                  "INSERT INTO orders VALUES(12,1,-5)",
+                  "INSERT INTO customer VALUES(2,'alice@example.test')"]:
+    try: db.execute(statement)
+    except sqlite3.IntegrityError: pass
+    else: raise AssertionError('Invalid data was accepted')
+assert db.execute('SELECT COUNT(*) FROM orders').fetchone()[0]==1
+db.close()
+print('Foreign key, nonnegative money and unique email rules rejected invalid writes.')

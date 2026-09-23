@@ -1,0 +1,8 @@
+{
+  "status": "available",
+  "distribution": "EngineeringNotebookLab-13e66a98",
+  "installation": "C:\\Users\\chand\\.codex\\visualizations\\2026\\09\\23\\01a0cd61-437a-7413-b921-13e66a982345\\engineering-notebooks\\.runtime\\wsl-alpine",
+  "rootfs_sha256": "0e5cc5702ad72a4e151f219976ba946d50161c3acce210ef3b122a529aba1270",
+  "alpine": "3.22.1",
+  "scope": "Task-owned WSL 2 environment under excluded .runtime. Existing distributions and Windows features are unchanged. Stop only this distribution with wsl --terminate EngineeringNotebookLab-13e66a98."
+}

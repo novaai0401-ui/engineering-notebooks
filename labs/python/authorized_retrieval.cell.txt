@@ -1,0 +1,17 @@
+# lab: authorized_retrieval
+docs = [
+    {"id":"public","tenant":"school-A","text":"gradient slope", "roles":{"student","teacher"}},
+    {"id":"exam","tenant":"school-A","text":"gradient exam answers", "roles":{"teacher"}},
+    {"id":"other","tenant":"school-B","text":"gradient notes", "roles":{"student"}},
+]
+
+def retrieve(query, authenticated_tenant, authenticated_role):
+    terms = set(query.lower().split())
+    allowed = [d for d in docs if d["tenant"] == authenticated_tenant
+               and authenticated_role in d["roles"]]
+    return sorted(allowed,
+        key=lambda d: len(terms & set(d["text"].split())), reverse=True)
+
+found = retrieve("gradient", "school-A", "student")
+assert [d["id"] for d in found] == ["public"]
+print("Restricted and cross-tenant documents excluded before ranking")

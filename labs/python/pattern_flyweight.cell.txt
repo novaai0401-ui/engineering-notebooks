@@ -1,0 +1,15 @@
+# lab: pattern_flyweight
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class GlyphStyle:
+    font:str
+    size:int
+class StylePool:
+    def __init__(self):self.styles={}
+    def get(self,font,size):
+        key=(font,size)
+        if key not in self.styles:self.styles[key]=GlyphStyle(font,size)
+        return self.styles[key]
+pool=StylePool();a={'style':pool.get('serif',12),'x':0};b={'style':pool.get('serif',12),'x':10}
+assert a['style'] is b['style'] and a['x']!=b['x']
+print('Immutable style is shared; position is not')

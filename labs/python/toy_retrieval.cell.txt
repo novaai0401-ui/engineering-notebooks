@@ -1,0 +1,17 @@
+# lab: toy_retrieval
+from collections import Counter
+import math
+def bag(text):
+    return Counter(text.lower().split())
+
+def cosine_counts(a, b):
+    dot = sum(value*b.get(word,0) for word,value in a.items())
+    norm_a = math.sqrt(sum(v*v for v in a.values()))
+    norm_b = math.sqrt(sum(v*v for v in b.values()))
+    return dot/(norm_a*norm_b) if norm_a and norm_b else 0.0
+
+documents = {"A":"plants need water", "B":"planets orbit stars"}
+query = bag("plants water")
+ranking = sorted(documents, key=lambda k: cosine_counts(query, bag(documents[k])), reverse=True)
+assert ranking[0] == "A"
+print(ranking)

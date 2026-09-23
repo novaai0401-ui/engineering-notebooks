@@ -1,0 +1,52 @@
+# Reference CI workflow. It has not run on GitHub in this task.
+# Use this notebook-library directory as the repository root.
+name: Study Coach verification
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install service test dependencies
+        run: python -m pip install fastapi==0.135.2 uvicorn==0.42.0 scikit-learn==1.8.0 httpx==0.28.1 prometheus-client==0.25.0 opentelemetry-sdk==1.41.1 opentelemetry-exporter-otlp-proto-http==1.41.1
+      - name: Build typed UI and install browsers
+        working-directory: labs/study-coach/frontend
+        run: |
+          npm ci
+          npm run build
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Java integration tests and artifact
+        working-directory: labs/study-coach/java
+        run: mvn -B -ntp package
+      - name: Native end-to-end and recovery tests
+        run: python labs/study-coach/test_system.py
+      - name: Generate local container credentials
+        run: |
+          python - <<'PY'
+          import os,secrets
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write('COACH_PASSWORD='+secrets.token_urlsafe(24)+'\n')
+              f.write('COACH_SERVICE_TOKEN='+secrets.token_urlsafe(32)+'\n')
+          PY
+      - name: Build and start container deployment
+        working-directory: labs/study-coach
+        run: docker compose up --build -d
+      - name: Container application smoke test
+        run: python labs/study-coach/container_smoke.py
+      - name: Stop this CI deployment
+        if: always()
+        working-directory: labs/study-coach
+        run: docker compose down

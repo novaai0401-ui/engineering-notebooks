@@ -1,0 +1,10 @@
+{
+  "review_type": "Tutor factual review of the recorded end-to-end answer",
+  "mechanical_integration": "passed",
+  "factual_quality": "failed",
+  "unsupported_claim": "ensuring side effects are idempotent",
+  "correction": "A checkpoint saves workflow state. External side effects still require idempotency keys or an equivalent deduplication protocol; a checkpoint alone does not make them idempotent.",
+  "evidence": "The retrieved checkpoint source explicitly says: Side effects still need idempotency keys.",
+  "lesson": "The model used a permitted citation ID while making an unsupported claim. Citation-format validation is not entailment validation. Preserve this failure as a regression case; do not claim general model accuracy or present unreviewed generated explanations as authoritative.",
+  "deployment_consequence": "Use the deterministic extractive default for this teaching corpus when factual review is unavailable. The optional generative mode remains an experimental draft-producing extension."
+}

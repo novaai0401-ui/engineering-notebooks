@@ -1,0 +1,9 @@
+# lab: attention_workshop
+import numpy as np
+q=np.array([[1.,0.],[0.,1.]])
+k=q.copy();v=np.array([[4.,0.],[0.,8.]])
+scores=q@k.T/np.sqrt(2);scores[np.triu_indices(2,1)]=-np.inf
+weights=np.exp(scores-np.max(scores,axis=1,keepdims=True));weights/=weights.sum(axis=1,keepdims=True)
+output=weights@v
+assert np.allclose(output[0],[4,0]);assert np.allclose(weights.sum(axis=1),1)
+print('Causal attention output:',np.round(output,3).tolist())

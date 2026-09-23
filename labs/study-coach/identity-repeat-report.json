@@ -1,0 +1,86 @@
+{
+  "cases": [
+    {
+      "round": 0,
+      "port": 8091,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 9768
+    },
+    {
+      "round": 0,
+      "port": 8096,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 2998
+    },
+    {
+      "round": 1,
+      "port": 8091,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 1035
+    },
+    {
+      "round": 1,
+      "port": 8096,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 843
+    },
+    {
+      "round": 2,
+      "port": 8091,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 740
+    },
+    {
+      "round": 2,
+      "port": 8096,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 674
+    },
+    {
+      "round": 3,
+      "port": 8091,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 724
+    },
+    {
+      "round": 3,
+      "port": 8096,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 748
+    },
+    {
+      "round": 4,
+      "port": 8091,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 722
+    },
+    {
+      "round": 4,
+      "port": 8096,
+      "passed": true,
+      "anonymous_api_probes": 4,
+      "anonymous_api_session_cookie": false,
+      "milliseconds": 834
+    }
+  ],
+  "client_authentication_probe": "Rotated client secret accepted; deliberately invalid authorization code rejected with invalid_grant",
+  "limitations": "Repeated local fresh logins using the retained isolated realm. Does not prove production reliability or reproduce every earlier failure."
+}

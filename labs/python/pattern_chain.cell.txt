@@ -1,0 +1,14 @@
+# lab: pattern_chain
+class Handler:
+    def __init__(self,predicate,action,next_handler=None):self.predicate=predicate;self.action=action;self.next=next_handler
+    def handle(self,request):
+        if self.predicate(request):return self.action(request)
+        if self.next:return self.next.handle(request)
+        raise ValueError('unhandled request')
+large=Handler(lambda x:x>=10,lambda x:'large')
+small=Handler(lambda x:0<=x<10,lambda x:'small',large)
+assert small.handle(4)=='small' and small.handle(20)=='large'
+try:small.handle(-1)
+except ValueError:pass
+else:raise AssertionError('unhandled request silently accepted')
+print('A chain delegates until one handler accepts, or fails explicitly')

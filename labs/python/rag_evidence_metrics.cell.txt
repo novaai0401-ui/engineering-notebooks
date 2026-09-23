@@ -1,0 +1,8 @@
+# lab: rag_evidence_metrics
+relevant={'d1','d2'};retrieved=['d1','d7','d3']
+hits=len(relevant.intersection(retrieved))
+precision=hits/len(retrieved);recall=hits/len(relevant)
+assert precision==1/3 and recall==.5
+chain_complete=relevant.issubset(retrieved)
+assert not chain_complete
+print({'precision':precision,'recall':recall,'complete_chain':chain_complete})

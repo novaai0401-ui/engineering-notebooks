@@ -1,0 +1,19 @@
+# lab: pattern_abstract_factory
+class QuietButton:
+    def render(self):return 'quiet button'
+class QuietNotice:
+    def render(self):return 'quiet notice'
+class BrightButton:
+    def render(self):return 'bright button'
+class BrightNotice:
+    def render(self):return 'bright notice'
+class QuietFactory:
+    def button(self):return QuietButton()
+    def notice(self):return QuietNotice()
+class BrightFactory:
+    def button(self):return BrightButton()
+    def notice(self):return BrightNotice()
+def screen(factory):return (factory.button().render(),factory.notice().render())
+assert screen(QuietFactory())==('quiet button','quiet notice')
+assert screen(BrightFactory())==('bright button','bright notice')
+print('Each factory supplies a consistent product family')

@@ -1,0 +1,14 @@
+# lab: pattern_memento
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class Snapshot:
+    text:str
+class Editor:
+    def __init__(self):self._text=''
+    def write(self,text):self._text=text
+    def save(self):return Snapshot(self._text)
+    def restore(self,snapshot):self._text=snapshot.text
+    def read(self):return self._text
+editor=Editor();editor.write('first');history=[editor.save()]
+editor.write('second');editor.restore(history.pop());assert editor.read()=='first'
+print('Caretaker stores a snapshot without implementing restoration')

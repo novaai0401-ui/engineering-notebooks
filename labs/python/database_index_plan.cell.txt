@@ -1,0 +1,10 @@
+# lab: database_index_plan
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('CREATE TABLE event(id INTEGER PRIMARY KEY,owner TEXT,created INTEGER)')
+db.executemany('INSERT INTO event VALUES(?,?,?)',[(i,'alice' if i%2 else 'bob',i) for i in range(1000)])
+db.execute('CREATE INDEX event_owner_created ON event(owner,created DESC,id DESC)')
+plan=db.execute('EXPLAIN QUERY PLAN SELECT id FROM event WHERE owner=? ORDER BY created DESC,id DESC LIMIT 5',('alice',)).fetchall()
+assert any('event_owner_created' in row[3] for row in plan)
+assert [r[0] for r in db.execute('SELECT id FROM event WHERE owner=? ORDER BY created DESC,id DESC LIMIT 3',('alice',))]==[999,997,995]
+db.close();print(plan)

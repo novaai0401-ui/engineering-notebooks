@@ -1,0 +1,254 @@
+# 30 — RAG: connect the question to the right evidence
+
+## 1. The open-book exam story
+
+A language model is a student with learned knowledge. Retrieval gives the student relevant pages from an allowed library before answering. Generation turns that evidence into an answer. RAG means retrieval-augmented generation. It can make answers more grounded and current, but finding a page does not guarantee that the student interprets it correctly.
+
+Our working example uses a tiny company handbook: Orion is maintained by the Payments team; Payments is led by Mira; another source explains checkpoints; another explains error E104. Alice also has a private document that Bob must never receive. You will follow these facts through six retrieval/control designs.
+
+The offline lab displays exact retrieved evidence so every step is inspectable. That default is a retrieval and orchestration teaching mode, not an LLM generator. An optional Ollama adapter adds actual generation. Its outputs require a separate factual review. Earlier in this course, a real model produced an unsupported checkpoint claim despite citing a real source; that failure remains part of the evidence.
+
+## 2. Connect every dot: two pipelines
+
+Ingestion flow: source → parse → validate permissions/metadata → clean → chunk → attach provenance → embed/index → publish version. Query flow: identity → question → route/rewrite → retrieve permitted candidates → merge/rerank → select bounded context → generate → validate/review → display answer and sources → record evaluation signals.
+
+| Stage | Input → output | Responsibility | Typical failure |
+| --- | --- | --- | --- |
+| Parse | PDF/HTML/table → text and structure | Preserve headings, tables and source locations | OCR loses negation or a table column |
+| Chunk | Structured document → passages | Keep useful context and parent relationships | Rule separated from its exception |
+| Index | Passages/metadata → searchable records | Version, ACL, deletion and embedding compatibility | Old private chunks remain searchable |
+| Retrieve | Question + verified identity → candidates | Find relevant permitted evidence | Relevant-looking unauthorized result |
+| Rerank | Candidate set → ordered set | Improve relevance using a stronger scorer | Relevant evidence never entered candidate set |
+| Context | Ordered evidence → bounded prompt data | Preserve provenance and token budget | Truncation removes qualification |
+| Generate | Question + evidence → proposed answer | Synthesize and abstain when needed | Unsupported inference with a valid citation |
+| Evaluate | Answer + sources + rubric → findings | Separate retrieval and factual quality | Citation format mistaken for entailment |
+
+The database stores source metadata, ownership and revisions. A vector index stores searchable representations. LangChain can provide retriever/model interfaces. LangGraph can represent state and conditional loops. MCP can expose an authorized retrieval tool across a protocol boundary. An agent harness enforces budgets, tool permissions, cancellation and logging. These components connect through contracts; none replaces the others' responsibilities.
+
+## 3. Chunking, embeddings and similarity
+
+Fixed-size chunks are easy to implement but may split meaning. Recursive splitting follows separators such as sections and paragraphs. Structure-aware splitting respects headings, code blocks and tables. Parent-child retrieval finds a small child passage and supplies its larger parent context. Overlap preserves boundary information but duplicates storage and can crowd results.
+
+An embedding maps content to a numerical vector. Cosine similarity measures direction: dot product divided by both vector lengths. Similar direction can suggest semantic relation; it does not prove a factual relationship. Keep embedding model/version and dimension with the index. Re-embedding is an explicit migration, not merely changing an environment variable.
+
+```python
+# lab: rag_cosine_geometry
+from math import sqrt
+def cosine(a,b):
+    if len(a)!=len(b):raise ValueError('Incompatible dimensions')
+    norm=sqrt(sum(x*x for x in a)*sum(x*x for x in b))
+    return sum(x*y for x,y in zip(a,b))/norm if norm else 0.
+assert cosine((1,0),(2,0))==1
+assert cosine((1,0),(0,1))==0
+assert cosine((1,0),(-1,0))==-1
+print('Same direction: 1; perpendicular: 0; opposite: -1. These are geometry, not truth probabilities.')
+```
+
+Mathematical cosine is undefined for a zero vector. The helper deliberately returns zero as a no-match fallback; a production embedding pipeline should validate empty/invalid representations explicitly. The lab's transparent synonym/concept vectors are deliberately small and inspectable; they are not pretrained embeddings. Substitute a real encoder only with a compatible indexing/query path and measured retrieval evaluation.
+
+## 4. Simple or naive RAG
+
+Flow: question → one retrieval → top-k passages → answer. Example: “What does E104 mean?” retrieves the error-code note and answers that the payment request timed out, preserving the instruction to reuse the idempotency key.
+
+This is a good baseline for document questions with nearby evidence and predictable latency. Its weakness is that one query and one fixed context selection can miss synonyms, cross-document dependencies or the right exception. Start with this baseline so later complexity has a measured reason to exist.
+
+In `flow.json`, choose `"mode":"simple"`. The offline encoder uses a small explicit synonym mapping; inspect its code and try words it does not know. The failure teaches why a real embedding model and a held-out retrieval set matter.
+
+## 5. Hybrid retrieval RAG
+
+Hybrid retrieval combines lexical matching and semantic matching. Keyword search is strong for E104, invoice identifiers and exact technical names; semantic search can connect “reimbursement” with “refund.” Retrieve both lists, deduplicate, combine ranks and optionally rerank the merged set.
+
+BM25 is a lexical scoring family using term frequency, document length normalization and inverse document frequency. Common words should not dominate merely because a long document repeats them. Its scores and cosine scores have different scales; simply adding them without calibration can be misleading. Reciprocal rank fusion combines positions instead.
+
+```python
+# lab: rag_reciprocal_rank_fusion
+from collections import Counter
+def rrf(rankings,k=60):
+    result=Counter()
+    for ranking in rankings:
+        for rank,doc in enumerate(ranking,1):result[doc]+=1/(k+rank)
+    return sorted(result,key=lambda doc:(-result[doc],doc))
+assert rrf([['exact-code','shared'],['semantic','shared']])[0]=='shared'
+print(rrf([['exact-code','shared'],['semantic','shared']]))
+```
+
+The shared candidate receives support from both lists. RRF's k is a rank smoothing constant, not the number of retrieved results. Hybrid retrieval is useful for enterprise manuals with both natural language and exact identifiers. In some framework documentation “hybrid RAG” also describes mixed deterministic/agentic control. State which meaning you intend.
+
+## 6. GraphRAG and relationship evidence
+
+Question: “Who leads the team maintaining Orion?” A graph can connect Orion → maintained by → Payments → led by → Mira. Keep the supporting source ID for every edge. A guessed relationship must not quietly become trusted fact merely because it is stored in a graph.
+
+Generic graph-augmented retrieval uses entities and relationships to find connected evidence. Microsoft's GraphRAG additionally builds a corpus-derived graph and community summaries; local search focuses on entities and nearby context, while global search can synthesize across community reports. Our tiny entity-expansion lab is not an implementation of that full community pipeline. [Microsoft GraphRAG query overview](https://microsoft.github.io/graphrag/query/overview/).
+
+Use graphs for dependency questions, relationship exploration and corpus-level themes when the extraction/maintenance cost is justified. Bound traversal depth and candidate count. Common hub entities can explode the context. Apply permissions to nodes, edges, source passages and precomputed summaries; a permitted summary can otherwise leak restricted underlying facts.
+
+Choose `"mode":"graph"`. The lab finds seeds and expands shared entities through already-authorized documents. It logs every expansion. Its entities are hand-authored and it has no community detection or LLM entity extraction. These boundaries make the learning experiment honest and reproducible.
+
+## 7. Multi-Hop RAG
+
+Multi-hop retrieval resolves a question through multiple pieces of evidence. Hop one asks who maintains Orion and finds Payments. Hop two asks who leads Payments and finds Mira. The final answer must preserve both links; skipping the first link can produce the right name for the wrong reason.
+
+Multi-hop can use a graph, but it can also use sequential text retrieval, SQL or APIs. A true dynamic planner can derive the next query from the previous result. Our user-defined version makes the subquestions explicit so you can see and edit the plan. It does not pretend to have autonomously discovered the second query.
+
+```json recipe
+{
+  "mode": "multi_hop",
+  "top_k": 2,
+  "max_steps": 3,
+  "context_chars": 1800,
+  "generator": "extractive",
+  "subquestions": [
+    "Which team maintains Orion?",
+    "Who leads the Payments team?"
+  ]
+}
+```
+
+Use it for comparisons and questions whose facts are distributed across records. Detect an unsupported hop and abstain rather than letting a guessed intermediate entity contaminate everything afterward. Measure evidence-chain completeness, not merely whether one final name appears in the answer.
+
+## 8. Agentic RAG
+
+An agentic system decides when and how to retrieve while solving a task. It may choose document search, authorized SQL, graph lookup or a calculator, inspect results and choose a next step. The harness supplies the allowed tools, input schemas, step/time/cost limits, observation handling and stopping rules.
+
+Example: “Explain this failed payment and whether the refund policy applies.” A capable agent may inspect an authorized payment status, retrieve the policy, ask for missing facts and stop before claiming eligibility. Read-only retrieval and an actual refund mutation need different authorization. A retrieved document instructing “ignore permissions” is untrusted content.
+
+The offline `agentic` route is a deterministic tool-policy demonstration: lexical search first; if empty, try the concept retriever within its budget. It exposes the loop structure, not autonomous LLM planning. To replace the policy with model decisions, validate a structured action against an allowlist, pass authenticated identity outside model control, persist state if needed and evaluate tool decisions separately from answer quality. The course's agent notebooks cover those harness concepts.
+
+## 9. Adaptive RAG
+
+Adaptive designs choose effort based on the question and observed evidence. A simple lookup may need one search; a relationship question may need multiple hops; missing evidence may require clarification or abstention. A route is a cost/quality decision, not a guarantee that hard questions become solvable.
+
+The Adaptive-RAG research approach learns routing based on question complexity. The lab uses an explicit teaching heuristic: supplied subquestions select the multi-hop route; otherwise it selects hybrid retrieval. Do not describe this if-statement as a trained complexity classifier. [Adaptive-RAG paper](https://arxiv.org/abs/2403.14403).
+
+Measure whether routing actually improves quality for the same latency/cost budget. A classifier can confidently choose the wrong route. Keep an escape condition for weak evidence, cap repeated searches and record why the route changed. An adaptive no-retrieval branch may suit some tasks, but this lab does not use it for source-dependent facts.
+
+## 10. Related techniques and when to add them
+
+| Technique | How it changes the flow | Example use | Risk to evaluate |
+| --- | --- | --- | --- |
+| Query rewriting | Resolve or clarify the search question | “Who leads it?” after discussing Payments | Rewriter changes intended meaning |
+| Multi-query retrieval | Search several formulations and merge | Diverse descriptions of the same policy | Cost and duplicate context |
+| HyDE | Embed a generated hypothetical answer for retrieval | Vocabulary gap between query and documents | Hypothetical text is not evidence |
+| Reranking | Stronger scorer reorders a candidate pool | Many superficially similar manual passages | Cannot recover a never-retrieved document |
+| MMR | Trade relevance against redundancy | Diverse evidence in a small context | Diversity can displace a crucial detail |
+| Parent-child retrieval | Search small chunks, supply larger parents | A paragraph depends on its heading/exception | Larger context consumes budget |
+| Contextual compression | Extract relevant spans before generation | Long policy documents | Compression drops conditions or provenance |
+| Corrective retrieval | Assess weak evidence and retrieve again | Ambiguous or stale first results | Unbounded loops or uncontrolled web fallback |
+| Self-reflective RAG | Model critiques retrieval/generation | Evidence-use evaluation during answering | Self-assessment can be wrong |
+| Conversational RAG | Resolve conversation references and retrieve | Follow-up questions | Memory leaks or old context overriding new facts |
+| Multimodal RAG | Retrieve images, tables or audio with provenance | Manuals containing diagrams | OCR/visual interpretation and alignment errors |
+| SQL/structured RAG | Query authorized structured facts | “Total completed jobs this week?” | Unsafe generated SQL and ambiguous definitions |
+
+Self-RAG is a specific research approach involving learned retrieval/critique behavior; any prompt saying “check yourself” is not automatically that method. [Self-RAG paper](https://arxiv.org/abs/2310.11511). These patterns can combine: an adaptive router might choose hybrid retrieval followed by reranking and a second hop. Add each component only when its benefit is demonstrated on your workload.
+
+## 11. User-defined flow: what you can change
+
+Open `labs/rag-flow/flow.json`. Set mode to simple, hybrid, graph, multi_hop, agentic or adaptive. Change top_k, max_steps, context_chars and subquestions. The program validates known modes and bounds; it does not evaluate arbitrary Python from configuration. Every run outputs an inspectable trace from authorization to context assembly.
+
+The teaching context budget counts characters. A production model budget must use the selected model's tokenizer and reserve space for instructions, tool messages and the answer. The optional local-model fixture uses a 2,048-token context setting; increasing context_chars alone does not increase that model limit. Keep the small fixture budget or implement explicit tokenizer-aware packing before using larger documents.
+
+Run from the library root:
+
+```shell
+python labs/rag-flow/rag_flow.py --config labs/rag-flow/flow.json --question "Who leads the team maintaining Orion?" --user alice
+python labs/rag-flow/test_flow.py
+```
+
+The CLI's --user is a classroom fixture, not authentication. A web API must derive the user from a verified session. The example never lets a model choose the effective user's identity. To try a new corpus, edit the explicit DOCS fixture, preserve IDs/ownership/entities and extend tests before trusting results.
+
+For actual generation, install/run Ollama separately with the documented local model and set generator to ollama. `run_live.py` attempts four generated answers for review. The initial outputs preserve a checkpoint answer needing correction. After clarifying the source and recovering from a recorded runtime timeout, all four revised answers passed the tutor's source-by-source review. This is a small development set, not a held-out accuracy estimate. Local generation requires model weights and sufficient memory; those weights are not in the ZIP. The offline extractive route needs only Python's standard library.
+
+## 12. Mapping the flow to LangGraph and services
+
+Model state as question, user scope, route, subquestions, evidence IDs, source versions, steps remaining, deadline, answer and evaluation status. Nodes can be authorize, route, retrieve, rerank, assemble, generate and assess. Conditional edges choose retrieve-again, clarify, abstain or finish. Make state merges deterministic when parallel searches return.
+
+Parallel keyword/vector retrieval can reduce latency, but you must decide whether one failure permits partial results. Preserve cancellation and a total deadline; do not give each nested tool a fresh full budget. A checkpoint can resume computation, while external side effects still need idempotency. Store only necessary sensitive state and use an approved retention policy.
+
+Java can remain the public authenticated API and job owner; Python runs the RAG pipeline. Kafka transports durable work notifications, PostgreSQL stores job/source state, Redis caches versioned safe projections, and SSE streams progress to React. MCP may expose retrieval to different agents. This is one possible architecture, not a requirement to install every tool for a small RAG application.
+
+## 13. Retrieval and answer evaluation
+
+Retrieval recall@k asks how much relevant evidence appears among k candidates. Precision@k asks how many returned candidates are relevant. Reciprocal rank rewards the position of the first relevant result. For a multi-hop question, include a metric requiring every needed hop. Evaluate with tenant filters and production-like document revisions.
+
+```python
+# lab: rag_evidence_metrics
+relevant={'d1','d2'};retrieved=['d1','d7','d3']
+hits=len(relevant.intersection(retrieved))
+precision=hits/len(retrieved);recall=hits/len(relevant)
+assert precision==1/3 and recall==.5
+chain_complete=relevant.issubset(retrieved)
+assert not chain_complete
+print({'precision':precision,'recall':recall,'complete_chain':chain_complete})
+```
+
+Answer evaluation separately asks whether material claims are supported, the question is answered, uncertainty is appropriate and citations identify the supporting passages. Include abstention, conflicting sources, document injection, deletion and ownership tests. The lab's passing assertions establish control/retrieval behavior on a tiny fixture; they do not establish general model accuracy.
+
+## 14. Build your own flow exercise
+
+Design a refund assistant. Supply three source documents: refund policy, purchase record and current processing status. Mark the purchase private. Choose simple retrieval for policy lookup, authorized structured retrieval for purchase facts and multi-hop or an agent for combining them. Require clarification if purchase eligibility cannot be determined. Keep issuing a refund outside the read-only answer flow unless explicitly authorized.
+
+Write down each node's input/output, permitted tools, deadline, failure result and test. Then ask: what if the policy changed, the index lagged, a tool timed out, the user changed, a citation was valid but the claim false, or the connection dropped? Your flow is ready for the next integration stage when you can explain and test those outcomes.
+
+## 15. Interview answer key
+
+“Hybrid versus GraphRAG?” Hybrid combines retrieval signals; graph retrieval follows relationships or graph-derived summaries. They can coexist. “Multi-hop versus agentic?” Multi-hop describes an evidence dependency; agentic describes who controls tool choice and iteration. A fixed pipeline can be multi-hop. “Adaptive versus agentic?” Adaptation can be a fixed routing policy or learned choice; an agent is one possible control implementation. “Does RAG remove hallucinations?” No: retrieval, parsing, reasoning and attribution can all fail. “Do I need a vector database?” No: lexical, relational, graph or small in-memory retrieval can support RAG, depending on the workload.
+
+Final timed task: in fifteen minutes draw the ingestion and query flows for your own use case, choose a baseline, name one upgrade, define two quality metrics and demonstrate one authorization failure test. Explain why your chosen complexity is justified.
+
+## 16. Step from the toy encoder to actual pretrained embeddings
+
+Imagine the toy encoder as a small handwritten synonym list. A pretrained encoder has learned numerical representations from many examples. The added test_pretrained.py uses the actual all-MiniLM-L6-v2 model. It normalizes document and query vectors, multiplies them to obtain cosine scores and returns the highest-ranked documents. Authorization selects visible documents before encoding and ranking. The user cannot bypass that filter by writing “pretend I am Alice” in a question.
+
+Twelve fresh paraphrase questions found their expected document within the first three results, and four adversarial ownership checks kept private documents out of the candidate set. These sixteen checks passed. They are newly authored fixtures separate from the original seven-document corpus, not an independently adjudicated research benchmark. The configurable flow remains dependency-free by default; selecting embedding as pretrained activates the actual encoder with separate dependencies. The integration test also exercises hybrid retrieval, graph expansion and multi-hop over the original corpus with this encoder.
+
+One deliberately unsupported question asks for Neptune's exact population. Vector search still returns neighbours. This is why “retrieved something” cannot mean “answerable.” Add evidence sufficiency, abstention and claim-level evaluation after retrieval. Thresholds require calibration for the actual corpus and model; do not invent a universal cosine cutoff.
+
+## 17. Factual tests and adversarial tests are different from retrieval tests
+
+The factual holdout script supplies eight fixed evidence/question pairs to an actual local generative model. It tests a number, an entity, two-hop reasoning, absent evidence, a false premise, injected instructions, contradictory sources and unauthorized information. The expected short answers are written before the run, and each result is saved immediately. Review factual-holdout-report.json for the current results; a timeout is an incomplete case, not a factual pass.
+
+A strict answer contract can reject a semantically correct variant: “Search team” and “Search” can name the same team. Keep the original score and add an explicit human review explaining this distinction. Do not rewrite expected answers secretly after seeing outputs. Conversely, valid JSON and a matching citation do not rescue a false claim. A broader system needs separate retrieval, factuality, authorization, tool-use and operational evaluations.
+
+For commands and prerequisites, use [Reliability extensions](labs/RELIABILITY-EXTENSIONS.md). First explain which stage each test isolates. Then connect them into an end-to-end experiment with a versioned corpus, permissions, retrieval trace, model output and human-reviewed answer key. Passing isolated stages does not automatically establish the combined system's quality.
+
+## 18. Let the model choose a tool without giving it authority
+
+Imagine a student choosing which shelf to search. The student may choose the shelf; the librarian still decides which rooms the student can enter. In the optional Ollama controller, the model returns a JSON search or finish decision. Application code validates the fields, rejects unknown actions, limits query length, keeps the existing authorized document set and enforces a maximum number of decisions. A model cannot change the user or request a shell command.
+
+Set mode to agentic, embedding to pretrained and controller to ollama, or use model-agent-flow.json. Every model decision and actual retrieval appears in the trace. Invalid JSON or forbidden fields fail the run visibly. A step budget stops the loop even if the model keeps searching. The default output is still exact evidence display; model-selected retrieval and generative answering are independent choices. This is a working bounded read-only controller, not a full production Deep Agent with durable tool execution, approvals and shared memory.
+
+The graph route still expands curated entity links. An actual pretrained encoder and real model controller do not magically turn it into an automatic GraphRAG community-summary pipeline. That pipeline needs extraction, entity resolution, edge provenance, community construction, refresh/delete behavior and additional evaluation. Preserve this distinction when explaining your architecture in an interview.
+
+## 19. Build and maintain a graph from actual model extraction
+
+The separate graph_pipeline.py exercise connects those stages. Three source cards say “Atlas is maintained by Search,” “Search is led by Noor,” and the private statement “Vault is led by Sera.” An actual local model extracts source, relationship, target and an exact supporting quotation. The application supplies document identity and permissions; the model does not decide who may read a document.
+
+Imagine drawing arrows between name cards. Atlas points to Search through maintained_by, and Search points to Noor through led_by. Following two arrows answers who leads the team maintaining Atlas. The test checks these exact extracted relationships before accepting the example. In a larger system, extraction needs a labelled evaluation set and review; a quotation containing both names does not by itself prove that an arrow's direction or meaning is correct.
+
+Names are normalized with Unicode normalization, case folding and whitespace handling. Thus ATLAS finds Atlas. This is exact-name resolution, not a solution to two different people sharing a name or one organization having several aliases. Real entity resolution also needs types, stable identifiers, tenant boundaries and ambiguity handling.
+
+SQLite stores documents, source hashes, relationships and supporting quotations. Updating a document replaces its old arrows in one transaction. Deleting it cascades to its arrows. A failed provenance check leaves the earlier valid document intact. Reopening the database preserves the graph; it is no longer just a dictionary rebuilt from hand-authored links.
+
+For each reader, permissions filter edges before traversal or community detection. NetworkX then runs seeded Louvain community detection. Think of it as grouping name cards that are more tightly connected, guided by a modularity score. Louvain is a heuristic; its grouping is not a semantic truth or a guarantee of the best possible partition. The lesson uses extractive community summaries assembled from authorized supporting quotations, with document IDs attached. Bob's summary must never contain Alice's private card, including after a permission change.
+
+Run `python labs/rag-flow/test_graph_pipeline.py` after the requirements and Ollama setup in the lab guide. The recorded execution passed actual extraction, database reopen, two-hop retrieval, permission-filtered communities, rejection of invented support, permission change, deletion and source replacement. This is a small custom graph-RAG pipeline, not a claim to reproduce Microsoft GraphRAG or certify extraction accuracy on arbitrary documents.
+
+Implementation reference: [NetworkX Louvain documentation](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_communities.html). The explanations and runnable example are included here; the link is optional background.
+
+## 20. Diagnose a timeout with measurements
+
+An unanswered request can reflect slow loading or generation rather than a wrong answer. The bounded-generation test records available memory, whether the model is on CPU, time to first content, loading duration, prompt processing and output tokens. The machine had about 96 percent memory usage during this investigation. The earlier injection case timed out twice; a later constrained run returned the correct answer 7443 in 34.6 seconds using a short output budget, smaller context, two CPU threads and a JSON answer schema.
+
+Several settings changed together, so this is a successful development retest, not proof that one setting alone caused the improvement. Never shrink context without checking whether all needed evidence still fits. Never treat a short answer as automatically correct. Keep earlier failures, record the new settings and repeat representative cases before choosing production limits. The baseline holdout score remains unchanged.
+
+Run `python labs/rag-flow/test_bounded_generation.py` to reproduce this measured case. [Ollama's chat API](https://docs.ollama.com/api/chat) documents the response timing fields and schema format used by the exercise.
+
+The subsequent eight-case development regression passed six cases. It returned UNKNOWN for a supported entity question and timed out on an absent-evidence question. Therefore the one repaired injection example does not close general answer quality. Both reports remain included.
+
+## 21. Keep evidence available when generation fails
+
+Imagine the librarian finds the right pages, but the storyteller's microphone stops working. We can still show the pages, clearly saying that no spoken explanation was produced. The configurable RAG lab now does this when generation times out, the model service is unreachable or its response is malformed. Its answer starts with “Generation unavailable; showing source excerpts only.” The trace records the error category and the actual generator as extractive.
+
+Set generation_timeout_seconds in flow.json to a number from 1 to 240; the default is 120. A timeout is a waiting limit, not proof of cancellation inside the model server. No permitted evidence means the model is not called at all. Permissions are applied before both generation and fallback. A successful generated answer still carries a factual-review warning; successful HTTP delivery does not establish truth.
+
+Run `python labs/rag-flow/test_generation_recovery.py` for injected timeout, unavailable-service, malformed-output, permission and configuration checks. These tests deliberately simulate transport failures. They verify recovery behavior, not model intelligence. Run test_flow.py afterward to exercise all six offline routes.

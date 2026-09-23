@@ -1,0 +1,25 @@
+{
+  "passed": [
+    "Two real Spring application instances completed fresh OIDC/PKCE logins with one confidential client",
+    "Forged logout token rejected by both Spring endpoints through the fanout relay",
+    "Provider logout revoked sessions established independently on both instances",
+    "After provider secret rotation, both application instances restarted with the new secret and completed fresh code exchanges"
+  ],
+  "relay_deliveries": [
+    [
+      400,
+      400
+    ],
+    [
+      200,
+      200
+    ],
+    [
+      200,
+      200
+    ]
+  ],
+  "limitations": "Local HTTP, two independently stored classroom application databases, and synchronous non-durable logout fanout. Tests revocation while both instances are reachable, not a shared-session store, load-balancer deployment, offline-instance recovery, zero-downtime secret overlap or distributed business-data consistency.",
+  "status": "passed",
+  "prior_failures": "Earlier cutover attempts failed, including Invalid credentials on the second instance. Their intermittent cause is not established; see identity-cluster-failure-review.json. This report describes the final isolated run only."
+}

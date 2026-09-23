@@ -1,0 +1,6 @@
+# lab: container_address_reasoning
+services={'web':'http://web:8091','ai':'http://ai:8092'}
+java_upstream=services['ai']+'/answer'
+assert java_upstream=='http://ai:8092/answer'
+assert 'localhost' not in java_upstream
+print('Use service DNS for container-to-container traffic; publish only the intended host entry point.')

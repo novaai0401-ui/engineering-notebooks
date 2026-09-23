@@ -1,0 +1,6 @@
+# lab: error_budget_burn
+def burn(failures,total,target=.999):
+    if total<=0 or not 0<target<1 or not 0<=failures<=total:raise ValueError('invalid inputs')
+    return (failures/total)/(1-target)
+assert abs(burn(10,1000)-10)<1e-10
+print('1% errors burns a 99.9% success budget at approximately 10x.')

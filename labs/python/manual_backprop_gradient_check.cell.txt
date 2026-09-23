@@ -1,0 +1,16 @@
+# lab: manual_backprop_gradient_check
+rng=np.random.default_rng(3)
+X=rng.normal(size=(4,2));target=rng.normal(size=(4,1))
+W1=rng.normal(size=(2,3));W2=rng.normal(size=(3,1))
+def loss_and_gradient(A):
+    H=np.tanh(X@A);error=H@W2-target
+    loss=float(np.mean(error**2))
+    dY=2*error/len(X)
+    dA=X.T@((dY@W2.T)*(1-H**2))
+    return loss,dA
+loss,gradient=loss_and_gradient(W1)
+eps=1e-6;plus=W1.copy();minus=W1.copy()
+plus[0,1]+=eps;minus[0,1]-=eps
+numeric=(loss_and_gradient(plus)[0]-loss_and_gradient(minus)[0])/(2*eps)
+assert np.isclose(numeric,gradient[0,1],rtol=1e-5,atol=1e-6)
+print('Analytic backprop matches a numerical loss derivative')

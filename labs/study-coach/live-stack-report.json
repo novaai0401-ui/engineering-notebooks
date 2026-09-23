@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "Authenticated approval produced an actual Ollama-generated answer through Java and Python",
+    "Final citation identifier belongs to retrieved evidence"
+  ],
+  "answer": "A checkpoint saves workflow state so a process can resume after a restart, ensuring side effects are idempotent [checkpoint]. Evidence for checkpoints' purpose is less direct and involves additional concepts.",
+  "attempts": 1,
+  "partial_observed": true,
+  "elapsed_seconds": 171.58181430000695,
+  "limitations": "One local integration case; citation syntax is not a semantic accuracy guarantee; read deadline and lease enlarged for bounded model inference."
+}

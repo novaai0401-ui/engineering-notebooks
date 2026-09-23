@@ -1,0 +1,10 @@
+# lab: retry_budget_model
+def schedule(deadline,attempt_cost,delays):
+    elapsed=0;attempts=0
+    for delay in [0]+delays:
+        if elapsed+delay+attempt_cost>deadline:break
+        elapsed+=delay+attempt_cost;attempts+=1
+    return attempts,elapsed
+assert schedule(5,1,[1,2,4])==(2,3)
+assert schedule(10,1,[1,2,4])==(3,6)
+print('A total deadline can reject a retry even when the attempt counter has room.')

@@ -1,0 +1,12 @@
+# lab: scratch_logistic_regression
+X=np.array([[-2.],[-1.],[1.],[2.]])
+y=np.array([0.,0.,1.,1.]);w=np.zeros(1);b=0.
+for _ in range(1000):
+    z=X@w+b
+    p=1/(1+np.exp(-np.clip(z,-40,40)))
+    w-=0.1*(X.T@(p-y)/len(y))
+    b-=0.1*(p-y).mean()
+loss=np.mean(np.logaddexp(0,X@w+b)-y*(X@w+b))
+assert np.array_equal((X@w+b>0).astype(int),y.astype(int))
+assert loss<0.02
+print('Binary labels learned; stable cross-entropy:',round(float(loss),4))

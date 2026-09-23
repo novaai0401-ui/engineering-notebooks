@@ -1,0 +1,56 @@
+{
+  "passed": [
+    "Unknown tools, extra authority fields and oversized queries rejected",
+    "Actual pretrained retrieval integrated into configurable hybrid pipeline after authorization",
+    "Pretrained-backed graph expansion and explicit/adaptive multi-hop preserve two-link evidence",
+    "Actual Ollama selected a validated read-only search; execution enforced permission and one-step budget"
+  ],
+  "seconds": 99.58,
+  "limitations": "Small local corpus; graph entities remain curated. No automatic graph extraction/community summarization or production benchmark. One real model decision, not broad autonomous-agent reliability; final answer remains extractive.",
+  "trace": [
+    {
+      "step": "authorize",
+      "visible_documents": 6
+    },
+    {
+      "step": "encoder",
+      "kind": "pretrained"
+    },
+    {
+      "step": "model_decision",
+      "decision": {
+        "action": "search",
+        "query": "meaning of E104",
+        "retriever": "hybrid"
+      }
+    },
+    {
+      "step": "retrieve",
+      "kind": "hybrid",
+      "query": "meaning of E104",
+      "ranking": [
+        [
+          "d4",
+          0.03278688524590164
+        ],
+        [
+          "d3",
+          0.016129032258064516
+        ]
+      ]
+    },
+    {
+      "step": "budget_stop",
+      "reason": "model tool-step budget exhausted"
+    },
+    {
+      "step": "assemble",
+      "evidence_ids": [
+        "d4",
+        "d3"
+      ],
+      "context_chars": 394,
+      "generator": "extractive"
+    }
+  ]
+}

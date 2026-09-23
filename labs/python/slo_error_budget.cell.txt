@@ -1,0 +1,8 @@
+# lab: slo_error_budget
+eligible=100000;failed=80;target=.999
+allowed=eligible*(1-target)
+remaining=allowed-failed
+assert round(allowed)==100 and round(remaining)==20
+burn=(failed/eligible)/(1-target)
+assert abs(burn-.8)<1e-9
+print({'allowed_failures':round(allowed),'remaining':round(remaining),'window_burn':round(burn,2)})

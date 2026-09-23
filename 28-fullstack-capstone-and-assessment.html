@@ -1,0 +1,110 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>28 — Put the pieces together: a full-stack engineering capstone</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-3">1. The product story</a></li><li><a href="#section-12">2. Trace one request through the architecture</a></li><li><a href="#section-21">3. Contracts before frameworks</a></li><li><a href="#section-31">4. Full-stack skills that sit between the frameworks</a></li><li><a href="#section-43">5. A staged implementation route</a></li><li><a href="#section-52">6. Failure matrix for the capstone</a></li><li><a href="#section-171">7. Interview rounds and scoring</a></li><li><a href="#section-180">8. What completion means</a></li></ul></nav><main id="content"><p class="downloads"><a href="28-fullstack-capstone-and-assessment.ipynb">Jupyter notebook</a><a href="28-fullstack-capstone-and-assessment.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">28 — Put the pieces together: a full-stack engineering capstone</h1>
+<h2 id="section-3">1. The product story</h2>
+<p>Build a study platform. A learner logs in, asks a question about permitted course material, watches progress, receives an answer with evidence and can return later to see the saved result. An instructor updates material. An operator can investigate a failed job without reading every learner's private prompt.</p>
+<p>The integrated Study Coach project already connects React, Java and Python with authentication, durable jobs, retrieval and browser tests. Kafka and the real-time/cache project are additional working labs. Their components are not silently wired into that existing application. Integration is a separate change requiring data contracts and end-to-end tests.</p>
+<h2 id="section-12">2. Trace one request through the architecture</h2>
+<p>React sends a CSRF-protected command with a logical request ID to Java. Java authenticates, authorizes, validates and atomically stores the job and outbox event. A publisher delivers the event. A worker loads the authorized source context and calls Python's retrieval/model boundary with a deadline. It conditionally stores the result and emits a progress event. SSE or WebSocket delivers authorized updates; a snapshot endpoint repairs missed history.</p>
+<p>PostgreSQL owns durable business records. Kafka can carry replayable events. Redis can cache permitted projections or support a specifically designed shared session mechanism. Object storage can hold large original files while PostgreSQL stores metadata and access rules. A vector index supports retrieval. Each component adds operational responsibility; use it only when a requirement justifies it.</p>
+<h2 id="section-21">3. Contracts before frameworks</h2>
+<p>Define identifiers, ownership, schema versions, timestamps, status transitions, error codes, retryability and idempotency. A job may be queued, running, completed, failed or cancelled; decide which transitions are legal and who can make them. A completed result should not be overwritten by a late retry from an earlier worker generation.</p>
+<pre><code class="language-python"># lab: capstone_state_machine
+allowed={'queued':{'running','cancelled'},'running':{'completed','failed','cancelled'},
+         'failed':{'queued'},'completed':set(),'cancelled':set()}
+job={'state':'queued','version':0}
+def change(expected_version,target):
+    if job['version']!=expected_version or target not in allowed[job['state']]:return False
+    job.update(state=target,version=expected_version+1);return True
+assert change(0,'running')
+assert not change(0,'cancelled')
+assert change(1,'completed')
+assert not change(2,'running')
+print(job)
+</code></pre>
+<p>This is a single-process model. Production compare-and-change belongs in an atomic database statement/transaction, not a read-then-write across two HTTP calls.</p>
+<h2 id="section-31">4. Full-stack skills that sit between the frameworks</h2>
+<p>Understand HTTP methods/statuses, DNS, TLS, reverse proxies, cookies, CORS, CSRF and browser storage. Know HTML semantics, responsive CSS, forms, focus management and JavaScript runtime behavior. Use TypeScript to express boundaries but still validate untrusted runtime JSON. Learn Git, reproducible builds, dependency updates, configuration management and rollback.</p>
+<p>For APIs, cover REST resource design, pagination, validation, error envelopes, rate limits and compatibility. GraphQL can support client-shaped queries but needs authorization, query-cost limits and N+1 prevention. gRPC can suit typed service calls, with explicit deadline and compatibility handling. Choose a protocol according to clients and operational constraints rather than collecting every protocol in one request path.</p>
+<p>For data, cover schema ownership, migrations, connection budgets, query plans and backups. For AI, cover token/context budgets, source permissions, model versioning, evaluation, prompt injection and cost limits. For operations, cover build provenance, logs/metrics/traces, deployment health and incident response.</p>
+<h2 id="section-43">5. A staged implementation route</h2>
+<p>Stage one: run the existing integrated app and explain each request without AI help. Stage two: implement one database invariant and a failing regression test. Stage three: substitute an event transport behind a clear interface, preserving outbox/inbox behavior. Stage four: add a bounded shared cache with a freshness policy. Stage five: add replayable real-time delivery and a reconnect test. Stage six: package and execute containers. Stage seven: deploy into an authorized staging environment, collect telemetry and rehearse recovery.</p>
+<p>Each stage has a concrete exit condition. A YAML file is not the exit condition for deployment; a running, tested release is. A cache class is not the exit condition for cache reliability; demonstrated invalidation and bounded behavior are. Do not mark a stage complete merely because a chapter explains it.</p>
+<h2 id="section-52">6. Failure matrix for the capstone</h2>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Expected behavior</th>
+<th>Evidence to collect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Response lost after commit</td>
+<td>Same request ID returns original job</td>
+<td>One durable job and stable result</td>
+</tr>
+<tr>
+<td>Event delivered twice</td>
+<td>One business effect</td>
+<td>Inbox/unique constraint and duplicate test</td>
+</tr>
+<tr>
+<td>Worker dies mid-job</td>
+<td>Lease/recovery policy applies</td>
+<td>State before/after restart and no lost accepted work</td>
+</tr>
+<tr>
+<td>Database unavailable</td>
+<td>Bounded error/backpressure</td>
+<td>Deadlines, pool metrics, recovery</td>
+</tr>
+<tr>
+<td>Model produces unsupported claim</td>
+<td>Evaluation rejects release/default path</td>
+<td>Claim-level failure record</td>
+</tr>
+<tr>
+<td>Stream reconnects after retention</td>
+<td>Snapshot/resync, explicit state</td>
+<td>Cursor test and UI recovery</td>
+</tr>
+<tr>
+<td>Permission revoked</td>
+<td>Unauthorized reads/streams stop under policy</td>
+<td>Tests on every relevant instance</td>
+</tr>
+<tr>
+<td>Cache unavailable</td>
+<td>Bounded fallback or explicit failure</td>
+<td>Backend load and error budget impact</td>
+</tr>
+<tr>
+<td>Deployment partially rolls out</td>
+<td>Compatible contracts or controlled rollback</td>
+<td>Old/new version coexistence tests</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="section-171">7. Interview rounds and scoring</h2>
+<p>Round A, 30 minutes: implement duplicate-safe job submission and tests. Round B, 20 minutes: diagnose a stale cache race. Round C, 40 minutes: design the platform for an explicit workload, then handle a regional dependency failure. Round D, 20 minutes: explain one algorithm with an invariant, complexity and edge cases. Round E, 15 minutes: interpret a SQL query plan and fix N+1 behavior.</p>
+<p>For each round award 0–4 in correctness, explanation, failure handling, testing and tradeoffs. Zero means absent/incorrect; one means memorized but not workable; two means a basic working answer; three means a justified tested answer; four means it remains coherent under follow-up changes. Keep the transcript, feedback and a fresh repeat attempt. Scores must come from your submitted work, not a prefilled success label.</p>
+<h2 id="section-180">8. What completion means</h2>
+<p>Reading completion means you can explain each chapter's worked example. Lab completion means you can reproduce results and deliberately trigger its failure cases. Project completion means the integrated application meets its stated acceptance tests. Interview readiness means repeated unaided performance against representative roles. None promises every possible exam or permanent coverage of a changing field.</p>
+<p>Use the evidence report to distinguish completed local tests from cloud, physical-device, clustered identity and endurance work still needing execution. Keep that distinction visible as the library grows. The database notebook is a separate deepening path; return to the capstone and apply its modelling, transaction and indexing lessons to one real endpoint.</p>
+</main></body></html>

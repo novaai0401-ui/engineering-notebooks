@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "passed": [
+    "Actual K3s API and node reached ready state",
+    "Two real pods became ready; deleted pod was replaced with a new UID",
+    "Deployment controller reconciled requested scale-down",
+    "Actual Study Coach images imported into K3s and deployed as non-root pods",
+    "Cluster Service networking and Secret configured authenticated Java-to-Python work",
+    "Completed job survived web pod deletion and replacement through its persistent volume"
+  ],
+  "version": "v1.37.0+k3s1",
+  "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
+}

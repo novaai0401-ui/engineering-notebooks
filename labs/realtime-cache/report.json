@@ -1,0 +1,14 @@
+{
+  "passed": [
+    "TTL expiry, LRU eviction and stale-version fill rejection passed with a controlled clock",
+    "Owner-scoped cache/ETag, mutation invalidation, idempotency and SSE Last-Event-ID replay passed",
+    "Real WebSocket publish/ping, Origin rejection and logout-driven connection revocation passed",
+    "Eighty writes under eight concurrent clients, retention-gap rejection, and process-restart persistence passed"
+  ],
+  "load_requests": 80,
+  "concurrency": 8,
+  "elapsed_seconds": 92.75804470002186,
+  "p50_ms": 9067.837700000382,
+  "p95_ms": 15526.492099976167,
+  "limitations": "Single-process SQLite/local cache and in-memory sessions. This is a short load test, not a long endurance, distributed cache or production capacity certification."
+}

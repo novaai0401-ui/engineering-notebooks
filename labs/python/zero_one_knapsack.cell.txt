@@ -1,0 +1,11 @@
+# lab: zero_one_knapsack
+def knapsack(weights,values,capacity):
+    dp=[0]*(capacity+1)
+    for weight,value in zip(weights,values):
+        if weight<=0:raise ValueError('positive weights required')
+        for c in range(capacity,weight-1,-1):dp[c]=max(dp[c],dp[c-weight]+value)
+    return dp[capacity]
+assert knapsack([2,3,4],[4,5,7],5)==9
+assert knapsack([2],[3],4)==3 # not 6: the item cannot be reused
+assert knapsack([],[],5)==0
+print('Backward capacity iteration preserves the one-use invariant')

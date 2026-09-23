@@ -1,0 +1,6 @@
+{
+  "status":"failed_test_coordination",
+  "observed":"The retained isolated realm emitted logout events for 22 sessions. The test checked the current browser after only some reachable deliveries completed, and the session was still active. It then timed out waiting for the browser phase marker.",
+  "correction":"Clear old test-realm sessions before starting new application sessions, then wait for both fresh events to reach the reachable instance before checking browsers. Abort promptly if the browser assertion fails.",
+  "scope":"This records the initial harness failure, not a successful durable Spring integration or proof of an application revocation defect. The corrected run has a separate report."
+}

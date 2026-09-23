@@ -1,0 +1,63 @@
+# 17 — Identity and deployment: who are you, and where does the app live?
+
+## 1. A school gate, a classroom and a permission slip
+
+Authentication is the school gate checking who you are. Authorization is deciding which classroom you may enter. A session is a temporary pass that lets the school recognize you again. A role is a group of permissions. None of these should come from a user-editable field saying “I am admin.”
+
+The original classroom login uses generated local credentials. The optional `oidc` profile delegates login to Keycloak and keeps an application session cookie. The project provides a realm template, administration helper and real browser integration script. It is a local demonstration of identity integration, not a claim that HTTP development settings are suitable for a public site.
+
+## 2. OAuth and OIDC in one small story
+
+OAuth authorizes access to a resource. OpenID Connect adds a standard identity layer. The browser visits the identity provider; the provider authenticates the person; it redirects back with a short-lived authorization code. The application exchanges that code at the provider and validates the returned identity information. The browser does not choose its own verified identity.
+
+PKCE creates a secret verifier and sends a SHA-256-derived challenge on the first request. The later code exchange must include the verifier. This binds the exchange to the party that started it. State binds a callback to the login attempt and helps prevent login CSRF; OIDC nonce binds the ID token to the authentication request. Let a maintained security framework implement these protocol details.
+
+Our confidential server client additionally has a client secret. Exact redirect URIs prevent sending codes to an attacker's destination. Wildcard public callbacks are a poor default. The stable `sub` claim identifies the person; display names and email addresses can change and should not become database ownership keys.
+
+## 3. Cookies, CSRF and the difference between sites and origins
+
+A cookie can be HttpOnly so JavaScript cannot read it. Secure means it is sent only over HTTPS. SameSite restricts some cross-site sending. These flags help but do not replace request authorization. A state-changing request also requires an unpredictable CSRF token tied to the user's session.
+
+SameSite is based on a site concept, not the complete origin tuple. Different ports on the same host are different origins but often the same site. Therefore a local identity test on two loopback ports does not prove a cross-site production login will behave identically. For a top-level authorization-code redirect across sites, a carefully configured Lax session cookie is commonly needed; test your actual hostnames and callback method. Never loosen it casually to repair an unexplained error.
+
+## 4. Role mapping is a narrow bridge
+
+Map only the provider claims your application understands. Study Coach recognizes `coach-learner` and `coach-admin`. The provider may carry many unrelated roles; those must not automatically become powerful application permissions. The normal API requires the learner role. Administration and metrics require the administrator role.
+
+The backend enforces permissions. Hiding an admin button is useful interface behavior but not access control. Test the HTTP endpoint directly as a learner. Test unauthenticated access too: an API should return an appropriate failure rather than making a JavaScript client parse an HTML login page.
+
+## 5. A user leaves the company
+
+Disabling an identity stops new authentication, but an application session may already exist. Provider logout, application logout, access-token expiry, refresh-token revocation and back-channel logout solve different parts of this problem. Define your revocation target: immediately, within one minute, or when a session expires. Then implement and test that target.
+
+Possible designs include supported back-channel logout, a centralized session store with an administrative revocation operation, or short sessions plus a periodic authoritative status check. A status check adds latency and a dependency; decide whether identity-provider failure should deny access or temporarily preserve an existing session for your threat model.
+
+The original integration uses Spring's OIDC back-channel logout support and a matching Keycloak client setting. Its browser test verifies that disabling Bob and issuing provider logout invalidates Bob's existing application session. Another test proves the old password fails and the rotated password succeeds for Alice.
+
+The added `test_identity_cluster.py` exercises two application instances with one confidential client. A loopback relay forwards signed logout messages to both Spring endpoints, which validate them; forged messages are rejected. Its final isolated run passed central logout and fresh login on both instances after a provider-secret rotation and application restart. Earlier cutover attempts failed, including an Invalid credentials result; their intermittent cause has not been established. Preserve that finding rather than calling the system production-proven. The relay is synchronous and non-durable, business databases are independent classroom fixtures, and an unavailable instance needs a stronger revocation/recovery design.
+
+## 6. Secret rotation is a two-sided change
+
+Suppose the school changes the lock but never gives the teacher the new key. Authentication breaks. A client-secret rotation must coordinate the identity provider and application. Prefer a supported overlap period: issue new secret, deploy consumers, verify successful exchanges, revoke old secret. If overlap is unsupported, plan a controlled cutover and test rollback. Do not print secrets in reports, commit runtime realm exports, or put them in browser source.
+
+The example generates random classroom secrets and stores temporary state under `.runtime`, which is excluded from the learning ZIP. Production uses a secret manager and least-privilege service identities. Backups need encryption and access control too; they can contain the same sensitive data as the live service.
+
+## 7. Native deployment, containers and cloud are different evidence
+
+A native integration starts separate processes on one machine. A container test adds image construction, container networking, volumes and startup ordering. A cloud test adds public networking, TLS, identity for services, managed data, scaling and operations. Passing one does not imply the others passed.
+
+An isolated WSL distribution now supplies a real Docker engine and K3s node. The completion audit links the actual container and cluster test reports; their local classroom profile is distinct from a production identity deployment. The native PostgreSQL/broker tests use independent processes and real network connections, and their report states their limits. A production launch also needs an actual destination account and domain, which have not been supplied.
+
+## 8. Deployment checklist as an executable release decision
+
+Build once and identify the artifact by digest. Run unit, integration and browser tests against that artifact. Apply backward-compatible database expansion before new code needs it. Deploy a small group of instances; check error rate and latency; expand only when the release gate passes. Keep rollback compatible with the expanded schema. Remove old columns in a later release after all readers stop using them.
+
+Readiness means an instance can serve traffic; liveness means the process should be restarted if unhealthy. A temporary database outage should not cause every instance to restart continuously. Use bounded connection pools, graceful shutdown and request deadlines. Stop admitting new work before terminating a worker, and let its lease recover if it cannot finish.
+
+## 9. Interview and debugging round
+
+Symptom: login works locally but loops after deployment. Investigate actual callback URL, forwarded scheme/host handling, cookie SameSite/Secure settings, session affinity or shared session store, client secret and clock skew. Do not “fix” it by allowing every redirect URI or disabling CSRF.
+
+Exercise: a learner can open `/api/admin/status` by typing the URL although the button is hidden. Correct answer: backend authorization is missing or incorrectly matched. Add the role requirement, then test anonymous, learner and admin requests. Frontend tests alone cannot prove access control.
+
+Reference provenance: [Spring OIDC login](https://docs.spring.io/spring-security/reference/servlet/oauth2/login/core.html), [Keycloak import/export](https://www.keycloak.org/server/importExport). Local project: `labs/study-coach/identity` and `test_identity.py`.

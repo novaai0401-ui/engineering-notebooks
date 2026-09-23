@@ -1,0 +1,10 @@
+{
+  "passed": [
+    "Actual OTLP collector accepted five spans while downstream was unavailable",
+    "Collector retry delivered all five spans when downstream recovered",
+    "Hard sink restart retained all exact trace IDs in SQLite",
+    "Contrib collector killed and restarted while destination remained offline; file_storage queue recovered every trace"
+  ],
+  "limitations": "Pinned contrib collector 0.161.0 with real file_storage queue and durable teaching SQLite sink. No Tempo/Jaeger/Grafana, replicated storage, retention, TLS or disk-loss test. Process crashes are not whole-machine power failures.",
+  "archive_sha256": "fd1a6d23aa7855efc4fc12e4ee2c21b410e0a35c85587a07def7746eec9cea24"
+}

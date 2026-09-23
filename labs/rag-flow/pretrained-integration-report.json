@@ -1,0 +1,9 @@
+{
+  "passed": [
+    "Unknown tools, extra authority fields and oversized queries rejected",
+    "Actual pretrained retrieval integrated into configurable hybrid pipeline after authorization",
+    "Pretrained-backed graph expansion and explicit/adaptive multi-hop preserve two-link evidence"
+  ],
+  "seconds": 31.73,
+  "limitations": "Small local corpus; graph entities remain curated. No automatic graph extraction/community summarization or production benchmark."
+}

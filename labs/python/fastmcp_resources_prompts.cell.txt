@@ -1,0 +1,18 @@
+# lab: fastmcp_resources_prompts
+@server.resource("catalog://{topic}")
+def catalog_resource(topic: str) -> str:
+    return f"Demonstration notes about {topic}."
+
+@server.prompt
+def study_prompt(topic: str) -> str:
+    return f"Explain {topic} with one small example."
+
+async def check_primitives():
+    async with Client(server) as client:
+        contents = await client.read_resource("catalog://space")
+        assert "space" in contents[0].text
+        prompt = await client.get_prompt("study_prompt", {"topic":"agents"})
+        assert "agents" in prompt.messages[0].content.text
+    return "Resource read and prompt rendered"
+
+print(await check_primitives())

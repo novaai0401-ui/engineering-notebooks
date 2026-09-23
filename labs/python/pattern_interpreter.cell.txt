@@ -1,0 +1,13 @@
+# lab: pattern_interpreter
+class Literal:
+    def __init__(self,value):self.value=value
+    def evaluate(self,context):return self.value
+class Variable:
+    def __init__(self,name):self.name=name
+    def evaluate(self,context):return context[self.name]
+class AddExpression:
+    def __init__(self,left,right):self.left=left;self.right=right
+    def evaluate(self,context):return self.left.evaluate(context)+self.right.evaluate(context)
+expression=AddExpression(Variable('score'),Literal(2))
+assert expression.evaluate({'score':8})==10
+print('A restricted expression tree has explicit evaluation rules')

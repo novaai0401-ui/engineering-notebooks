@@ -1,0 +1,268 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Your personal engineering classroom</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">Choose a notebook</a></li><li><a href="#section-241">Continue into the nine advanced workshops</a></li><li><a href="#section-333">A learning route that builds understanding</a></li><li><a href="#section-447">How to answer an interview question</a></li><li><a href="#section-456">Read offline</a></li><li><a href="#section-462">Run the notebook labs</a></li><li><a href="#section-478">Run the Spring Boot project</a></li><li><a href="#section-488">Run the React project</a></li><li><a href="#section-498">Coverage and honest limits</a></li></ul></nav><main id="content"><h1 id="section-0">Your personal engineering classroom</h1>
+<p>Start with the story, say the idea in your own words, trace the small example on paper, then change the code. You do not need another website to read these lessons. External links credit the official sources and are optional reading. Running examples does require the documented software.</p>
+<h2 id="section-6">Choose a notebook</h2>
+<p>The expanded library contains 30 notebooks. For exact folders and commands, start with <a href="STUDY-ON-ANY-DEVICE.html">Study on any device</a>. The <a href="COMPLETION-AUDIT.html">completion audit</a> separates executed checks from remaining verification. After the foundation and advanced workshops, continue with:</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>New notebook</th>
+<th>What it adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="16-live-model-engineering.html">16. Real model engineering</a></td>
+<td>Actual local generation, tool selection, budgets, citation gates and evaluation limits</td>
+</tr>
+<tr>
+<td><a href="17-identity-and-deployment.html">17. Identity and deployment</a></td>
+<td>OIDC/PKCE, roles, sessions, revocation, secret rotation and release decisions</td>
+</tr>
+<tr>
+<td><a href="18-distributed-systems-lab.html">18. Distributed systems lab</a></td>
+<td>PostgreSQL, persistent broker, two workers, outbox/inbox, isolation and restore</td>
+</tr>
+<tr>
+<td><a href="19-observability-and-browser-quality.html">19. Observability and browsers</a></td>
+<td>Traces, metrics, alerts, measured load, three browser engines and accessibility</td>
+</tr>
+<tr>
+<td><a href="20-specialist-algorithms-and-math.html">20. Specialist algorithms and math</a></td>
+<td>Fenwick/segment trees, KMP, SCC, flow, gradients, attention and least squares</td>
+</tr>
+<tr>
+<td><a href="21-assessed-interview-route.html">21. Assessed interview route</a></td>
+<td>Diagnostics, timed rounds, explicit answer keys and grading rubrics</td>
+</tr>
+<tr>
+<td><a href="22-kafka-event-engineering.html">22. Kafka</a></td>
+<td>Partitions, groups, transactions, offsets, duplicates and a real broker restart lab</td>
+</tr>
+<tr>
+<td><a href="23-docker-and-release-engineering.html">23. Docker</a></td>
+<td>Images, containers, builds, networking, release and recovery</td>
+</tr>
+<tr>
+<td><a href="24-kubernetes-from-pods-to-recovery.html">24. Kubernetes</a></td>
+<td>Controllers, Pods, probes, scaling, security, storage and deployment recipes</td>
+</tr>
+<tr>
+<td><a href="25-cache-management-and-consistency.html">25. Cache management</a></td>
+<td>TTL, LRU, stampedes, version fences, Redis principles and ETags</td>
+</tr>
+<tr>
+<td><a href="26-websockets-sse-and-realtime-delivery.html">26. Real-time delivery</a></td>
+<td>SSE, WebSockets, replay, revocation, backpressure and scaling</td>
+</tr>
+<tr>
+<td><a href="27-reliability-evaluation-and-operations.html">27. Reliability</a></td>
+<td>Failure tests, deadlines, telemetry, identity and factual evaluation</td>
+</tr>
+<tr>
+<td><a href="28-fullstack-capstone-and-assessment.html">28. Full-stack capstone</a></td>
+<td>Request flow, contracts, acceptance tests and scored interview rounds</td>
+</tr>
+<tr>
+<td><a href="29-databases-for-fullstack-and-ai.html">29. Databases</a></td>
+<td>SQL, modelling, transactions, indexes, JPA/Python, NoSQL, Redis and vectors</td>
+</tr>
+<tr>
+<td><a href="30-rag-patterns-and-user-defined-flows.html">30. RAG flows</a></td>
+<td>Simple, Hybrid, Graph, Multi-Hop, Agentic and Adaptive RAG with configurable examples</td>
+</tr>
+</tbody>
+</table></div>
+<p>The latest execution evidence and remaining environment-dependent checks are in <a href="VALIDATION.html">Validation</a>. Reading is fully offline. Executing distributed labs needs installed services and dependencies; no live-model weights or runtime credentials are bundled.</p>
+<p>The <a href="labs/study-coach/monitoring-dashboard.html">saved monitoring dashboard</a> shows a measured local scrape. <a href="labs/study-coach/ADVANCED-RUN.md">Advanced run instructions</a> explain how to repeat the model, identity, distributed-system and monitoring integrations. The supplied <code>.github/workflows/study-coach.yml</code> is an unexecuted CI/container recipe for using this library directory as a repository root.</p>
+<p>Notebook 16 includes an actual failed factual review: the experimental model confused checkpointing with idempotency despite using a valid citation. The lesson supplies the correction. Keep the default extractive mode when you cannot review generated claims.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>What you learn</th>
+<th>Working practice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="01-agent-engineering.html">Agents</a></td>
+<td>Agent types, harnesses, LangChain, LangGraph, Deep Agents, MCP, FastMCP, parallel work, orchestration, safety and evaluation</td>
+<td>11 executable labs including actual framework calls with a scripted model</td>
+</tr>
+<tr>
+<td><a href="02-python-for-ai.html">Python for AI</a></td>
+<td>Python foundations, arrays, tables, ML pipelines, gradients, retrieval, concurrency and design</td>
+<td>12 executable labs</td>
+</tr>
+<tr>
+<td><a href="03-java-spring-boot.html">Java and Spring Boot</a></td>
+<td>Objects, collections, concurrency, SOLID, dependency injection, HTTP, transactions, security and testing</td>
+<td>4 Java labs plus a tested Spring project</td>
+</tr>
+<tr>
+<td><a href="04-react-and-frontend.html">React</a></td>
+<td>Browser foundations, JavaScript, state, reducers, effects, hooks, accessibility and testing</td>
+<td>2 JavaScript labs plus a tested interactive React project</td>
+</tr>
+<tr>
+<td><a href="05-fullstack-ai-architecture.html">Full-stack AI architecture</a></td>
+<td>React + Java + Python boundaries, SQL, identity, retrieval, queues, reliability and deployment</td>
+<td>3 executable labs and an integration capstone specification</td>
+</tr>
+<tr>
+<td><a href="06-algorithms-and-design-patterns.html">Algorithms and patterns</a></td>
+<td>Core problem-solving techniques, data structures, design principles and all 23 classic GoF patterns</td>
+<td>13 executable labs plus pattern selection exercises</td>
+</tr>
+</tbody>
+</table></div>
+<p>Every notebook has a readable HTML edition, editable Markdown, and a Jupyter notebook. Executable cells retain recorded outputs; architecture and interview workbooks primarily contain guided reading and exercises. Java and JavaScript notebooks use a Python kernel that launches the installed Java or Node runtime. Code labelled as a recipe is displayed for study rather than automatically executed.</p>
+<h2 id="section-241">Continue into the nine advanced workshops</h2>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Depth added</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="07-durable-agents.html">7. Durable agents</a></td>
+<td>Persistent approvals, migration, leases, fencing, cancellation, memory and evaluation</td>
+</tr>
+<tr>
+<td><a href="08-remote-mcp.html">8. Remote MCP</a></td>
+<td>Actual HTTP server/client, credentials, scopes, ownership, deadlines and deployment</td>
+</tr>
+<tr>
+<td><a href="09-python-ai-depth.html">9. Python AI depth</a></td>
+<td>Packaging, typing, profiling, statistics, numerical stability and ML from scratch</td>
+</tr>
+<tr>
+<td><a href="10-java-spring-depth.html">10. Java/Spring depth</a></td>
+<td>JVM, generics, concurrency, isolation, JPA query counts, optimistic locking, outbox and cache</td>
+</tr>
+<tr>
+<td><a href="11-react-depth.html">11. React depth</a></td>
+<td>Closures, event loop, TypeScript, server state, routing, hydration and browser tests</td>
+</tr>
+<tr>
+<td><a href="12-algorithms-depth.html">12. Algorithms depth</a></td>
+<td>Trees, graph ordering, union-find, tries, backtracking, DP and correctness arguments</td>
+</tr>
+<tr>
+<td><a href="13-patterns-workshop.html">13. Pattern workshop</a></td>
+<td>All 23 GoF patterns implemented with assertions, alternatives and failure modes</td>
+</tr>
+<tr>
+<td><a href="14-fullstack-workshop.html">14. Connected full-stack workshop</a></td>
+<td>The implemented React + Java + Python Study Coach and its failure tests</td>
+</tr>
+<tr>
+<td><a href="15-interview-practice.html">15. Interview practice</a></td>
+<td>Timed rounds, graded exercises, detailed answers and follow-up questions</td>
+</tr>
+</tbody>
+</table></div>
+<p>Pair each foundation notebook with its advanced continuation. Work through notebook 14 while reading the corresponding source files under <code>labs/study-coach</code>. Its <a href="labs/study-coach/README.md">run guide</a> explains exact commands. The remote protocol project is in <code>labs/remote-mcp</code>, and the installable Python package is in <code>labs/python-package</code>.</p>
+<h2 id="section-333">A learning route that builds understanding</h2>
+<p>If you are new to programming, begin with Python lessons 1–7, then Java foundations and browser/JavaScript foundations. Learn the agent notebook after functions, classes, exceptions and async make sense. Study algorithms throughout rather than saving them for the end.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Weeks</th>
+<th>Focus</th>
+<th>Evidence that you understand</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–3</td>
+<td>Python foundations and basic problem solving</td>
+<td>Predict output before running it; explain mutation and loops</td>
+</tr>
+<tr>
+<td>4–6</td>
+<td>Python AI data flow, core algorithms</td>
+<td>Build a leakage-safe pipeline; trace BFS and binary search</td>
+</tr>
+<tr>
+<td>7–9</td>
+<td>Agents, graphs, MCP and orchestration</td>
+<td>Trace a tool call, stop a loop, explain retries and permissions</td>
+</tr>
+<tr>
+<td>10–12</td>
+<td>Java, Spring and transactions</td>
+<td>Run the service tests; explain constructor injection and rollback</td>
+</tr>
+<tr>
+<td>13–15</td>
+<td>JavaScript, React and browser behavior</td>
+<td>Change the study app and test it with keyboard interactions</td>
+</tr>
+<tr>
+<td>16–18</td>
+<td>Full-stack boundaries and reliability</td>
+<td>Draw a request path, failure path and authorization boundary</td>
+</tr>
+<tr>
+<td>19–21</td>
+<td>Patterns and interview drills</td>
+<td>Choose a pattern, explain its cost and reject an unnecessary one</td>
+</tr>
+<tr>
+<td>22–24</td>
+<td>Capstone and mock interviews</td>
+<td>Implement an integrated slice and defend its design decisions</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a flexible route, not a promise that everyone learns at the same speed. A useful daily session is 20 minutes reading, 20 tracing, 30 coding, and 10 explaining without notes.</p>
+<h2 id="section-447">How to answer an interview question</h2>
+<p>Use five steps: define the idea simply; give a tiny example; explain the mechanism; discuss a failure case or tradeoff; describe how you would test it. For algorithms, state input assumptions, a straightforward solution, the improved solution, complexity and edge cases. For architecture, begin with requirements and constraints before naming technologies.</p>
+<p>For each exercise ask: What happens with empty input? What if two requests arrive together? What if a dependency fails? Who is allowed to do this? How do I know the answer is correct? Where does the data go?</p>
+<h2 id="section-456">Read offline</h2>
+<p>Open <code>index.html</code> in a browser. All lesson styling is embedded; there are no CDN dependencies. You can print an HTML lesson to PDF using the browser. Keep the folder together so local links work. The original AI Interview Book is a separate companion and is not overwritten by this collection.</p>
+<h2 id="section-462">Run the notebook labs</h2>
+<p>Use Python 3.11 with the tested versions in <code>requirements-tested.txt</code>. From this folder in PowerShell:</p>
+<pre><code class="language-powershell">python -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements-tested.txt
+.\.venv\Scripts\python run_notebook_labs.py --book 01-agent-engineering
+</code></pre>
+<p>Omit <code>--book</code> to run all notebooks' executable cells. Java labs also require a JDK supporting <code>javac --release 21</code>; JavaScript labs require Node.js. Installations may download large scientific packages, especially PyTorch. Package pins identify what was tested on this Windows machine; availability on another platform can differ.</p>
+<p>To use a notebook editor, install Jupyter or an editor with notebook support and select this Python environment. Run cells from top to bottom. Some cells depend on earlier definitions. Files under <code>labs/python</code> are source fragments ending in <code>.cell.txt</code>, not standalone programs; the runner handles their ordering and top-level async code.</p>
+<p>The framework labs use a deterministic scripted model. They exercise real framework behavior without API keys, paid calls or external model services. A scripted model is not a trained language model, and its passing tests do not demonstrate model reasoning quality. Provider-backed recipes require separate configuration and have not been provider-tested here.</p>
+<h2 id="section-478">Run the Spring Boot project</h2>
+<p>From <code>labs/spring-demo</code>, with Java and Maven installed:</p>
+<pre><code class="language-powershell">mvn test
+mvn spring-boot:run
+</code></pre>
+<p>Open <code>http://127.0.0.1:8089/api/greeting?name=Asha</code> while the application runs. Stop it with Ctrl+C. This small local teaching service demonstrates injection, validation, HTTP mapping and tests. It is not an authenticated production service.</p>
+<h2 id="section-488">Run the React project</h2>
+<p>From <code>labs/react-demo</code>, with Node.js and npm installed:</p>
+<pre><code class="language-powershell">npm ci
+npm test
+npm run build
+</code></pre>
+<p>Open <code>dist/index.html</code>. Add a topic, mark it complete and observe the count. The app stores its state in memory: refreshing clears it. The packaged build can be opened without installing Node; Node is needed to edit, rebuild and run its tests.</p>
+<h2 id="section-498">Coverage and honest limits</h2>
+<p>The original six books teach foundations; nine advanced workshops add working implementations and deeper practice. All 23 GoF patterns now have executable small implementations. The Study Coach is a complete local integration with authentication, durable jobs, streamed extractive answers and failure tests. It is a teaching application, not a production-certified service or a deployed generative model. Docker deployment recipes are provided; container execution and external model-provider calls are not claimed as tested unless recorded in the validation report.</p>
+<p>No finite collection can include every algorithm, every design pattern or every future framework change, and no book can guarantee every exam result. Advanced compiler work, formal verification, specialist numerical methods, complete cloud operations, every Spring module and every research algorithm are outside this collection. Use the worked examples and exercises to develop the reasoning needed for unfamiliar questions. Check <a href="VALIDATION.html">the validation report</a> for exactly what ran.</p>
+</main></body></html>

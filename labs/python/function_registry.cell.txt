@@ -1,0 +1,13 @@
+# lab: function_registry
+registry = {}
+def register(function):
+    registry[function.__name__] = function
+    return function
+
+@register
+def square(value: float) -> float:
+    """Multiply a value by itself."""
+    return value * value
+
+assert registry["square"](4) == 16
+print(sorted(registry))

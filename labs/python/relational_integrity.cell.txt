@@ -1,0 +1,26 @@
+# lab: relational_integrity
+import sqlite3
+db = sqlite3.connect(":memory:")
+db.execute("PRAGMA foreign_keys=ON")
+db.execute("CREATE TABLE learner(id INTEGER PRIMARY KEY, name TEXT NOT NULL)")
+db.execute("""CREATE TABLE topic(
+  id INTEGER PRIMARY KEY,
+  learner_id INTEGER NOT NULL REFERENCES learner(id),
+  title TEXT NOT NULL,
+  UNIQUE(learner_id, title)
+)""")
+with db:
+    db.execute("INSERT INTO learner VALUES (?,?)", (1,"Asha"))
+    db.execute("INSERT INTO topic VALUES (?,?,?)", (10,1,"Gradients"))
+row = db.execute("""SELECT l.name,t.title FROM learner l
+ JOIN topic t ON l.id=t.learner_id WHERE l.id=?""", (1,)).fetchone()
+assert row == ("Asha","Gradients")
+try:
+    with db:
+        db.execute("INSERT INTO topic VALUES (?,?,?)", (11,1,"Gradients"))
+except sqlite3.IntegrityError:
+    pass
+else:
+    raise AssertionError("duplicate should be rejected")
+db.close()
+print("Join and uniqueness rule verified")

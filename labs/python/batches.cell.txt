@@ -1,0 +1,15 @@
+# lab: batches
+from itertools import islice
+
+def batches(items, size):
+    if size <= 0:
+        raise ValueError("size must be positive")
+    iterator = iter(items)
+    while True:
+        group = list(islice(iterator, size))
+        if not group:
+            return
+        yield group
+
+assert list(batches(range(7), 3)) == [[0,1,2],[3,4,5],[6]]
+print("Batches preserve the last partial group")

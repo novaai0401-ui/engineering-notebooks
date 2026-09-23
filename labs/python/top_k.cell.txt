@@ -1,0 +1,18 @@
+# lab: top_k
+import heapq
+def largest_k(values, k):
+    if k < 0:
+        raise ValueError("k must be nonnegative")
+    if k == 0:
+        return []
+    heap = []
+    for value in values:
+        if len(heap) < k:
+            heapq.heappush(heap, value)
+        elif value > heap[0]:
+            heapq.heapreplace(heap, value)
+    return sorted(heap, reverse=True)
+
+assert largest_k([1,9,2,8,3], 2) == [9,8]
+assert largest_k([4], 0) == []
+print("Largest values retained with bounded heap")

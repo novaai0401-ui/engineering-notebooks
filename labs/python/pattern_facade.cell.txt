@@ -1,0 +1,11 @@
+# lab: pattern_facade
+class LessonStore:
+    def load(self,topic):return {'topic':topic,'text':'Explain '+topic}
+class QuizStore:
+    def choose(self,topic):return 'Why use '+topic+'?'
+class ClassroomFacade:
+    def __init__(self,lessons,quizzes):self.lessons=lessons;self.quizzes=quizzes
+    def session(self,topic):return {'lesson':self.lessons.load(topic),'quiz':self.quizzes.choose(topic)}
+session=ClassroomFacade(LessonStore(),QuizStore()).session('queues')
+assert session['lesson']['topic']=='queues' and session['quiz']=='Why use queues?'
+print('Facade coordinates a small subsystem through one use-case operation')

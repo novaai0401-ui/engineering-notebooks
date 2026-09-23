@@ -1,0 +1,12 @@
+# lab: pattern_template_method
+from abc import ABC,abstractmethod
+class Pipeline(ABC):
+    def run(self,values):
+        clean=self.transform(values)
+        return sum(clean)
+    @abstractmethod
+    def transform(self,values):...
+class PositivePipeline(Pipeline):
+    def transform(self,values):return [value for value in values if value>0]
+assert PositivePipeline().run([-2,3,4])==7
+print('The pipeline skeleton delegates one variable step')

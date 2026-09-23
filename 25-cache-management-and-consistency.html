@@ -1,0 +1,79 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>25 — Cache management: keeping photocopies useful</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-3">1. A cache is a photocopy with a promise</a></li><li><a href="#section-12">2. Keys, ownership and scope</a></li><li><a href="#section-21">3. TTL, eviction and capacity</a></li><li><a href="#section-31">4. Invalidation and the late-loader race</a></li><li><a href="#section-41">5. Stampedes, avalanches and penetration</a></li><li><a href="#section-50">6. Redis locks and leases</a></li><li><a href="#section-59">7. Spring and Python integration</a></li><li><a href="#section-68">8. HTTP caching and ETags</a></li><li><a href="#section-77">9. Working project and interview drill</a></li><li><a href="#section-86">10. Actual Redis failover: electing a replacement captain</a></li></ul></nav><main id="content"><p class="downloads"><a href="25-cache-management-and-consistency.ipynb">Jupyter notebook</a><a href="25-cache-management-and-consistency.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">25 — Cache management: keeping photocopies useful</h1>
+<h2 id="section-3">1. A cache is a photocopy with a promise</h2>
+<p>The school register is authoritative; a teacher keeps a photocopy to answer questions quickly. When the register changes, the photocopy can be wrong. Before choosing Redis or Caffeine, decide which answers may be stale, for how long, and what the UI should disclose. A cached public course description and a cached account-permission decision have different consequences.</p>
+<p>Cache-aside means the application checks the cache, loads on a miss and stores the result. Read-through delegates loading to a cache abstraction. Write-through updates through a coordinated cache layer before acknowledging according to its contract. Write-behind defers durable writes and therefore needs a durable queue/recovery design if losing accepted writes is unacceptable. A cache is not inherently durable storage.</p>
+<h2 id="section-12">2. Keys, ownership and scope</h2>
+<p>A key should include all dimensions that affect the answer: tenant, resource, relevant permissions, locale and schema/version where applicable. Caching /profile under one global key leaks data even if the database query was correctly authorized. Avoid logging personal data in keys. Invalidate cached authorization when its authority changes, or explicitly bound how long it may remain accepted.</p>
+<p>Local caches are fast but each process has its own copy. Redis gives multiple processes a shared service and additional network/failure costs. A CDN caches at the edge; browser HTTP caching follows response directives. These layers can disagree unless you specify policy end to end.</p>
+<h2 id="section-21">3. TTL, eviction and capacity</h2>
+<p>TTL expires entries after time; eviction frees capacity. LRU removes least recently used entries, LFU favors frequency, and size-aware admission can reject expensive low-value objects. Redis offers configurable policies; do not assume its approximate eviction implementation is identical to a textbook perfect LRU. A TTL is a maximum local residence under a policy, not proof of global freshness after a remote write.</p>
+<pre><code class="language-python"># lab: cache_lru_and_ttl
+from collections import OrderedDict
+class Cache:
+    def __init__(self,capacity): self.data=OrderedDict();self.capacity=capacity
+    def put(self,key,value,now,ttl):
+        self.data[key]=(value,now+ttl);self.data.move_to_end(key)
+        while len(self.data)&gt;self.capacity:self.data.popitem(last=False)
+    def get(self,key,now):
+        if key not in self.data:return None
+        value,expires=self.data[key]
+        if now&gt;=expires:del self.data[key];return None
+        self.data.move_to_end(key);return value
+c=Cache(2);c.put('a',1,0,10);c.put('b',2,0,10)
+assert c.get('a',1)==1
+c.put('c',3,1,10)
+assert c.get('b',2) is None and c.get('a',10) is None
+print('Capacity evicted b; time expired a.')
+</code></pre>
+<p>This toy cache is single-threaded, uses entry count rather than bytes, and conflates cached None with a miss. Production APIs need an explicit hit/miss representation and synchronization policy.</p>
+<h2 id="section-31">4. Invalidation and the late-loader race</h2>
+<p>Deleting a key after a database commit avoids deleting on rolled-back writes, but a concurrent old reader can refill it with old data afterward. Sequence: reader loads version 4; writer commits version 5 and invalidates; reader finally puts version 4. A version fence must reject older fills even when the value was deleted. Store the fence long enough, or revalidate against the authority.</p>
+<pre><code class="language-python"># lab: cache_version_fence
+fence={'course':4};cached={}
+def put(key,version,value):
+    if version&lt;fence.get(key,0):return False
+    fence[key]=version;cached[key]=(version,value);return True
+old_read=(4,'old title')
+fence['course']=5;cached.pop('course',None)
+assert not put('course',*old_read)
+assert put('course',5,'new title')
+print(cached)
+</code></pre>
+<p>In a distributed implementation, compare-and-set must be atomic, for example through a carefully tested Redis script or transaction. Reading a fence then writing separately recreates a race. Event invalidation is delayed and can be duplicated; track versions and define what happens after a missed event. The included real-time lab rechecks the database revision on snapshot reads, so it caches the projection rather than avoiding every database access.</p>
+<h2 id="section-41">5. Stampedes, avalanches and penetration</h2>
+<p>A stampede is many requests rebuilding one expired key. Single-flight lets one loader run while others await a bounded result. TTL jitter spreads expiration across keys. Negative caching can briefly remember a genuine absence, but must not mix authorization failures across users or permanently hide newly created records. An avalanche is many keys expiring together or an entire cache becoming unavailable.</p>
+<p>Define fallback capacity. Sending every missed request directly to a fragile database can cause a cascading outage. Use bounded concurrency, deadlines, admission control and, where acceptable, explicitly labelled stale data. Never substitute stale permission or inventory guarantees without a business-approved consistency model.</p>
+<h2 id="section-50">6. Redis locks and leases</h2>
+<p>A lease expires, but the old holder may continue running after a pause. A token-checked atomic delete prevents one holder from deleting another's lock; it does not stop the paused holder from writing to a separate database. A monotonically increasing fencing token enforced by the protected resource can reject stale holders. Explain the failure model before presenting a distributed lock as mutual exclusion under every possible failure.</p>
+<p>Redis Pub/Sub offers live message delivery to connected subscribers, not a durable replay log. Redis Streams has different retention, consumer and acknowledgement semantics. Persistence, replication and failover settings affect data-loss windows. Treat a rate limiter, session store and disposable cache as different workloads, even if all use Redis. <a href="https://redis.io/docs/latest/develop/reference/client-side-caching/">Redis client cache principles</a>.</p>
+<h2 id="section-59">7. Spring and Python integration</h2>
+<p>Spring @Cacheable expresses read caching; @CacheEvict expresses eviction. Specify the cache manager, key, serialization, TTL and transactional timing rather than assuming annotations choose them correctly. Proxy interception means self-invocation can bypass annotation behavior. Caffeine is local memory; selecting it does not broadcast invalidations to another replica.</p>
+<p>Python can wrap a loader with a bounded cache or use a Redis client with connect/read timeouts, pool limits and serialization validation. Never unpickle untrusted cache values. Treat cache errors explicitly, and observe hit ratio, misses, evictions, bytes, load duration and backend pressure. A high hit ratio can coexist with terrible p99 latency or stale wrong answers.</p>
+<h2 id="section-68">8. HTTP caching and ETags</h2>
+<p>An ETag identifies a representation version. A client sends If-None-Match; the server can return 304 when the current authorized representation matches. Authorization still runs before deciding that the cached representation is valid. <code>private</code> limits shared-cache storage; <code>no-cache</code> means revalidate before reuse, while <code>no-store</code> forbids storing under the directive's rules.</p>
+<p>Personal responses need deliberate cache headers and Vary handling where relevant. An ETag should cover every representation-changing input, not just one table timestamp. The real-time lab tests per-user ETags, mutation invalidation and conditional reads. It does not claim to test Redis failover.</p>
+<h2 id="section-77">9. Working project and interview drill</h2>
+<p>Read <code>labs/realtime-cache/app.py</code>, run <code>test_project.py</code>, then inspect <code>report.json</code>. Its bounded local cache tests TTL, LRU and stale-version rejection; HTTP tests exercise ownership, ETags and invalidation. The same app exposes real SSE and WebSockets, making cache/stream consistency observable.</p>
+<p>Interview: after a write, one user sees stale data for ten minutes. Trace browser cache, CDN, server cache, read replica and database transaction in order. Check cache keys and revision propagation. Propose a measured freshness contract and a regression test rather than immediately increasing TTLs or flushing every customer's cache.</p>
+<h2 id="section-86">10. Actual Redis failover: electing a replacement captain</h2>
+<p>The new Linux lab runs three Redis servers and three Sentinel processes with generated passwords. Imagine one captain recording changes and two helpers copying the notebook. Three supervisors watch the captain. When the captain stops, the supervisors can agree on a replacement, and a Sentinel-aware client asks where to send its next write.</p>
+<p>The test first waits for both replicas to acknowledge a record. It then kills the primary process, waits for promotion, reads the earlier record through the client, writes new data and checks a cache entry expires. Finally, it restarts the old primary and verifies that it becomes a replica and catches up. The recorded run used Redis 8.0.4 and passed these checks.</p>
+<p>This does not turn Redis replication into synchronous consensus. WAIT measures acknowledgements in that execution; asynchronous replication can still lose data under other failures. A three-process election on one computer is not a three-machine resilience test. Distinguish Sentinel's failover coordination, the client's rediscovery and the durability of your business data. A cache can often be rebuilt; an authoritative payment ledger needs a separately justified durability design.</p>
+<p>Run <code>labs/test_redis_failover.py</code> inside the named WSL lab using the exact commands in <a href="labs/RELIABILITY-EXTENSIONS.md">Reliability extensions</a>. No cloud account is required for this local exercise.</p>
+</main></body></html>

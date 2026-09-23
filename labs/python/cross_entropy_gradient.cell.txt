@@ -1,0 +1,11 @@
+# lab: cross_entropy_gradient
+import numpy as np
+z=np.array([2.,1.,0.]);target=1
+def ce(v):
+    shifted=v-v.max();return -shifted[target]+np.log(np.exp(shifted).sum())
+p=np.exp(z-z.max());p/=p.sum();g=p.copy();g[target]-=1
+numeric=[]
+for i in range(3):
+    step=np.zeros(3);step[i]=1e-6;numeric.append((ce(z+step)-ce(z-step))/2e-6)
+assert np.allclose(g,numeric,atol=1e-7)
+print('Cross-entropy gradient:',np.round(g,4).tolist())

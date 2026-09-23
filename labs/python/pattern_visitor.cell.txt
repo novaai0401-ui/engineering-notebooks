@@ -1,0 +1,17 @@
+# lab: pattern_visitor
+class VideoLesson:
+    def __init__(self,minutes):self.minutes=minutes
+    def accept(self,visitor):return visitor.video(self)
+class ReadingLesson:
+    def __init__(self,words):self.words=words
+    def accept(self,visitor):return visitor.reading(self)
+class TimeVisitor:
+    def video(self,lesson):return lesson.minutes
+    def reading(self,lesson):return lesson.words/200
+class KindVisitor:
+    def video(self,lesson):return 'video'
+    def reading(self,lesson):return 'reading'
+elements=[VideoLesson(10),ReadingLesson(1000)]
+assert sum(item.accept(TimeVisitor()) for item in elements)==15
+assert [item.accept(KindVisitor()) for item in elements]==['video','reading']
+print('Two operations traverse the same stable element types')

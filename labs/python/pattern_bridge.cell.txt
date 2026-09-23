@@ -1,0 +1,13 @@
+# lab: pattern_bridge
+class PlainRenderer:
+    def render(self,title):return title
+class BracketRenderer:
+    def render(self,title):return '['+title+']'
+class Report:
+    def __init__(self,renderer):self.renderer=renderer
+    def output(self):return self.renderer.render('Study report')
+class DetailedReport(Report):
+    def output(self):return self.renderer.render('Detailed study report')
+assert Report(PlainRenderer()).output()=='Study report'
+assert DetailedReport(BracketRenderer()).output()=='[Detailed study report]'
+print('Report kind and rendering implementation vary independently')

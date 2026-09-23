@@ -1,0 +1,18 @@
+groups:
+  - name: study-coach
+    rules:
+      - alert: StudyCoachPythonErrors
+        expr: sum(rate(coach_ai_requests_total{route="/answer",status=~"5.."}[5m])) / clamp_min(sum(rate(coach_ai_requests_total{route="/answer"}[5m])), 0.001) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Python answer HTTP failures exceed one percent
+          description: Inspect traces and job failures; successful HTTP streaming starts can still fail later.
+      - alert: StudyCoachWorkerFailures
+        expr: sum(increase(coach_job_failures_total[10m])) > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Repeated background execution failures

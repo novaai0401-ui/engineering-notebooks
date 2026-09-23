@@ -1,0 +1,14 @@
+# lab: mutation
+original = [[1], [2]]
+shallow = original.copy()
+shallow[0].append(9)
+assert original[0] == [1, 9]
+
+def append_label(label, labels=None):
+    result = [] if labels is None else list(labels)
+    result.append(label)
+    return result
+
+assert append_label("a") == ["a"]
+assert append_label("b") == ["b"]
+print("Each call receives its intended list")

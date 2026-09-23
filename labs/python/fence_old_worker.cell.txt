@@ -1,0 +1,11 @@
+# lab: fence_old_worker
+state={'status':'pending','token':None,'answer':''}
+def claim(token):state.update(status='running',token=token)
+def write(token,text):
+    if state['status']!='running' or state['token']!=token:return False
+    state['answer']=text;return True
+claim('first');claim('replacement')
+assert not write('first','late wrong answer')
+assert write('replacement','current answer')
+state['status']='cancelled';assert not write('replacement','too late')
+print('Stale and cancelled writes rejected. Real shared claims require conditional SQL.')

@@ -1,0 +1,10 @@
+# lab: pattern_composite
+class LessonPart:
+    def __init__(self,duration):self.duration=duration
+    def minutes(self):return self.duration
+class ModulePart:
+    def __init__(self,*children):self.children=children
+    def minutes(self):return sum(child.minutes() for child in self.children)
+course=ModulePart(LessonPart(10),ModulePart(LessonPart(20),LessonPart(5)))
+assert course.minutes()==35 and ModulePart().minutes()==0
+print('The same operation works on leaves and nested groups')

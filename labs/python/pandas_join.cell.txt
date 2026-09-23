@@ -1,0 +1,8 @@
+# lab: pandas_join
+import pandas as pd
+users = pd.DataFrame({"user_id":[1,2], "group":["A","B"]})
+events = pd.DataFrame({"user_id":[1,1,2], "value":[2,3,4]})
+joined = events.merge(users, on="user_id", validate="many_to_one")
+totals = joined.groupby("group")["value"].sum().to_dict()
+assert totals == {"A":5,"B":4}
+print(totals)

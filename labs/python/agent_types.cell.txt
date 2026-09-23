@@ -1,0 +1,20 @@
+# lab: agent_types
+def reflex(dark):
+    return "lamp on" if dark else "lamp off"
+
+def remember_and_act(previous_clean, observed_dirt):
+    clean = previous_clean and not observed_dirt
+    return "rest" if clean else "clean room"
+
+def utility_route(routes):
+    return min(routes, key=lambda r: r["minutes"] + 2*r["toll"])["name"]
+
+def route_question(question):
+    return "calculator" if question.startswith("add ") else "catalog"
+
+assert reflex(True) == "lamp on"
+assert remember_and_act(True, True) == "clean room"
+assert utility_route([{"name":"A","minutes":10,"toll":4},
+                      {"name":"B","minutes":14,"toll":0}]) == "B"
+assert route_question("add 2 3") == "calculator"
+print("Four agent decision rules passed")

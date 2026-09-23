@@ -1,0 +1,14 @@
+# lab: longest_unique_window
+def longest_unique(text):
+    last = {}
+    left = best = 0
+    for right, character in enumerate(text):
+        left = max(left, last.get(character, -1) + 1)
+        last[character] = right
+        best = max(best, right - left + 1)
+    return best
+
+assert longest_unique("abba") == 2
+assert longest_unique("") == 0
+assert longest_unique("abcabcbb") == 3
+print("Longest window lengths verified")

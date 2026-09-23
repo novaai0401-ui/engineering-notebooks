@@ -1,0 +1,19 @@
+# lab: langgraph_basic
+from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class LessonState(TypedDict):
+    question: str
+    answer: str
+
+def answer_node(state: LessonState):
+    return {"answer": state["question"].strip().upper()}
+
+builder = StateGraph(LessonState)
+builder.add_node("answer", answer_node)
+builder.add_edge(START, "answer")
+builder.add_edge("answer", END)
+graph = builder.compile()
+out = graph.invoke({"question":"  learn agents  ", "answer":""})
+assert out["answer"] == "LEARN AGENTS"
+print(out["answer"])

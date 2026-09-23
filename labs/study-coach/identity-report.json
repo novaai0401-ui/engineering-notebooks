@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "Real authorization-code login used S256 PKCE, session cookie, learner role, and CSRF enforcement",
+    "RP-initiated logout invalidated application session",
+    "Mapped administrator role permits protected metrics and administration",
+    "Password rotation rejected the old password and accepted the new password in fresh browser sessions",
+    "Disabling an account and provider back-channel logout invalidated its existing application session",
+    "Identity administration changed password, disabled account and rotated confidential client secret"
+  ],
+  "limitations": "Local HTTP dev realm with one application instance. Password re-login and single-instance back-channel revocation tested. Client-secret rotation state verified, but application cutover to the new secret and clustered session revocation are not tested. Use TLS, managed storage and shared session design for public deployment."
+}

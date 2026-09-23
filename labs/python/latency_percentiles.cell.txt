@@ -1,0 +1,8 @@
+# lab: latency_percentiles
+import math,statistics
+samples=[100]*9+[10000]
+def percentile(xs,p):
+    if not xs or not 0<p<=1:raise ValueError('invalid sample or percentile')
+    return sorted(xs)[math.ceil(p*len(xs))-1]
+assert percentile(samples,.5)==100 and percentile(samples,.95)==10000
+print({'mean_ms':statistics.mean(samples),'p50_ms':percentile(samples,.5),'p95_ms':percentile(samples,.95)})

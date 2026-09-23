@@ -1,0 +1,15 @@
+{
+  "passed": [
+    "simple route returns permitted evidence and a trace",
+    "hybrid route returns permitted evidence and a trace",
+    "graph route returns permitted evidence and a trace",
+    "multi_hop route returns permitted evidence and a trace",
+    "agentic route returns permitted evidence and a trace",
+    "adaptive route returns permitted evidence and a trace",
+    "Bounded tool policy falls back from lexical miss to synonym concept retrieval",
+    "Private source denied to Bob, allowed to Alice; missing evidence abstains",
+    "Multi-hop plan and bounded graph expansion retrieve the two-link evidence chain",
+    "Unknown routes and invalid budgets rejected"
+  ],
+  "limitations": "Offline toy corpus, transparent synonym vectors, deterministic tool/router policy and extractive evidence output. No pretrained embedding, autonomous LLM planning, Microsoft GraphRAG community pipeline or general factual-quality claim. Ollama adapter not exercised by this test."
+}

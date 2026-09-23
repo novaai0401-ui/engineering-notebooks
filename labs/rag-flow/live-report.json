@@ -1,0 +1,179 @@
+{
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "source_sha256": "bdde0762bb87d94c525afb3b85d29df5a4a91344d78a27a946d4805ebca81102",
+  "cases": [
+    {
+      "id": "two-hop-team",
+      "question": "Who leads the team maintaining Orion?",
+      "seconds": 97.12,
+      "mode": "multi_hop",
+      "answer": "Based on the provided evidence, the team maintaining Orion is led by Mira. Document references: d1, d2.",
+      "evidence": [
+        {
+          "id": "d1",
+          "text": "Orion is maintained by the Payments team."
+        },
+        {
+          "id": "d2",
+          "text": "The Payments team is led by Mira."
+        }
+      ],
+      "trace": [
+        {
+          "step": "authorize",
+          "visible_documents": 7
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Orion maintained",
+          "ranking": [
+            [
+              "d1",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Payments led",
+          "ranking": [
+            [
+              "d2",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "assemble",
+          "evidence_ids": [
+            "d1",
+            "d2"
+          ],
+          "context_chars": 86,
+          "generator": "ollama"
+        }
+      ],
+      "quality": "Generated answer requires factual review; citation presence is insufficient"
+    },
+    {
+      "id": "checkpoint-boundary",
+      "question": "Does saving a checkpoint make external side effects idempotent?",
+      "seconds": 116.97,
+      "mode": "hybrid",
+      "answer": "No, saving a checkpoint does not make external side effects idempotent according to the provided evidence (d3). The evidence states that a checkpoint saves workflow progress but does not address idempotent execution of external side effects. Idempotency and checkpointing serve different purposes in handling workflow and external side effects.",
+      "evidence": [
+        {
+          "id": "d3",
+          "text": "A checkpoint saves workflow progress; it does not make external side effects idempotent. A correctly implemented idempotency-key contract deduplicates repeated operations. Reconciliation detects and repairs discrepancies after uncertain outcomes; it does not itself guarantee idempotent execution."
+        }
+      ],
+      "trace": [
+        {
+          "step": "authorize",
+          "visible_documents": 7
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Does saving a checkpoint make external side effects idempotent?",
+          "ranking": [
+            [
+              "d3",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "assemble",
+          "evidence_ids": [
+            "d3"
+          ],
+          "context_chars": 303,
+          "generator": "ollama"
+        }
+      ],
+      "quality": "Generated answer requires factual review; citation presence is insufficient"
+    },
+    {
+      "id": "reconciliation-boundary",
+      "question": "Does reconciliation guarantee idempotent execution?",
+      "seconds": 56.0,
+      "mode": "hybrid",
+      "answer": "Reconciliation does not guarantee idempotent execution. According to document d3, \"Reconciliation detects and repairs discrepancies after uncertain outcomes; it does not itself guarantee idempotent execution.\"",
+      "evidence": [
+        {
+          "id": "d3",
+          "text": "A checkpoint saves workflow progress; it does not make external side effects idempotent. A correctly implemented idempotency-key contract deduplicates repeated operations. Reconciliation detects and repairs discrepancies after uncertain outcomes; it does not itself guarantee idempotent execution."
+        }
+      ],
+      "trace": [
+        {
+          "step": "authorize",
+          "visible_documents": 7
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Does reconciliation guarantee idempotent execution?",
+          "ranking": [
+            [
+              "d3",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "assemble",
+          "evidence_ids": [
+            "d3"
+          ],
+          "context_chars": 303,
+          "generator": "ollama"
+        }
+      ],
+      "quality": "Generated answer requires factual review; citation presence is insufficient"
+    },
+    {
+      "id": "error-retry",
+      "question": "What does E104 mean and how should it be retried?",
+      "seconds": 63.2,
+      "mode": "hybrid",
+      "answer": "Error E104 means the payment request timed out. It should be retried using the same idempotency key. Document ID: d4",
+      "evidence": [
+        {
+          "id": "d4",
+          "text": "Error E104 means the payment request timed out. Retry using the same idempotency key."
+        }
+      ],
+      "trace": [
+        {
+          "step": "authorize",
+          "visible_documents": 7
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "What does E104 mean and how should it be retried?",
+          "ranking": [
+            [
+              "d4",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "assemble",
+          "evidence_ids": [
+            "d4"
+          ],
+          "context_chars": 91,
+          "generator": "ollama"
+        }
+      ],
+      "quality": "Generated answer requires factual review; citation presence is insufficient"
+    }
+  ],
+  "review_status": "Four revised cases passed the separate tutor source review in live-review.json; limited development set"
+}

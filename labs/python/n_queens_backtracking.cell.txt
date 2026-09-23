@@ -1,0 +1,16 @@
+# lab: n_queens_backtracking
+def queens(n):
+    solutions=[];columns=set();down=set();up=set();path=[]
+    def visit(row):
+        if row==n:solutions.append(tuple(path));return
+        for col in range(n):
+            if col in columns or row-col in down or row+col in up:continue
+            columns.add(col);down.add(row-col);up.add(row+col);path.append(col)
+            visit(row+1)
+            path.pop();columns.remove(col);down.remove(row-col);up.remove(row+col)
+    visit(0);return solutions
+assert len(queens(4))==2 and queens(1)==[(0,)] and queens(2)==[]
+for solution in queens(4):
+    assert len(set(solution))==4
+    assert len({r-c for r,c in enumerate(solution)})==4
+print('Pruning finds the two valid four-queen arrangements')

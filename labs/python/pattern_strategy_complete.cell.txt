@@ -1,0 +1,11 @@
+# lab: pattern_strategy_complete
+def mean_score(values):return sum(values)/len(values)
+def strict_score(values):return min(values)
+class Assessment:
+    def __init__(self,strategy):self.strategy=strategy
+    def grade(self,values):
+        if not values:raise ValueError('scores required')
+        return self.strategy(values)
+assert Assessment(mean_score).grade([6,10])==8
+assert Assessment(strict_score).grade([6,10])==6
+print('The same assessment workflow selects different grading algorithms')

@@ -1,0 +1,97 @@
+# 16 — Real models: from a talking helper to a bounded agent
+
+## 1. The library helper story
+
+Imagine a child asks a librarian what a checkpoint means. The librarian first finds the right page, then explains it. Retrieval is finding the page. Generation is explaining the page in new words. A language model can sound confident without finding the right page. This is why a good system measures these steps separately.
+
+Our first Study Coach version returned passages using TF-IDF. Its output was an extract, not invented prose. The optional Ollama mode now calls an installed Qwen model and streams newly generated words. The read-only definition agent also asks the model to select a tool, executes that tool under application control, and gives its result back to the model. See `labs/study-coach/python/ollama_agent.py` and the recorded `live-model-report.json`.
+
+You can read this lesson without a service. Running its live project needs Ollama, the named model, Java, Python and the dependencies in the project. A notebook cannot include a multi-gigabyte model in a small ZIP.
+
+## 2. What happens during one token
+
+A tokenizer turns text into integer IDs. An embedding maps each ID to a vector. Transformer layers mix information from earlier positions using attention and transform it with feed-forward layers. The last layer produces one number, called a logit, per possible next token. Softmax turns logits into probabilities. A decoding rule selects a token; the token is appended; the process repeats.
+
+For logits [2,1,0], subtract the largest value to get [0,-1,-2]. Exponentials are approximately [1,0.368,0.135]. Divide each by their sum 1.503: probabilities are approximately [0.665,0.245,0.090]. Subtracting a common number does not change the probabilities because the same factor cancels from numerator and denominator. It prevents overflow for very large logits.
+
+Temperature divides logits before softmax. Lower positive temperature sharpens the distribution; higher temperature flattens it. It does not make false facts true. Top-k keeps k candidates; top-p keeps a smallest high-probability set whose cumulative probability reaches p. A seed and zero temperature still do not guarantee identical results across hardware and implementations.
+
+```python
+# lab: stable_decoding
+import math
+def softmax(values):
+    if not values: raise ValueError('empty vocabulary')
+    largest=max(values);weights=[math.exp(x-largest) for x in values]
+    total=sum(weights);return [w/total for w in weights]
+assert abs(sum(softmax([10000,9999,9998]))-1)<1e-12
+assert softmax([2,1,0])==softmax([10002,10001,10000])
+print([round(x,3) for x in softmax([2,1,0])])
+```
+
+## 3. A tool call is a request, not permission
+
+Think of a child giving a note to a bank teller: “Please withdraw money.” The note itself is not authorization. Likewise, JSON from a model is untrusted input. The application validates the tool name, arguments, authenticated identity, permissions and budget before executing anything.
+
+Our example exposes only `lookup_definition(term)`. The server chooses allowed terms and rejects extra fields. A model cannot introduce a new tool or replace the user identity. Read the tool result as data; a malicious document saying “ignore your rules” must not change the tool permissions. Prompt wording alone is not a security boundary.
+
+The execution loop is: validated user request → model → validated tool proposal → allowed tool → model → checked response. Stop if the budget runs out, if an unsupported tool appears, or if the output fails validation. Record the reason; do not silently pretend success.
+
+## 4. Budgets are the agent's lunch money
+
+Give the helper a small purse. The live definition example allows at most two model calls, one tool call and 256 generated tokens in total, with at most 128 per call. Input bytes are also bounded. These are distinct controls: a token limit does not limit wall-clock time, and a timeout does not cap spending if a remote provider keeps computing after disconnection.
+
+For a paid provider, estimated cost is input_tokens × input_price_per_token + output_tokens × output_price_per_token. Include cached-input pricing only if the provider reports it. Reserve a budget before launching parallel calls; atomically reconcile actual usage afterwards. Otherwise four workers can each believe they own the same remaining budget.
+
+Our local report records zero API spend because it invokes a local service. Hardware, electricity and time still have costs. The generated-token count comes from the model server's usage field, not a count of words.
+
+```python
+# lab: atomic_budget_model
+class Budget:
+    def __init__(self,limit):self.remaining=limit
+    def reserve(self,amount):
+        if amount<0 or amount>self.remaining:raise ValueError('budget exhausted')
+        self.remaining-=amount
+    def refund(self,amount):
+        if amount<0:raise ValueError('negative refund')
+        self.remaining+=amount
+b=Budget(200);b.reserve(128)
+try:b.reserve(128)
+except ValueError:pass
+else:raise AssertionError('overspend')
+b.refund(128-40);assert b.remaining==160
+print('Reserve before work; reconcile actual usage afterwards. Shared storage needs a transaction.')
+```
+
+## 5. Streaming and trust are different clocks
+
+Streaming shows words early. Verification may finish later. If the model writes an unauthorized citation near the end, earlier words may already be visible. Label partial output as a draft and treat the final validation event as a separate state. A user interface must not present an interrupted stream as a complete answer.
+
+The example checks that bracketed citation IDs belong to the retrieved evidence. This catches invented identifiers. It does not establish that every sentence follows from the source. Semantic support requires a claim-by-claim rubric, deterministic checks where possible, and human review for consequential uses. A model-based judge can assist but has its own errors and should be calibrated against people.
+
+The actual end-to-end run demonstrated this failure. The generated answer said a checkpoint was “ensuring side effects are idempotent” and attached the allowed `[checkpoint]` citation. That claim is wrong: saving workflow state does not make an external payment or email idempotent. The retrieved source explicitly required idempotency keys. The network flow and citation-format check passed, while the tutor's factual review failed. Both results are preserved in `live-stack-report.json` and `live-stack-review.json`; the failure is not hidden or counted as a correct answer. Keep the extractive default when factual review is unavailable. The optional generative mode is a draft-producing experiment, not an authoritative tutor.
+
+If a connection closes halfway through an answer, the worker records retry or failure. It does not commit `done` merely because it received some text. A cancelled job rejects late writes using the persisted status and lease token.
+
+## 6. Evaluation without fooling yourself
+
+Separate development examples, which you use while editing, from a held-out set, which you avoid optimizing against. For each case record the question, authorized evidence, expected behavior, model/version, prompt version, sampling configuration, tool decisions, latency, token use and outcome. Include answerable questions, missing evidence, ambiguous requests, malicious instructions inside documents, tool timeouts, invalid tool arguments and unauthorized ownership claims.
+
+Retrieval metrics answer “did we find the useful page?” Recall@k counts whether required evidence appeared among k results. Generation metrics answer “did the explanation use the page correctly?” A factual-support rubric can score each material claim as supported, contradicted or unsupported. Task success answers “did the user actually get the intended result?” These are not interchangeable.
+
+The included live smoke report has two answer cases and one tool trajectory. It proves the actual model path ran; it is too small to estimate general reasoning quality. The earlier 16-case retrieval regression remains a development test. Do not report either as a universal accuracy percentage.
+
+## 7. Deployment choices and failure ownership
+
+Use local inference when privacy, offline use or control matters and the hardware fits. Use hosted inference when managed capacity and access to a particular model matter. Use a gateway to enforce per-user budgets, timeouts and audit metadata consistently. Keep provider keys on the server. A browser bundle is public and cannot protect a secret.
+
+Retries need a classification. Retry a temporary connection failure with a bounded backoff. Do not repeatedly retry malformed input or a denied permission. A timeout after a side-effecting tool is ambiguous: the action may already have happened. Reconcile by the operation's idempotency key before retrying.
+
+## 8. Your interview round
+
+Question: “Why not let the model choose the user ID for a retrieval tool?” Answer: identity must come from the authenticated session; a model-supplied identity would permit cross-user access. Follow-up: filter ownership before ranking, enforce it again at data access, and test both forbidden reads and indirect leakage through summaries.
+
+Question: “Does valid JSON mean the agent is safe?” Answer: syntax validation only establishes structure. Business constraints, ownership, resource limits and approval rules remain separate checks.
+
+Exercise: design a refund agent with a maximum refund of 500 units. Answer outline: integer minor units; authenticated customer; server-side order ownership; refundable-balance check inside a transaction; idempotency key tied to request content; human approval above policy threshold; ledger and audit event; retry reconciliation; tests for concurrent refunds and response loss. Do not place the refund authority in the prompt.
+
+API references used while writing: [Ollama chat](https://docs.ollama.com/api/chat) and [tool calling](https://docs.ollama.com/capabilities/tool-calling). The teaching text and examples are contained here; links are provenance, not required reading.

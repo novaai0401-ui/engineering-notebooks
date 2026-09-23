@@ -1,0 +1,13 @@
+{
+  "passed": [
+    "Java authentication, CSRF and Python service authentication enforce boundaries",
+    "Idempotency binds payload; another owner cannot read or approve",
+    "Approval starts background work; real SSE contains partial and final answers",
+    "Retrieval filters documents by authenticated owner before ranking",
+    "Cancelled jobs cannot be reapproved",
+    "Chromium, Firefox and WebKit journeys passed, including keyboard approval, cancellation, injected failures, reconnect and axe checks",
+    "Hard process kill followed by same-database restart recovers an expired running job",
+    "Upstream outage reaches a bounded three-attempt failure state",
+    "New work succeeds after the upstream service returns"
+  ]
+}

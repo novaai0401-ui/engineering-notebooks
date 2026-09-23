@@ -1,0 +1,27 @@
+# lab: langgraph_interrupt
+from typing import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.types import interrupt, Command
+
+class ReviewState(TypedDict):
+    proposal: str
+    approved: bool
+
+def review(state):
+    response = interrupt({"proposal": state["proposal"]})
+    if type(response) is not bool:
+        raise ValueError("approval must be a Boolean")
+    return {"approved": response}
+
+b = StateGraph(ReviewState)
+b.add_node("review", review)
+b.add_edge(START, "review")
+b.add_edge("review", END)
+app = b.compile(checkpointer=InMemorySaver())
+config = {"configurable":{"thread_id":"lesson-review"}}
+paused = app.invoke({"proposal":"Reserve demonstration book", "approved":False}, config)
+assert "__interrupt__" in paused
+finished = app.invoke(Command(resume=True), config)
+assert finished["approved"] is True
+print("Paused and resumed; no reservation was executed")

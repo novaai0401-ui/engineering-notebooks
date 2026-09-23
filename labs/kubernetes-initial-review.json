@@ -1,0 +1,8 @@
+{
+  "finding": "API and node readiness plus worker-pod reconciliation passed, but system services could not reach the Kubernetes API through its ClusterIP.",
+  "evidence": "local-path-provisioner failed to GET https://10.43.0.1:443/api/v1/namespaces/kube-system/configmaps/local-path-config with connection refused. CoreDNS remained unready.",
+  "cause": "The test bound the API only to 127.0.0.1 while the cluster service targets the node interface.",
+  "correction": "Bind the authenticated TLS API to the lab VM interfaces and require CoreDNS and local-path-provisioner rollout readiness before testing the workload.",
+  "interruption": "The first test was deliberately interrupted after inspecting this defect; its partial results remain in kubernetes-initial-report.json. The task-owned WSL distribution was stopped to clean its old runtime processes before rerunning.",
+  "scope": "An isolated local WSL lab, not a public cluster. The web application port-forward remains loopback-only. Production API reachability requires an explicit network/firewall policy."
+}

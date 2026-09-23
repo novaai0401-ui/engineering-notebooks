@@ -1,0 +1,8 @@
+{
+  "passed": [
+    "Actual OTLP collector accepted five spans while downstream was unavailable",
+    "Collector retry delivered all five spans when downstream recovered",
+    "Hard sink restart retained all exact trace IDs in SQLite"
+  ],
+  "limitations": "Durable teaching sink, not Tempo/Jaeger/Grafana. Collector queue is memory-only: a collector crash before delivery can lose queued spans. No replicated storage, retention, authorization, TLS or disk-loss test."
+}

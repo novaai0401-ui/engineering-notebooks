@@ -1,0 +1,88 @@
+# 23 — Docker: pack the lunchbox before sending it to school
+
+## 1. Image, container, registry and volume
+
+An image is the lunchbox recipe plus prepared ingredients: application files, runtime and filesystem layers. A container is a running instance with process isolation and a writable layer. A registry stores images. A volume keeps data independently of a particular container's writable layer.
+
+A container is not a complete virtual machine with its own kernel. Linux containers need a Linux kernel. On this Windows machine, neither a Docker engine nor a WSL distribution was available during the environment check. A Dockerfile can be reviewed here, but a successful native Java run is not a successful container test. The validation report preserves that distinction.
+
+## 2. Build context and reproducibility
+
+The build context is the set of files the builder can access. Copy only what is needed. Exclude credentials, local databases, dependencies, test recordings and runtime downloads with `.dockerignore`. A secret removed in a later layer may still exist in an earlier layer, so never bake it into the image.
+
+Pin application dependencies with lockfiles and tested versions. Image tags can move; a digest identifies particular content. Pinning alone does not solve security updates: record the digest, scan the artifact, then deliberately update and retest. Separate a reproducible build from a permanently frozen vulnerable build.
+
+## 3. Multi-stage builds
+
+Study Coach first builds the React bundle with Node, then packages Java with Maven, then copies only the runnable JAR into a Java runtime image. Build tools do not need to live in the final runtime. The Python image installs pinned service dependencies and runs under a non-root account.
+
+Layer caching works best when stable dependency manifests are copied before frequently changed application source. A changed source file should not force a dependency download if the manifests are unchanged. Cache behavior improves speed; it is not evidence that tests ran.
+
+## 4. Networking without the localhost trap
+
+Inside a container, `localhost` means that container's network namespace. If Java and Python are separate Compose services, Java must call the Python service name, such as `http://ai:8092/answer`. Publishing a port exposes a container port on the host. Services on the same private Compose network can communicate without publishing every port.
+
+Bind development ports to host loopback when external access is unnecessary. A service listening only on 127.0.0.1 inside its container cannot normally be reached through the container network. Study Coach's runtime image sets the server bind address to 0.0.0.0 inside the container while its Compose host port remains loopback-only.
+
+```python
+# lab: container_address_reasoning
+services={'web':'http://web:8091','ai':'http://ai:8092'}
+java_upstream=services['ai']+'/answer'
+assert java_upstream=='http://ai:8092/answer'
+assert 'localhost' not in java_upstream
+print('Use service DNS for container-to-container traffic; publish only the intended host entry point.')
+```
+
+## 5. State and graceful shutdown
+
+Containers are replaceable; business data is not. Mount persistent data explicitly. A database volume without tested backups is still a single failure domain. Avoid deleting volumes as a routine troubleshooting step.
+
+On shutdown, stop accepting new requests, finish bounded work, flush important state and exit within the configured grace period. If a worker cannot finish, its durable lease should permit recovery elsewhere. The image entrypoint should let the application receive termination signals rather than hiding it behind a shell that mishandles them.
+
+## 6. Resource and security boundaries
+
+Run with a non-root UID, drop unnecessary Linux capabilities, avoid privileged containers and mount only required paths. A read-only root filesystem reduces accidental writes; give the application an explicit temporary directory where needed. Configure CPU/memory requests or limits at the appropriate deployment layer and test out-of-memory behavior.
+
+Secrets belong in runtime secret delivery, not Git, build arguments or browser bundles. Build arguments are not a secret store. Use a trusted registry, a software bill of materials and artifact scanning as part of a release process. These measures complement application authorization; they do not replace it.
+
+## 7. Readiness is not startup order
+
+“Start database before web” does not mean the database is ready when web connects. Applications need bounded retries or explicit readiness checks. A process may have started but still be loading a model or applying migrations. Readiness controls traffic admission; liveness decides whether restarting a process is useful. An external database outage should not automatically restart every web instance continuously.
+
+## 8. The supplied executable recipe
+
+`labs/study-coach/compose.yaml` connects Java and Python and retains H2 data in a volume. `container_smoke.py` authenticates, obtains CSRF, creates and approves a job, then checks its completed answer. The reference GitHub workflow builds the UI, tests Java, runs native browser/recovery checks, builds containers and invokes that smoke test.
+
+These files are runnable instructions, not a claim that Docker was executed here. With an available engine, run from the Study Coach directory:
+
+```powershell
+# Set fresh COACH_PASSWORD and COACH_SERVICE_TOKEN in your environment first.
+docker compose config
+docker compose build
+docker compose up -d
+python container_smoke.py
+docker compose logs --tail 100
+docker compose down
+```
+
+Do not add volume deletion options if you intend to keep data. `docker compose config` can expand secret environment values, so avoid posting its full output publicly.
+
+## 9. Rolling releases and database compatibility
+
+Consider version A reading `name`, while version B wants `display_name`. First add the new field in a backward-compatible migration. Deploy code that can coexist with both schemas or dual-write when justified. Backfill carefully. Switch readers after verification. Remove the old field only after all old readers have gone. This expand/contract sequence keeps rollback possible longer.
+
+Do not assume rolling back application code rolls back a database migration. A destructive migration may make the old application unusable. Practice rollback with a realistic database copy before treating it as a reliable release strategy.
+
+## 10. Release gates and interview drill
+
+A release gate should identify the exact artifact, tested configuration and measured outcomes. Check HTTP behavior, database migrations, authentication, streaming, restart recovery and resource use. Container success does not establish cloud load-balancer behavior or public TLS configuration; verify those after deployment to the actual environment.
+
+Debugging question: a container works with a bind mount but the built image fails. Investigate missing copied files, ignored files, incorrect working directory, permissions and reliance on host dependencies. Question: the app cannot call Python at localhost. Explain the network namespace and service DNS. Question: an image contains a key deleted in a later layer. Revoke the key, rebuild without it and remove exposed artifacts according to your registry policy; deleting a later-layer file is insufficient.
+
+## 11. Run the supplied image acceptance test
+
+Follow the optional WSL setup in STUDY-ON-ANY-DEVICE, then run `python labs/study-coach/test_containers.py` from the library root. The runner builds the supplied Dockerfiles rather than copying a host-built application into an unrelated image. Node compiles React, Maven packages Java, and the final image contains a Java runtime; Python has its own service image. Think of building a lunchbox in a kitchen: the final box contains the meal, not every appliance used to prepare it.
+
+The runner creates a uniquely named Compose project and random credentials in excluded .runtime. It checks anonymous rejection, authenticated CSRF handling, duplicate job submission, human approval, a real Java-to-Python answer delivered over SSE and retained data after a web-container restart. It records image IDs in container-report.json. Its final cleanup removes only that test project's services and volume; images stay available for the Kubernetes exercise. An image build or a running container alone is not sufficient acceptance evidence.
+
+This classroom profile uses Basic authentication over local loopback and one H2 writer. It does not claim production identity or a multi-writer database. Initial downloads can be slow, and subsequent cached builds are different performance measurements. Inspect the report for an actual passed result before moving to the cluster capstone. No public-cloud resources are created by this command.

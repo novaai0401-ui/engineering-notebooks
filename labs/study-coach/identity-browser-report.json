@@ -1,0 +1,9 @@
+{
+  "passed": [
+    "Real authorization-code login used S256 PKCE, session cookie, learner role, and CSRF enforcement",
+    "RP-initiated logout invalidated application session",
+    "Mapped administrator role permits protected metrics and administration",
+    "Password rotation rejected the old password and accepted the new password in fresh browser sessions",
+    "Disabling an account and provider back-channel logout invalidated its existing application session"
+  ]
+}

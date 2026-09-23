@@ -1,0 +1,9 @@
+# lab: stable_decoding
+import math
+def softmax(values):
+    if not values: raise ValueError('empty vocabulary')
+    largest=max(values);weights=[math.exp(x-largest) for x in values]
+    total=sum(weights);return [w/total for w in weights]
+assert abs(sum(softmax([10000,9999,9998]))-1)<1e-12
+assert softmax([2,1,0])==softmax([10002,10001,10000])
+print([round(x,3) for x in softmax([2,1,0])])

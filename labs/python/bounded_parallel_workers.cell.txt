@@ -1,0 +1,18 @@
+# lab: bounded_parallel_workers
+import asyncio
+
+async def worker(name, evidence, semaphore):
+    async with semaphore:
+        await asyncio.sleep(0)
+        return {"worker":name, "evidence":evidence, "status":"ok"}
+
+async def parallel_review():
+    cap = asyncio.Semaphore(2)
+    jobs = [worker("math", "2+3=5", cap),
+            worker("sources", "document A", cap),
+            worker("format", "JSON valid", cap)]
+    return await asyncio.wait_for(asyncio.gather(*jobs), timeout=2)
+
+results = await parallel_review()
+assert [r["worker"] for r in results] == ["math","sources","format"]
+print("Three simulated reviewers; at most two inside the bounded section")

@@ -1,0 +1,22 @@
+# lab: trie_prefix
+class Trie:
+    END=object()
+    def __init__(self):self.root={}
+    def insert(self,word):
+        node=self.root
+        for char in word:node=node.setdefault(char,{})
+        node[self.END]=True
+    def walk(self,prefix):
+        node=self.root
+        for char in prefix:
+            if char not in node:return None
+            node=node[char]
+        return node
+    def contains(self,word):
+        node=self.walk(word)
+        return node is not None and self.END in node
+trie=Trie()
+for word in ['agent','agency','graph','']:trie.insert(word)
+assert trie.walk('age') is not None and not trie.contains('age')
+assert trie.contains('agent') and trie.contains('') and not trie.contains('agents')
+print('Word termination is distinct from prefix existence')

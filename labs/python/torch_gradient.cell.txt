@@ -1,0 +1,12 @@
+# lab: torch_gradient
+import torch
+w = torch.tensor(7.0, requires_grad=True)
+prediction = w * 2.0
+loss = 0.5 * (prediction - 20.0) ** 2
+loss.backward()
+assert abs(w.grad.item() + 12.0) < 1e-6
+with torch.no_grad():
+    w -= 0.1 * w.grad
+    w.grad.zero_()
+assert abs(w.item() - 8.2) < 1e-5
+print(round(w.item(), 2))

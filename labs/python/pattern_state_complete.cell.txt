@@ -1,0 +1,19 @@
+# lab: pattern_state_complete
+class Waiting:
+    def approve(self,job):job.state=Running()
+    def finish(self,job):raise ValueError('not running')
+class Running:
+    def approve(self,job):raise ValueError('already running')
+    def finish(self,job):job.state=Finished()
+class Finished:
+    def approve(self,job):raise ValueError('terminal')
+    def finish(self,job):raise ValueError('terminal')
+class StatefulJob:
+    def __init__(self):self.state=Waiting()
+    def approve(self):self.state.approve(self)
+    def finish(self):self.state.finish(self)
+job=StatefulJob();job.approve();job.finish();assert isinstance(job.state,Finished)
+try:job.approve()
+except ValueError:pass
+else:raise AssertionError('terminal transition accepted')
+print('State objects own transition behavior')

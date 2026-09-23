@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>19 — Seeing failures and testing the whole experience</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-3">1. Three ways to understand a busy kitchen</a></li><li><a href="#section-18">2. Labels can eat your memory</a></li><li><a href="#section-27">3. Average is a quiet liar</a></li><li><a href="#section-37">4. Alerts should describe user pain</a></li><li><a href="#section-47">5. Browser engines are not interchangeable evidence</a></li><li><a href="#section-56">6. Accessibility beyond an automated score</a></li><li><a href="#section-65">7. Failure drills</a></li><li><a href="#section-74">8. Debugging interview</a></li></ul></nav><main id="content"><p class="downloads"><a href="19-observability-and-browser-quality.ipynb">Jupyter notebook</a><a href="19-observability-and-browser-quality.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">19 — Seeing failures and testing the whole experience</h1>
+<h2 id="section-3">1. Three ways to understand a busy kitchen</h2>
+<p>A log is a note: “order 17 failed.” A metric is a number over time: “three orders failed this minute.” A trace is the journey of one order through cashier, cook and delivery. Use each for the question it answers. Logging every token is neither necessary nor privacy-friendly.</p>
+<p>Study Coach creates a Java <code>job.execute</code> span and propagates W3C trace context in the HTTP request to Python. Python creates a child request span. The integration checks matching trace IDs and the child's parent span ID. This proves a cross-service link; it does not prove that every background message and browser action is instrumented.</p>
+<p>JSON trace files provide an offline inspection path. Optional OTLP HTTP export sends spans to a collector. Java Micrometer and Python Prometheus expose counters and durations. Keep these endpoints protected: operational metadata can reveal internals even when it contains no passwords.</p>
+<p>The monitoring integration ran native Prometheus 3.14.0, scraped the protected Python endpoint, queried the counter for a real completed answer, and verified a timed alert fixture using promtool. Open the <a href="labs/study-coach/monitoring-dashboard.html">saved monitoring dashboard</a>. Its values are explicitly a recorded run, not current service health. The later collector lab also ran native OpenTelemetry Collector 0.161.0, verified its archive digest, validated its configuration and received an actual Python-exported OTLP trace. See <code>labs/collector-lab/report.json</code>. This proves the local receive/debug-export path, not Grafana, durable trace storage, TLS/authentication or outage buffering.</p>
+<h2 id="section-18">2. Labels can eat your memory</h2>
+<p>A metric with labels <code>route</code> and <code>status</code> has a manageable number of combinations. Adding a unique user ID or question to every label can create millions of time series. That is high cardinality. Put bounded categories in metrics and controlled diagnostic IDs in traces or logs. Never use raw prompts, credentials or bearer tokens as metric labels.</p>
+<p>The Python middleware groups unknown paths into <code>other</code>. It records counts and duration for <code>/answer</code>, <code>/health</code> and <code>/metrics</code>. The Java worker records duration and failure counts. The trace files contain identifiers and timing, not the question text or authorization header.</p>
+<h2 id="section-27">3. Average is a quiet liar</h2>
+<p>If nine requests take 100 milliseconds and one takes 10 seconds, the average is 1.09 seconds. Most users waited 0.1 seconds; one waited 10 seconds. Percentiles show the distribution. For a small nearest-rank sample, p95 means the value at rank ceil(0.95 × n) in sorted order. With only 12 samples that is the maximum, so it is a noisy estimate.</p>
+<pre><code class="language-python"># lab: latency_percentiles
+import math,statistics
+samples=[100]*9+[10000]
+def percentile(xs,p):
+    if not xs or not 0&lt;p&lt;=1:raise ValueError('invalid sample or percentile')
+    return sorted(xs)[math.ceil(p*len(xs))-1]
+assert percentile(samples,.5)==100 and percentile(samples,.95)==10000
+print({'mean_ms':statistics.mean(samples),'p50_ms':percentile(samples,.5),'p95_ms':percentile(samples,.95)})
+</code></pre>
+<p>The distributed test measures 12 jobs with four concurrent clients. Its throughput and latency are observations on this machine, not a production capacity guarantee. A serious load study needs warm-up, realistic request distributions, independent load generation, long steady-state runs, resource saturation measurements and repeated trials.</p>
+<h2 id="section-37">4. Alerts should describe user pain</h2>
+<p>A service-level indicator is a measured property such as successful completed jobs divided by valid submitted jobs. A service-level objective is a target over a specified window. Define what counts as success and what exclusions apply. A job that returns HTTP 200 but later fails should not disappear from your success measurement.</p>
+<p>An error budget is the allowed bad fraction. At 99.9% success, the budget is 0.1%. If the current failure fraction is 1%, the service is consuming that allowance at ten times the target rate. Alert over both short and long windows to avoid reacting to a single noisy minute while still catching rapid damage.</p>
+<pre><code class="language-python"># lab: error_budget_burn
+def burn(failures,total,target=.999):
+    if total&lt;=0 or not 0&lt;target&lt;1 or not 0&lt;=failures&lt;=total:raise ValueError('invalid inputs')
+    return (failures/total)/(1-target)
+assert abs(burn(10,1000)-10)&lt;1e-10
+print('1% errors burns a 99.9% success budget at approximately 10x.')
+</code></pre>
+<h2 id="section-47">5. Browser engines are not interchangeable evidence</h2>
+<p>Chromium, Firefox and WebKit use different implementations. Test your central journeys in all three. WebKit running under Playwright on Windows is useful engine coverage; it is not a test on a physical iPhone or the shipping Safari application. State that distinction in a release report.</p>
+<p>The project tests sign-in, job creation, approval, streamed completion, cancellation and navigation. It runs axe rules on the completed page and exercises keyboard interactions. Add cases for a rejected login, missing field, expired session, interrupted stream, route reload and cancellation during work as the product evolves.</p>
+<h2 id="section-56">6. Accessibility beyond an automated score</h2>
+<p>Use a keyboard from the first control through the final action. Focus must be visible, order sensible and dialogs escapable. A screen reader needs accessible names and meaningful status announcements. At enlarged text and narrow widths, content must remain readable without losing actions. Avoid conveying state only through red and green.</p>
+<p>Automated rules can detect many missing labels and contrast failures. They cannot establish that every instruction is understandable, that focus moves helpfully after every dynamic update, or that a whole workflow works with a screen reader. Record manual checks separately from automated results. Do not write “WCAG certified” from a zero-violation scan.</p>
+<h2 id="section-65">7. Failure drills</h2>
+<p>Drill one: stop the broker. Expected: HTTP approval commits to the outbox; work remains pending; a visible status explains the wait; restart permits delivery. Drill two: stop a worker after claiming. Expected: the lease expires; another worker claims; the old token cannot write. Drill three: disconnect a model stream. Expected: no <code>done</code> state without a final completion marker. Drill four: remove permission. Expected: new unauthorized requests fail, with session revocation behavior matching the documented design.</p>
+<p>For every drill, write the hypothesis before the test. Record the observed outcome and recovery time. A failed hypothesis is useful evidence to fix the design, not a reason to hide the test.</p>
+<h2 id="section-74">8. Debugging interview</h2>
+<p>Question: “The p99 doubled but CPU is low. What next?” Answer: compare traces for time waiting on database connections, locks, network calls, queue delay and downstream services. Low CPU is consistent with blocked work. Inspect saturation of the constrained resource rather than guessing that more application replicas will help.</p>
+<p>Question: “Why is the graph expensive after adding user labels?” Answer: each distinct label combination creates another series. Remove unbounded labels, aggregate metrics by meaningful bounded dimensions and retain per-request correlation in traces with a privacy policy.</p>
+<p>Reference provenance: the native monitoring binary and checksum came from the <a href="https://prometheus.io/download/">official Prometheus download page</a>. The included setup script pins the version and checksum. This reference is optional; the concepts, test and interpretation are provided here.</p>
+</main></body></html>

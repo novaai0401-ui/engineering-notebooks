@@ -1,0 +1,13 @@
+{
+  "passed": [
+    "Service killed after partial progress while four clients were writing",
+    "Clients reauthenticated after in-memory session loss and retried stable idempotency keys",
+    "Eighty acknowledged logical writes correspond to exactly eighty durable request records and eighty events; explicit duplicate submissions reused sequence IDs"
+  ],
+  "clients": 4,
+  "logical_writes": 80,
+  "completed_at_kill": 14,
+  "retry_observations": 12,
+  "elapsed_seconds": 17.7,
+  "limitations": "One forced process outage in a bounded local run, not long endurance, disk corruption, distributed cache, machine power-loss or cloud certification."
+}

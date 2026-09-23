@@ -1,0 +1,10 @@
+# lab: cache_version_fence
+fence={'course':4};cached={}
+def put(key,version,value):
+    if version<fence.get(key,0):return False
+    fence[key]=version;cached[key]=(version,value);return True
+old_read=(4,'old title')
+fence['course']=5;cached.pop('course',None)
+assert not put('course',*old_read)
+assert put('course',5,'new title')
+print(cached)

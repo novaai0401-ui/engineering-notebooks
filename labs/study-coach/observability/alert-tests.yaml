@@ -1,0 +1,16 @@
+rule_files:
+  - alerts.yaml
+evaluation_interval: 1m
+tests:
+  - interval: 1m
+    input_series:
+      - series: coach_job_failures_total
+        values: '0+1x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: StudyCoachWorkerFailures
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: Repeated background execution failures

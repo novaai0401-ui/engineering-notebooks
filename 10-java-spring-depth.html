@@ -1,0 +1,126 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 10 — Java and Spring beyond the happy path</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. JVM memory and garbage collection</a></li><li><a href="#section-21">2. Generics, variance, and erasure</a></li><li><a href="#section-31">3. Concurrency: visibility, atomicity and ordering</a></li><li><a href="#section-44">4. Spring dependency injection and proxy behavior</a></li><li><a href="#section-56">5. Isolation with a concrete race</a></li><li><a href="#section-68">6. JPA performance: measure the SQL</a></li><li><a href="#section-80">7. Messaging and the transactional outbox</a></li><li><a href="#section-92">8. Cache correctness before cache speed</a></li><li><a href="#section-102">9. Security and integration tests</a></li><li><a href="#section-111">10. Interview exercise and rubric</a></li></ul></nav><main id="content"><p class="downloads"><a href="10-java-spring-depth.ipynb">Jupyter notebook</a><a href="10-java-spring-depth.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 10 — Java and Spring beyond the happy path</h1>
+<p>A Java service is like a busy school office. Objects hold records, threads are clerks, the database is the official register, transactions protect related changes, and security checks who may request them. Faster clerks cannot repair a broken register contract. This notebook connects language rules to measurable service behavior.</p>
+<h2 id="section-6">1. JVM memory and garbage collection</h2>
+<p>Each thread has a stack of call frames, including local variables and references. Objects generally live on the heap, subject to runtime optimizations. Class metadata uses metaspace; native libraries, direct buffers, thread stacks and code caches also consume memory. <code>-Xmx</code> limits the Java heap, not total process memory. An out-of-memory failure can therefore occur even when a heap chart looks comfortable.</p>
+<p>Garbage collection identifies unreachable objects; it does not mean “delete an object immediately after its last visible use.” A static map retaining every request can keep objects reachable forever. Closing a database connection or file is a resource-lifetime responsibility, not a job to leave to the collector. Use try-with-resources for <code>AutoCloseable</code> objects.</p>
+<p>Different collectors and configurations trade throughput, pause times and memory. Begin with workload evidence rather than memorizing one universal best collector. Record allocation rate, live heap after collection, pause distribution, CPU and request latency. Use JVM tools such as Java Flight Recorder, <code>jcmd</code>, and GC logs with appropriate permissions. A heap dump may contain credentials and user data; handle it as sensitive data.</p>
+<p><strong>Worked diagnosis:</strong> Heap use rises during each batch and returns to roughly the same baseline after collection: likely allocation pressure. The post-collection baseline rises steadily with retained request entries: suspect retention. CPU is idle but latency is high and all workers await connections: investigate a saturated connection pool, not only GC.</p>
+<h2 id="section-21">2. Generics, variance, and erasure</h2>
+<p>A <code>List&lt;Integer&gt;</code> is not a <code>List&lt;Number&gt;</code>: if it were, a caller could add a <code>Double</code> into the integer list. A producer that gives you numbers can use <code>? extends Number</code>; a consumer that accepts integers can use <code>? super Integer</code>. This is the idea behind “producer extends, consumer super.” Type erasure means most generic type arguments are unavailable as ordinary runtime class distinctions; do not use unchecked casts as a substitute for validation.</p>
+<pre><code class="language-java">// lab: GenericTransfer
+import java.util.*;
+public class GenericTransfer {
+ static &lt;T&gt; void copy(List&lt;? extends T&gt; source,List&lt;? super T&gt; target){
+  for(T value:source)target.add(value);
+ }
+ static double total(List&lt;? extends Number&gt; values){
+  return values.stream().mapToDouble(Number::doubleValue).sum();
+ }
+ public static void main(String[] args){
+  List&lt;Integer&gt; integers=List.of(1,2,3);
+  List&lt;Number&gt; numbers=new ArrayList&lt;&gt;();copy(integers,numbers);
+  assert total(numbers)==6;
+  System.out.println(&quot;A producer of integers can feed a consumer of numbers&quot;);
+ }
+}
+</code></pre>
+<p>Use immutable records for value-like data when their members support the intended immutability. A record containing a mutable list is only shallowly immutable; defensively copy the list if needed. <code>equals</code> and <code>hashCode</code> must agree. Mutating a key field after inserting an object into a hash map can make lookup fail.</p>
+<h2 id="section-31">3. Concurrency: visibility, atomicity and ordering</h2>
+<p><code>count++</code> reads, adds and writes; those operations are not one atomic action. <code>volatile</code> supplies visibility and ordering guarantees for the variable but does not turn arbitrary compound operations into transactions. Locks protect invariants involving several values. Atomic classes support specific atomic operations. A thread-safe collection does not automatically make “check then act” across several calls atomic.</p>
+<pre><code class="language-java">// lab: BoundedPipeline
+import java.util.concurrent.*;
+public class BoundedPipeline {
+ public static void main(String[] args)throws Exception{
+  BlockingQueue&lt;Integer&gt; queue=new ArrayBlockingQueue&lt;&gt;(2);
+  try(var executor=Executors.newVirtualThreadPerTaskExecutor()){
+   Future&lt;Integer&gt; consumer=executor.submit(()-&gt;{
+    int sum=0;
+    while(true){int value=queue.take();if(value==-1)return sum;sum+=value;}
+   });
+   Future&lt;?&gt; producer=executor.submit(()-&gt;{
+    try{for(int i=1;i&lt;=5;i++)queue.put(i);queue.put(-1);}
+    catch(InterruptedException e){Thread.currentThread().interrupt();throw new RuntimeException(e);}
+   });
+   producer.get(2,TimeUnit.SECONDS);
+   assert consumer.get(2,TimeUnit.SECONDS)==15;
+  }
+  System.out.println(&quot;A bounded queue applies backpressure between producer and consumer&quot;);
+ }
+}
+</code></pre>
+<p>The sentinel works because this example has one consumer and data never uses <code>-1</code>. Multiple consumers need a termination protocol suitable for their number, or explicit cancellation. Virtual threads make many blocking tasks cheaper than one platform thread per task; they do not create unlimited database connections, memory or remote capacity. Bound scarce resources separately.</p>
+<p>Deadlock requires a cycle of waiting. Consistent lock ordering can prevent such cycles. Timeouts reduce indefinite waiting but require a safe recovery policy. On interruption, release resources and preserve or propagate the interrupt according to your API contract. Do not swallow it and continue expensive work.</p>
+<h2 id="section-44">4. Spring dependency injection and proxy behavior</h2>
+<p>Constructor injection makes required dependencies explicit and supports ordinary unit tests. The container creates and connects beans. A singleton bean is shared within the application context; it must not keep request-specific mutable fields. A controller field named <code>currentUser</code> is a cross-request bug, even if the first manual test succeeds.</p>
+<p>Spring often applies features through proxies. In default proxy-based transaction management, a call from one method to another method on the same object can bypass transactional advice. Put the transaction boundary on a service method called through its managed bean. Read the <a href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">transaction annotation reference</a> for proxy and rollback behavior. Configure rollback rules deliberately; do not assume every checked exception rolls back under every configuration.</p>
+<p>Transactions should protect database invariants, not wrap a slow model call by default. Holding locks and connections while a remote model responds reduces capacity and increases contention. Commit a durable job first, then let a worker call the external service outside the short database transaction.</p>
+<h2 id="section-56">5. Isolation with a concrete race</h2>
+<p>Two clerks read that one seat remains. Both subtract one in their own memory and write zero. Both customers receive a seat. The final counter looks valid, but the business invariant was broken. Possible solutions include an atomic conditional update (<code>UPDATE ... SET seats=seats-1 WHERE seats&gt;0</code>), optimistic version checks, row locking, or a stronger transaction design. Select according to contention, retry cost and database behavior.</p>
+<p>Read committed generally prevents dirty reads. Repeatable read and serializable offer stronger guarantees, but exact behaviors and anomalies differ among database engines. Do not infer PostgreSQL or MySQL semantics from an H2 test alone. Serialization failures and deadlocks may require retrying the complete transaction, with bounded attempts and idempotent external behavior.</p>
+<p>The Study Coach <code>PersistenceTests</code> uses two actual database connections to show that an uncommitted row is hidden at read committed and becomes visible after commit. It separately tests optimistic locking: two detached versions are loaded; one update wins and the stale version is rejected.</p>
+<h2 id="section-68">6. JPA performance: measure the SQL</h2>
+<p>JPA maps object operations onto SQL. Lazy loading delays a relationship query; eager loading requests early availability but does not guarantee one efficient SQL statement. The N+1 problem occurs when one query loads N parents and then one query per parent loads its children. In the classroom test, three courses produce four queries. A fetch join produces one query for the same small result.</p>
+<p><code>CourseRepository.withLessons()</code> uses a fetch join. <code>PersistenceTests.fetchJoinAvoidsNPlusOne</code> clears the persistence context and Hibernate statistics before each measurement, then asserts four versus one prepared statements. Without clearing the first-level cache, the second measurement could appear fast merely because the objects were already loaded.</p>
+<p>Fetch joins are not universally free: joining large collections duplicates parent columns, can multiply rows across several collections, and complicates pagination. Alternatives include projections, entity graphs, batch fetching, and two-step ID pagination. Return API DTOs rather than exposing an arbitrary entity graph to JSON serialization. Open-session-in-view can hide missing query planning by triggering queries during rendering; this project disables it.</p>
+<h2 id="section-80">7. Messaging and the transactional outbox</h2>
+<p>Suppose you insert an enrollment and then publish a message. A crash between these steps leaves an enrollment with no event. Reversing the order can publish an event for a transaction that later rolls back. The outbox stores the business change and a pending event in the same database transaction. A separate relay publishes pending events.</p>
+<p>The <code>Enrollment</code> service and its integration test show both records rolling back together on a deliberate exception, then both committing on success. This is the producer-side atomicity part of the pattern. The project does not include a Kafka or RabbitMQ broker. A production relay must handle claims, retries, duplicate publishing and ordering; consumers need idempotency because a relay can crash after publish but before marking delivery.</p>
+<p>An event describes something that happened; a command requests an action. Choose schemas, partition keys and ordering requirements explicitly. A dead-letter queue is a holding area for investigation, not a way to declare lost work successful. Record why an item failed and how it may be replayed safely.</p>
+<h2 id="section-92">8. Cache correctness before cache speed</h2>
+<p>A cache stores a reusable result. Its key must include every input that affects the result, including identity or permission scope where relevant. Omitting the owner from a retrieval cache key can leak another user's data. Decide TTL, size bound, invalidation and behavior during a miss storm. Do not cache failures forever.</p>
+<pre><code class="language-java">// lab: ScopedCache
+import java.util.*;
+public class ScopedCache {
+ record Key(String owner,String query){}
+ record Entry(String value,long expires){}
+ static class Cache {
+  final Map&lt;Key,Entry&gt; entries=new LinkedHashMap&lt;&gt;();
+  final int capacity;
+  Cache(int capacity){if(capacity&lt;1)throw new IllegalArgumentException();this.capacity=capacity;}
+  synchronized void put(Key key,String value,long now,long ttl){
+   entries.remove(key);entries.put(key,new Entry(value,now+ttl));
+   while(entries.size()&gt;capacity)entries.remove(entries.keySet().iterator().next());
+  }
+  synchronized Optional&lt;String&gt; get(Key key,long now){
+   Entry item=entries.get(key);
+   if(item==null)return Optional.empty();
+   if(item.expires()&lt;=now){entries.remove(key);return Optional.empty();}
+   return Optional.of(item.value());
+  }
+  synchronized void invalidate(Key key){entries.remove(key);}
+ }
+ public static void main(String[] args){
+  Cache cache=new Cache(2);Key alice=new Key(&quot;alice&quot;,&quot;plan&quot;);
+  cache.put(alice,&quot;private&quot;,0,10);
+  assert cache.get(new Key(&quot;bob&quot;,&quot;plan&quot;),1).isEmpty();
+  assert cache.get(alice,10).isEmpty();
+  cache.put(alice,&quot;new&quot;,10,10);cache.invalidate(alice);
+  assert cache.get(alice,11).isEmpty();
+  System.out.println(&quot;Cache keys include owner; expiration and invalidation are tested&quot;);
+ }
+}
+</code></pre>
+<p>This small cache evicts by insertion order and synchronizes operations; it is not a distributed cache or a production caching library. For expensive loads, coalesce simultaneous misses. For updates, explain the ordering between commit and invalidation. Strong consistency requirements may make a cache inappropriate.</p>
+<h2 id="section-102">9. Security and integration tests</h2>
+<p>The connected application uses Spring Security, password hashing, HTTP Basic for the local teaching session, CSRF protection, owner-filtered database queries, and an internal service credential for Python. Basic credentials must travel over TLS beyond local development. They are not encryption. The browser page keeps its explicit authorization header in memory and does not store it in localStorage. Forgetting page credentials is not server-side session revocation.</p>
+<p>Read <a href="https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/basic.html">Spring's Basic authentication documentation</a> for filter behavior. Test absent authentication, incorrect credentials, missing CSRF token, another user's job ID, malformed input and every state-changing endpoint. A controller unit test cannot establish these filters work; use integration and network tests as well.</p>
+<h2 id="section-111">10. Interview exercise and rubric</h2>
+<p><strong>Task, 20 points:</strong> Design enrollment plus notification under concurrency. Award 4 points for the seat invariant and a valid atomic strategy, 3 for transaction boundaries, 3 for an outbox and idempotent consumer, 3 for JPA query planning, 3 for identity/ownership checks, and 4 for failure tests covering rollback, duplicate delivery and concurrent attempts.</p>
+<p><strong>Follow-up:</strong> Would <code>synchronized</code> on one service method solve double booking across three servers? No; its lock exists only in one JVM. <strong>Follow-up:</strong> Would adding <code>@Transactional</code> everywhere solve N+1? No; transaction scope and query shape are separate. <strong>Follow-up:</strong> Does a cache always improve latency? A remote cache, serialization overhead or a miss storm can make it worse. Measure the complete path.</p>
+</main></body></html>

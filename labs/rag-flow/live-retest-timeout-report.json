@@ -1,0 +1,8 @@
+{
+  "status": "blocked_by_runtime_timeout",
+  "attempt": "Expanded four-case run after clarifying the checkpoint source",
+  "observed": "The first local Ollama generation timed out after the configured 240-second socket timeout. A separate five-second read of /api/ps also timed out.",
+  "completed_new_cases": 0,
+  "previous_evidence": "live-report-initial.json and live-review-initial.json preserve the two earlier generated answers and their claim-level review.",
+  "consequence": "No post-correction factual pass is claimed. Default offline/extractive route remains available and its tests passed."
+}

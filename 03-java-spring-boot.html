@@ -1,0 +1,183 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 3 — Java and Spring Boot, From Objects to Services</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. Java is a typed recipe language</a></li><li><a href="#section-22">2. Objects, interfaces, records, and encapsulation</a></li><li><a href="#section-35">3. Collections, generics, equality, and hashing</a></li><li><a href="#section-54">4. Exceptions, resources, and Optional</a></li><li><a href="#section-72">5. JVM, memory, and concurrency</a></li><li><a href="#section-88">6. SOLID, cohesion, and boundaries</a></li><li><a href="#section-103">7. Spring: a container assembles objects</a></li><li><a href="#section-118">8. A layered service</a></li><li><a href="#section-131">9. HTTP, validation, and error contracts</a><details><summary>Examples and subtopics</summary><ul><li><a href="#section-143">Framework recipe: a small controller</a></li></ul></details></li><li><a href="#section-153">10. Transactions, JPA, and database correctness</a></li><li><a href="#section-171">11. Security, identity, and browser boundaries</a></li><li><a href="#section-183">12. Testing and operating Spring services</a></li><li><a href="#section-195">13. Build, versions, and capstone</a></li><li><a href="#section-204">14. Oral exam with answers</a></li></ul></nav><main id="content"><p class="downloads"><a href="03-java-spring-boot.ipynb">Jupyter notebook</a><a href="03-java-spring-boot.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 3 — Java and Spring Boot, From Objects to Services</h1>
+<p>This notebook builds from simple Java calculations to a layered HTTP service. The companion algorithms notebook contains the classic design-pattern catalog and algorithm practice. Here we apply those ideas to Java and Spring. Read the lessons offline. Running Java labs needs a JDK; running the Spring project additionally needs Maven and initially available dependencies.</p>
+<h2 id="section-6">1. Java is a typed recipe language</h2>
+<p>A variable has a declared type. A class describes objects and behavior. An object is one instance. A method is a function belonging to a class or object. The compiler translates source into bytecode; the JVM executes it using interpretation and/or runtime compilation. The JDK supplies development tools such as the compiler, not just execution support.</p>
+<p>Primitive types include <code>int</code>, <code>long</code>, <code>double</code>, <code>boolean</code>, and <code>char</code>. Reference variables refer to objects or null. <code>String</code> represents text and is immutable. <code>final</code> prevents reassignment of a variable; it does not magically make a referenced mutable object's contents immutable.</p>
+<pre><code class="language-java">// lab: FirstJava
+public class FirstJava {
+    static int total(int count, int price, int fee) {
+        if (count &lt; 0) throw new IllegalArgumentException(&quot;negative count&quot;);
+        return Math.addExact(Math.multiplyExact(count, price), fee);
+    }
+    public static void main(String[] args) {
+        if (total(3, 10, 5) != 35) throw new AssertionError();
+        String a = new String(&quot;book&quot;);
+        String b = new String(&quot;book&quot;);
+        if (!a.equals(b)) throw new AssertionError();
+        System.out.println(&quot;Total: 35; text values equal&quot;);
+    }
+}
+</code></pre>
+<p><code>public class</code> names the program. <code>static</code> makes a method callable without creating an instance. Exact arithmetic throws on overflow instead of silently wrapping. <code>main</code> is the entry point for this ordinary Java program. <code>equals</code> compares String values; <code>==</code> compares reference identity for objects. Compile using <code>javac FirstJava.java</code>, then run <code>java FirstJava</code>.</p>
+<p><strong>Practice:</strong> Does <code>final List&lt;String&gt;</code> prevent adding an item? <strong>Answer:</strong> No. It prevents changing that variable to refer to another list; the list's own mutability still matters.</p>
+<h2 id="section-22">2. Objects, interfaces, records, and encapsulation</h2>
+<p>Imagine different calculators following one agreement: each can quote a price. An interface expresses that agreement. Implementations supply behavior. Encapsulation protects an object's rules rather than exposing arbitrary writable fields.</p>
+<pre><code class="language-java">// lab: PricingDemo
+public class PricingDemo {
+    interface Pricing { int price(int quantity); }
+    record FlatPricing(int unitPrice) implements Pricing {
+        FlatPricing {
+            if (unitPrice &lt; 0) throw new IllegalArgumentException();
+        }
+        public int price(int quantity) {
+            if (quantity &lt; 0) throw new IllegalArgumentException();
+            return Math.multiplyExact(unitPrice, quantity);
+        }
+    }
+    static int checkout(Pricing pricing, int quantity) {
+        return pricing.price(quantity);
+    }
+    public static void main(String[] args) {
+        if (checkout(new FlatPricing(7), 3) != 21) throw new AssertionError();
+        System.out.println(&quot;Strategy supplied through an interface&quot;);
+    }
+}
+</code></pre>
+<p>The interface names the capability. The record is a compact data carrier with generated accessors and value-oriented methods. Its constructor validates the rate. <code>checkout</code> depends on an abstraction rather than one concrete pricing class. This is composition and dependency injection in ordinary Java, without a framework.</p>
+<p>Inheritance expresses an is-a relationship with substitutability constraints. Composition expresses has-a or uses-a. A subtype should preserve the contract expected by callers; throwing unsupported-operation errors for normal parent behavior may violate that expectation. Prefer narrow interfaces that callers actually need.</p>
+<h2 id="section-35">3. Collections, generics, equality, and hashing</h2>
+<p>An ArrayList provides indexed dynamic-array access. A linked list stores linked nodes; knowing a node can make local changes cheap, but finding an index is linear. A HashMap associates keys with values using hashes and equality. A TreeMap maintains ordered keys. A HashSet tests distinct membership; a priority queue exposes the smallest or comparator-preferred element, not a globally sorted iteration order.</p>
+<p>Generics such as <code>List&lt;String&gt;</code> express element types and catch many errors at compilation. Java generics are largely implemented with type erasure; a generic parameter is not always available as runtime type information. A <code>List&lt;Dog&gt;</code> is not a <code>List&lt;Animal&gt;</code> because the latter could permit adding a Cat.</p>
+<p>PECS means producer extends, consumer super: use suitable wildcard bounds when an API reads produced values or accepts consumed ones. Do not add wildcards everywhere; first identify the direction of use.</p>
+<p>Equal objects must have equal hash codes. Mutating a key's equality-relevant fields after insertion can make hash-based lookup fail. Hash collisions are possible and do not imply equality. Arrays use identity-based equality unless you use appropriate array comparison utilities.</p>
+<pre><code class="language-java">// lab: CollectionDemo
+import java.util.*;
+public class CollectionDemo {
+    public static void main(String[] args) {
+        Map&lt;String, Integer&gt; counts = new HashMap&lt;&gt;();
+        for (String word : List.of(&quot;ai&quot;, &quot;java&quot;, &quot;ai&quot;)) {
+            counts.merge(word, 1, Integer::sum);
+        }
+        if (counts.get(&quot;ai&quot;) != 2) throw new AssertionError();
+        List&lt;String&gt; ranked = counts.keySet().stream()
+            .sorted(Comparator.comparingInt((String k) -&gt; counts.get(k))
+                .reversed().thenComparing(Comparator.naturalOrder()))
+            .toList();
+        if (!ranked.equals(List.of(&quot;ai&quot;, &quot;java&quot;))) throw new AssertionError();
+        System.out.println(ranked);
+    }
+}
+</code></pre>
+<p><code>merge</code> inserts one or combines with the old count. The stream builds a processing pipeline. The comparator sorts larger counts first and text as a tie-breaker. <code>toList</code> collects the stream result; do not assume every list-returning API promises mutability. Streams do not inherently improve speed or make side effects safe.</p>
+<h2 id="section-54">4. Exceptions, resources, and Optional</h2>
+<p>An exception is a structured failure path. Checked exceptions require declaration or handling; unchecked exceptions extend RuntimeException and typically represent programming or application failures not enforced at the signature. Do not use that distinction alone to decide whether a failure is recoverable.</p>
+<p>Try-with-resources closes AutoCloseable resources. Preserve causes when wrapping errors. Avoid catch-all handlers that hide failure and return empty business results. A missing record and a failed database connection are different outcomes.</p>
+<p>Optional expresses an explicitly optional return. It can reduce accidental null assumptions, but calling <code>get()</code> blindly recreates the problem. <code>orElse</code> evaluates its fallback eagerly; <code>orElseGet</code> calls a supplier when necessary. Null checks still matter at external boundaries.</p>
+<p>Immutability makes sharing easier. Defensive copies protect collections. Records are shallowly immutable in their component bindings, not necessarily in nested data. Validate constructor invariants and avoid publishing partially initialized objects.</p>
+<p><strong>Practice:</strong> Why is returning an empty list for a database timeout misleading? <strong>Answer:</strong> Callers cannot distinguish no records from unavailable information and may take incorrect actions.</p>
+<h2 id="section-72">5. JVM, memory, and concurrency</h2>
+<p>Objects are generally managed on the heap; method frames and local execution state use thread stacks, subject to optimization details. Garbage collection reclaims unreachable managed objects; it does not guarantee immediate release of files or sockets. A memory leak can occur when reachable structures retain objects no longer needed.</p>
+<p>Concurrency is overlapping progress. Parallelism is simultaneous execution. A race occurs when outcomes depend on uncontrolled interleaving. <code>volatile</code> supports visibility and ordering for a variable, but <code>count++</code> is a read-modify-write sequence and is not made atomic just by volatile.</p>
+<pre><code class="language-java">// lab: ConcurrentCount
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+public class ConcurrentCount {
+    public static void main(String[] args) throws Exception {
+        AtomicInteger count = new AtomicInteger();
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future&lt;?&gt; a = pool.submit(() -&gt; { for(int i=0;i&lt;1000;i++) count.incrementAndGet(); });
+            Future&lt;?&gt; b = pool.submit(() -&gt; { for(int i=0;i&lt;1000;i++) count.incrementAndGet(); });
+            a.get(); b.get();
+            if (count.get() != 2000) throw new AssertionError();
+            System.out.println(count.get());
+        } finally { pool.shutdown(); }
+    }
+}
+</code></pre>
+<p>The executor owns worker threads. Futures let the caller await completion and observe failures. AtomicInteger makes each increment atomic; it would not automatically protect a multi-variable business invariant. Always close or shut down owned execution resources.</p>
+<p>Locks protect critical sections; consistent lock ordering helps avoid deadlock. CompletableFuture composes asynchronous results but needs deliberate executor and exception handling. Virtual threads can support many blocking tasks with lower per-thread overhead in suitable workloads; they do not make CPU work free, remove database limits, or provide backpressure automatically. <a href="https://dev.java/learn/">Java learning baseline</a>.</p>
+<h2 id="section-88">6. SOLID, cohesion, and boundaries</h2>
+<p>Single responsibility means grouping behavior that changes for the same reason. Open/closed means enabling expected extensions without repeated invasive edits. Liskov substitution means preserving the contract of an abstraction. Interface segregation means avoiding forcing clients to depend on unrelated methods. Dependency inversion means policy depends on abstractions, with concrete details supplied at boundaries.</p>
+<p>Imagine a checkout service. It calculates a total, then asks a Payment interface to charge. A provider-specific SDK sits behind an adapter. This isolates the business rule from SDK changes. Do not create twenty interfaces for a one-function toy merely to claim architectural sophistication.</p>
+<p>DRY avoids duplicated knowledge, not every repeated line. KISS prefers clear solutions. YAGNI avoids speculative features. High cohesion keeps related behavior together; low coupling limits unnecessary dependencies. Composition, explicit invariants, immutability, and clear error contracts often matter more than naming a design pattern.</p>
+<p>The companion pattern notebook explains all 23 classic GoF patterns with concrete examples and cautions. In Spring you commonly encounter Factory, Proxy, Adapter, Strategy, Template Method, Observer-style events, and dependency injection, which is a broader construction technique rather than one of those 23 patterns.</p>
+<h2 id="section-103">7. Spring: a container assembles objects</h2>
+<p>In ordinary Java you write <code>new Service(repository)</code>. Spring can construct and connect managed objects, called beans. Inversion of control means the container controls this construction lifecycle. Dependency injection supplies what an object needs, often through its constructor.</p>
+<p><code>@Component</code> marks a discoverable component; service and repository stereotypes communicate roles. <code>@Configuration</code> and <code>@Bean</code> define objects explicitly. Constructor injection makes required dependencies visible and supports tests without container startup. Multiple candidates require qualification or a clear selection rule.</p>
+<p>Singleton scope normally means one bean instance per application context, not a universal JVM or cluster singleton. Request scope ties lifecycle to a request. A singleton with mutable per-user fields can leak or mix concurrent requests. Keep request data in request-specific values, not shared service instance fields.</p>
+<p>Spring Boot adds opinionated setup, dependency management, and conditional auto-configuration. Conditions inspect classes, existing beans, and configuration. Boot does not remove Spring's underlying object lifecycle. Inspect configuration rather than calling unexpected behavior “magic.”</p>
+<h2 id="section-118">8. A layered service</h2>
+<pre><code class="language-text">HTTP request -&gt; controller -&gt; application service -&gt; repository
+                                  |                    |
+                             domain rules          database
+HTTP response &lt;- response DTO &lt;---+
+</code></pre>
+<p>A controller translates HTTP. The service coordinates a use case and its invariants. A repository handles persistence. DTOs define external data shapes. Domain objects express business concepts. An entity maps persistence; returning it directly can couple your API to storage and expose unwanted fields.</p>
+<p>Hexagonal architecture calls external interfaces ports and concrete integrations adapters. A modular monolith can preserve these boundaries inside one deployment. Microservices add independently deployed boundaries and distributed failure; choose them for actual operational needs, not as a default interview decoration.</p>
+<p><strong>Example:</strong> <code>POST /reservations</code> accepts a book ID. The controller validates shape, the service verifies authority and availability, and the repository persists a reservation transactionally. An LLM recommendation does not bypass this path.</p>
+<h2 id="section-131">9. HTTP, validation, and error contracts</h2>
+<p>GET retrieves without intended mutation. POST commonly creates or initiates work. PUT represents replacement semantics at an identified resource and is intended to be idempotent. PATCH applies a partial change whose idempotency depends on the patch operation. DELETE is idempotent in intended effect even if repeated response codes differ.</p>
+<p>Use status codes deliberately: 200 success, 201 created, 202 accepted for ongoing processing, 400 invalid request, 401 unauthenticated, 403 forbidden, 404 missing or intentionally undisclosed resource, 409 state conflict, 429 rate-limited, and 5xx server-side failure classes. Include stable error codes and request IDs without leaking stack traces.</p>
+<p>Validate DTO fields with Bean Validation and enforce business invariants in services and databases. A “positive amount” annotation cannot verify that a user owns an account. Input type validation, authentication, authorization, and business validity solve different problems.</p>
+<h3 id="section-143">Framework recipe: a small controller</h3>
+<p>The delivered <code>labs/spring-demo</code> project contains the complete build and testable controller. This excerpt is the teaching view, not an instruction to place every class into one file.</p>
+<pre><code class="language-java">@RestController
+@RequestMapping(&quot;/api&quot;)
+class GreetingController {
+    @GetMapping(&quot;/greeting&quot;)
+    Greeting greeting(@RequestParam(defaultValue=&quot;learner&quot;) String name) {
+        if (name.isBlank() || name.length() &gt; 80) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;invalid name&quot;);
+        }
+        return new Greeting(&quot;Hello, &quot; + name);
+    }
+    record Greeting(String message) {}
+}
+</code></pre>
+<p>The class handles HTTP requests. The mapping prefixes paths. The method reads a query parameter, checks a small constraint, and returns a structured record that the configured web stack serializes. It is a deliberately public demonstration greeting, not a template for exposing private data without authentication. <a href="https://spring.io/guides/gs/rest-service">Official REST guide</a>.</p>
+<h2 id="section-153">10. Transactions, JPA, and database correctness</h2>
+<p>A transaction groups changes under chosen guarantees. Atomicity means all-or-nothing within its boundary. Consistency means application/database invariants are preserved by correctly designed operations. Isolation controls what concurrent work can observe. Durability concerns committed changes surviving failures within the storage system's guarantees.</p>
+<p><code>@Transactional</code> commonly works through a proxy around bean calls. Self-invocation can bypass that proxy, so annotating a method does not guarantee every internal call starts the intended transaction. Defaults commonly roll back unchecked exceptions; checked-exception rollback and other behavior are configurable. Verify your transaction manager and framework configuration. <a href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">Official transaction semantics</a>.</p>
+<p>JPA maps Java objects and relationships to persistent records. An EntityManager tracks managed entities within a persistence context. Dirty checking notices changes for flushing; flush synchronizes SQL work but is not identical to transaction commit. Lazy loading defers fetching and can fail outside the needed context. N+1 queries arise when loading a collection triggers an extra query per item.</p>
+<p>Use explicit fetch plans, projections, or suitable joins for read paths. Index frequent predicates and join keys after examining query plans. Optimistic locking uses versions to reject conflicting updates; pessimistic locking holds database locks under defined scope. A Java synchronized block cannot coordinate independent service instances by itself.</p>
+<p><strong>Practice:</strong> Two users reserve the last copy simultaneously. What prevents double booking? <strong>Answer:</strong> A database-enforced constraint or correctly isolated conditional update/locking strategy, combined with service logic. Two separate read-then-write checks alone can race.</p>
+<h2 id="section-171">11. Security, identity, and browser boundaries</h2>
+<p>Spring Security's servlet integration uses a filter chain. Authentication determines identity; authorization determines allowed operations. Protect both endpoint access and object-level ownership. A valid token does not entitle its holder to every record ID. <a href="https://docs.spring.io/spring-security/reference/servlet/architecture.html">Security architecture</a>.</p>
+<p>JWT is a token format, not encryption by default. Validate signature, issuer, audience, expiration, and relevant claims with a suitable library. OAuth 2.0 concerns delegated authorization; OpenID Connect adds identity-oriented functionality. Do not build password hashing or token verification from scratch for production.</p>
+<p>CORS is a browser cross-origin policy and does not authenticate callers. CSRF matters particularly when browsers automatically attach credentials such as cookies. Choose protections from the actual credential transport and threat model instead of copying an unconditional disable-CSRF snippet. Output encoding, parameterized SQL, secret handling, and resource limits remain necessary.</p>
+<h2 id="section-183">12. Testing and operating Spring services</h2>
+<p>Unit-test domain rules without starting Spring. Use appropriate slices for controller or persistence tests and broader integration tests when wiring and infrastructure matter. Mocking every dependency cannot establish database transaction behavior. Real database integration tests may use disposable containers or an equivalent isolated environment.</p>
+<p>Configuration should be explicit across profiles. Health checks indicate selected readiness/liveness conditions, not perfect business correctness. Structured logs, metrics, and traces answer different questions: events, aggregates, and request paths. Carry correlation IDs across calls and control sensitive fields.</p>
+<p>For resilience, set timeouts, cap connections, retry only suitable failures, and use circuit breakers or bulkheads where appropriate. A circuit breaker temporarily stops calls to a failing dependency; it is not a retry loop. Graceful shutdown should stop accepting new work and handle in-flight tasks within a budget.</p>
+<h2 id="section-195">13. Build, versions, and capstone</h2>
+<p>The accompanying Spring project pins its parent version and Java target; the validation report states whether it compiled and tested. Do not infer compatibility solely from the machine's newest JDK. The documentation checked for this edition lists Spring Boot 4.1.1 and its supported Java range; deployed projects should use their own supported, tested dependency set. <a href="https://docs.spring.io/spring-boot/system-requirements.html">System requirements</a>.</p>
+<p>Capstone: a book-reservation API with users, books, and reservations. Implement DTO validation, a transactional service, persistent uniqueness/availability protection, object-level permissions, pagination, structured errors, idempotent create handling, and tests for concurrent attempts. Add an AI suggestion service behind an interface while keeping reservation authority in the Java application service.</p>
+<h2 id="section-204">14. Oral exam with answers</h2>
+<p><strong>Why constructor injection?</strong> Required dependencies are explicit and can be supplied in tests; it discourages hidden mutable setup.</p>
+<p><strong>Why not return entities?</strong> It couples clients to storage, can trigger accidental lazy loads, and can disclose unwanted fields.</p>
+<p><strong>Can volatile replace a lock?</strong> Only for suitable visibility/ordering use cases, not arbitrary compound invariants.</p>
+<p><strong>Why equals and hashCode together?</strong> Hash collections rely on equal keys producing compatible hash behavior.</p>
+<p><strong>What is a proxy?</strong> An object standing in for another to add behavior such as transactions or authorization around calls.</p>
+<p><strong>Why might a transaction annotation not apply?</strong> Calls can bypass the configured proxy, or configuration and transaction-manager scope may differ from assumptions.</p>
+<p><strong>Does garbage collection close database connections promptly?</strong> No. Use structured resource management and appropriate pools.</p>
+<p><strong>When prefer a modular monolith?</strong> When one deployment meets needs and strong internal boundaries give adequate maintainability without distributed coordination overhead.</p>
+<p><strong>Coverage:</strong> Detailed tutorials and labs cover Java basics, object design, collections, streams, exceptions, concurrency, dependency injection, layers, HTTP, transactions, security, and testing. JVM GC tuning, bytecode engineering, every Spring portfolio module, and every database-specific isolation behavior are advanced introductions or outside this notebook. The algorithms/patterns companion extends interview breadth without pretending a finite set covers all possible exams.</p>
+<p>Advanced continuation: <a href="10-java-spring-depth.html">10-java-spring-depth</a>. The advanced workshop and accompanying projects extend the introductory scope described above.</p>
+</main></body></html>

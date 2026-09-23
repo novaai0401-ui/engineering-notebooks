@@ -1,0 +1,15 @@
+# lab: database_windows_and_pagination
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('''CREATE TABLE result(id INTEGER PRIMARY KEY, learner TEXT,score INTEGER);
+INSERT INTO result VALUES(1,'Alice',90),(2,'Bob',80),(3,'Chen',80),(4,'Divya',70);''')
+ranked=db.execute('''SELECT learner,DENSE_RANK() OVER(ORDER BY score DESC)
+FROM result ORDER BY score DESC,id''').fetchall()
+assert ranked==[('Alice',1),('Bob',2),('Chen',2),('Divya',3)]
+first=db.execute('SELECT id,score FROM result ORDER BY score DESC,id LIMIT 2').fetchall()
+last_id,last_score=first[-1]
+second=db.execute('''SELECT id,score FROM result WHERE score<? OR (score=? AND id>?)
+ORDER BY score DESC,id LIMIT 2''',(last_score,last_score,last_id)).fetchall()
+assert first+second==[(1,90),(2,80),(3,80),(4,70)]
+db.close()
+print('Stable tie-breaking avoids skipping Chen at the page boundary.')

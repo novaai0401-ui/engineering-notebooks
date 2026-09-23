@@ -1,0 +1,204 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 12 — Trees, graphs, backtracking and dynamic programming</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. A correctness proof in four small steps</a></li><li><a href="#section-18">2. Binary trees and search-tree invariants</a></li><li><a href="#section-28">3. Topological order and cycle detection</a></li><li><a href="#section-38">4. Union-find and minimum spanning trees</a></li><li><a href="#section-48">5. Tries for prefix queries</a></li><li><a href="#section-58">6. Backtracking: choose, explore, undo</a></li><li><a href="#section-68">7. Dynamic programming: state, recurrence, order</a></li><li><a href="#section-78">8. Knapsack and the direction of iteration</a></li><li><a href="#section-88">9. Negative edges and shortest paths</a></li><li><a href="#section-98">10. Timed rounds with alternatives and scoring</a></li></ul></nav><main id="content"><p class="downloads"><a href="12-algorithms-depth.ipynb">Jupyter notebook</a><a href="12-algorithms-depth.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 12 — Trees, graphs, backtracking and dynamic programming</h1>
+<p>An algorithm interview is not a memory contest alone. You must turn a problem into a representation, explain why each step is safe, and test the boundary cases. This notebook extends the basic algorithms in Notebook 6. Every implementation below has an executable check; the explanations give the reasoning that a test alone cannot prove.</p>
+<h2 id="section-6">1. A correctness proof in four small steps</h2>
+<p>State the precondition: what is true before the algorithm starts? State an invariant: what remains true after every loop iteration? Show progress: what gets closer to finishing? State the postcondition: what is true when it stops? For recursion, identify a smaller subproblem and a base case. Testing finds counterexamples; a proof argues about all allowed inputs.</p>
+<p>For binary search, the invariant can be “every index below <code>lo</code> contains a value below the target, and every index at or above <code>hi</code> contains a value at least the target.” Each comparison shrinks <code>[lo,hi)</code>. At termination the interval is empty and <code>lo</code> is the insertion boundary. Without sorted input, that proof fails even if a few examples pass.</p>
+<p>Complexity describes how resource use grows with input size. Include the call stack, output storage, and representation costs. Expected hash-table performance differs from a worst-case guarantee. An <code>O(n)</code> algorithm with a huge allocation can lose to a simpler method on small inputs; asymptotics and measurements answer different questions.</p>
+<h2 id="section-18">2. Binary trees and search-tree invariants</h2>
+<p>A binary tree allows up to two children per node. A binary search tree additionally orders keys: every key in the left subtree is smaller and every key in the right subtree is larger under our no-duplicates convention. Checking only immediate children is insufficient. Carry lower and upper bounds down the entire path.</p>
+<pre><code class="language-python"># lab: tree_bounds_and_traversal
+from dataclasses import dataclass
+@dataclass
+class Node:
+    value:int
+    left:object=None
+    right:object=None
+def valid_bst(node,low=float('-inf'),high=float('inf')):
+    return node is None or (low&lt;node.value&lt;high and valid_bst(node.left,low,node.value) and valid_bst(node.right,node.value,high))
+def inorder(root):
+    result=[];stack=[];node=root
+    while stack or node:
+        while node:stack.append(node);node=node.left
+        node=stack.pop();result.append(node.value);node=node.right
+    return result
+tree=Node(5,Node(2),Node(8,Node(6),Node(9)))
+assert valid_bst(tree) and inorder(tree)==[2,5,6,8,9]
+assert not valid_bst(Node(5,Node(2,None,Node(7))))
+assert inorder(None)==[]
+print('Ancestor bounds catch a violation that local child checks miss')
+</code></pre>
+<p>Both procedures take <code>O(n)</code> time. The explicit traversal stack uses <code>O(h)</code> space for height <code>h</code>; recursive validation also uses <code>O(h)</code> call depth. An unbalanced tree may have <code>h=n</code> and exceed Python's recursion limit. Balanced search trees maintain logarithmic height through rotations and balancing rules; a plain BST does not guarantee that.</p>
+<h2 id="section-28">3. Topological order and cycle detection</h2>
+<p>A directed acyclic graph represents prerequisites. Kahn's algorithm counts incoming edges, starts with nodes having none, and removes their outgoing edges. A node enters the ready queue only after all its prerequisites have been removed. If fewer than all nodes are output, a directed cycle prevented progress.</p>
+<pre><code class="language-python"># lab: topological_sort
+from collections import deque
+def topological(graph):
+    nodes=set(graph)|{v for neighbors in graph.values() for v in neighbors}
+    indegree={node:0 for node in nodes}
+    for neighbors in graph.values():
+        for v in neighbors:indegree[v]+=1
+    ready=deque(sorted(node for node in nodes if indegree[node]==0));order=[]
+    while ready:
+        node=ready.popleft();order.append(node)
+        for neighbor in graph.get(node,[]):
+            indegree[neighbor]-=1
+            if indegree[neighbor]==0:ready.append(neighbor)
+    if len(order)!=len(nodes):raise ValueError('cycle')
+    return order
+graph={'python':['agents'],'agents':['project'],'java':['project'],'project':[]}
+order=topological(graph);position={v:i for i,v in enumerate(order)}
+assert all(position[u]&lt;position[v] for u,neighbors in graph.items() for v in neighbors)
+try:topological({'a':['b'],'b':['a']})
+except ValueError:pass
+else:raise AssertionError('cycle missed')
+print('Prerequisites precede dependents; cycles are rejected')
+</code></pre>
+<p>Ignoring the initial sorting used for deterministic output, the algorithm is <code>O(V+E)</code> time and <code>O(V)</code> auxiliary storage. Sorting ready nodes initially adds up to <code>O(V log V)</code> here. Multiple valid orders may exist. Topological ordering is not shortest-path search, and an undirected cycle requires a different interpretation.</p>
+<h2 id="section-38">4. Union-find and minimum spanning trees</h2>
+<p>Union-find tracks disjoint groups. <code>find</code> returns a representative; <code>union</code> merges two groups. Path compression shortens future searches and union by size prevents avoidable tall trees. Its amortized cost is nearly constant, conventionally expressed using the inverse Ackermann function, for the standard sequence of operations.</p>
+<pre><code class="language-python"># lab: union_find_kruskal
+class UnionFind:
+    def __init__(self,n):self.parent=list(range(n));self.size=[1]*n
+    def find(self,x):
+        while self.parent[x]!=x:
+            self.parent[x]=self.parent[self.parent[x]];x=self.parent[x]
+        return x
+    def union(self,a,b):
+        a,b=self.find(a),self.find(b)
+        if a==b:return False
+        if self.size[a]&lt;self.size[b]:a,b=b,a
+        self.parent[b]=a;self.size[a]+=self.size[b];return True
+def kruskal(n,edges):
+    groups=UnionFind(n);chosen=[]
+    for weight,a,b in sorted(edges):
+        if groups.union(a,b):chosen.append((weight,a,b))
+    if n and len(chosen)!=n-1:raise ValueError('disconnected graph')
+    return chosen
+selected=kruskal(4,[(1,0,1),(2,1,2),(8,0,2),(3,2,3),(9,0,3)])
+assert sum(w for w,_,_ in selected)==6
+assert len(selected)==3
+print('Kruskal chooses the lightest safe edges without closing a cycle')
+</code></pre>
+<p>The cut property justifies choosing a minimum-weight edge crossing a cut between components. Sorting dominates at <code>O(E log E)</code>. A spanning tree connects every vertex with minimum total edge weight; it does not minimize each source-to-destination route. The implementation assumes valid vertex indices and an undirected graph encoded as weighted edges.</p>
+<h2 id="section-48">5. Tries for prefix queries</h2>
+<p>A trie stores one character per edge. Words sharing a prefix share the same path. A terminal marker distinguishes “a word ends here” from “this is merely a prefix.” Search and insert take <code>O(L)</code> dictionary steps for word length <code>L</code>; space depends on the stored characters and node overhead.</p>
+<pre><code class="language-python"># lab: trie_prefix
+class Trie:
+    END=object()
+    def __init__(self):self.root={}
+    def insert(self,word):
+        node=self.root
+        for char in word:node=node.setdefault(char,{})
+        node[self.END]=True
+    def walk(self,prefix):
+        node=self.root
+        for char in prefix:
+            if char not in node:return None
+            node=node[char]
+        return node
+    def contains(self,word):
+        node=self.walk(word)
+        return node is not None and self.END in node
+trie=Trie()
+for word in ['agent','agency','graph','']:trie.insert(word)
+assert trie.walk('age') is not None and not trie.contains('age')
+assert trie.contains('agent') and trie.contains('') and not trie.contains('agents')
+print('Word termination is distinct from prefix existence')
+</code></pre>
+<p>For only exact membership, a hash set is often simpler and smaller. For autocomplete, collect descendants under the prefix but bound results and define ordering. Unicode normalization, case folding and locale rules are product decisions; blindly lowercasing does not solve every language's matching rules.</p>
+<h2 id="section-58">6. Backtracking: choose, explore, undo</h2>
+<p>Backtracking explores a decision tree while abandoning impossible partial choices. N-queens places one queen per row. A placement is safe if its column and two diagonal identifiers have not been used. When returning from a branch, undo exactly the state added for that choice.</p>
+<pre><code class="language-python"># lab: n_queens_backtracking
+def queens(n):
+    solutions=[];columns=set();down=set();up=set();path=[]
+    def visit(row):
+        if row==n:solutions.append(tuple(path));return
+        for col in range(n):
+            if col in columns or row-col in down or row+col in up:continue
+            columns.add(col);down.add(row-col);up.add(row+col);path.append(col)
+            visit(row+1)
+            path.pop();columns.remove(col);down.remove(row-col);up.remove(row+col)
+    visit(0);return solutions
+assert len(queens(4))==2 and queens(1)==[(0,)] and queens(2)==[]
+for solution in queens(4):
+    assert len(set(solution))==4
+    assert len({r-c for r,c in enumerate(solution)})==4
+print('Pruning finds the two valid four-queen arrangements')
+</code></pre>
+<p>The search is exponential; a useful loose bound is factorial-style column permutations with polynomial overhead. Output storage can dominate. Returning <code>path</code> itself instead of a copy would make all saved solutions refer to later mutations. This is a frequent interview bug worth explaining before writing code.</p>
+<h2 id="section-68">7. Dynamic programming: state, recurrence, order</h2>
+<p>Dynamic programming stores answers to overlapping subproblems. For longest common subsequence, <code>dp[i][j]</code> is the best length using the first <code>i</code> characters of one string and first <code>j</code> of the other. Matching final characters add one to <code>dp[i-1][j-1]</code>. Otherwise take the better of skipping either final character. Fill smaller prefixes first.</p>
+<pre><code class="language-python"># lab: lcs_dynamic_programming
+def lcs(a,b):
+    dp=[[0]*(len(b)+1) for _ in range(len(a)+1)]
+    for i in range(1,len(a)+1):
+        for j in range(1,len(b)+1):
+            dp[i][j]=dp[i-1][j-1]+1 if a[i-1]==b[j-1] else max(dp[i-1][j],dp[i][j-1])
+    result=[];i,j=len(a),len(b)
+    while i and j:
+        if a[i-1]==b[j-1]:result.append(a[i-1]);i-=1;j-=1
+        elif dp[i-1][j]&gt;=dp[i][j-1]:i-=1
+        else:j-=1
+    return ''.join(reversed(result))
+assert lcs('abcde','ace')=='ace' and lcs('','abc')==''
+assert len(lcs('ABCBDAB','BDCABA'))==4
+print('Prefix recurrence computes and reconstructs a common subsequence')
+</code></pre>
+<p>Time and space are <code>O(mn)</code>. If only the length is needed, two rows reduce space to <code>O(min(m,n))</code>; reconstructing a sequence then needs additional technique or stored decisions. A subsequence can skip characters; a substring must be contiguous. Confusing the two produces a different recurrence.</p>
+<h2 id="section-78">8. Knapsack and the direction of iteration</h2>
+<p>For 0/1 knapsack, each item may be used once. <code>dp[c]</code> is the best value using processed items within capacity <code>c</code>. Iterate capacities downward so an item cannot reuse its own update in the same pass. Upward iteration would describe an unbounded-use variant.</p>
+<pre><code class="language-python"># lab: zero_one_knapsack
+def knapsack(weights,values,capacity):
+    dp=[0]*(capacity+1)
+    for weight,value in zip(weights,values):
+        if weight&lt;=0:raise ValueError('positive weights required')
+        for c in range(capacity,weight-1,-1):dp[c]=max(dp[c],dp[c-weight]+value)
+    return dp[capacity]
+assert knapsack([2,3,4],[4,5,7],5)==9
+assert knapsack([2],[3],4)==3 # not 6: the item cannot be reused
+assert knapsack([],[],5)==0
+print('Backward capacity iteration preserves the one-use invariant')
+</code></pre>
+<p>This is <code>O(nC)</code> time and <code>O(C)</code> space, where C is numeric capacity. It is pseudo-polynomial because capacity may be exponentially large relative to the number of bits needed to encode it. A greedy value-to-weight ratio solves the fractional version, not arbitrary 0/1 knapsack.</p>
+<h2 id="section-88">9. Negative edges and shortest paths</h2>
+<p>Dijkstra's greedy finalization relies on nonnegative edge weights. Bellman–Ford repeatedly relaxes every edge. After k passes, distances are correct for shortest paths using at most k edges. A shortest simple path uses at most V-1 edges; another improvement afterwards indicates a reachable negative cycle.</p>
+<pre><code class="language-python"># lab: bellman_ford
+def bellman_ford(n,edges,source):
+    dist=[float('inf')]*n;dist[source]=0
+    for _ in range(n-1):
+        changed=False
+        for a,b,w in edges:
+            if dist[a]+w&lt;dist[b]:dist[b]=dist[a]+w;changed=True
+        if not changed:break
+    if any(dist[a]+w&lt;dist[b] for a,b,w in edges):raise ValueError('reachable negative cycle')
+    return dist
+assert bellman_ford(3,[(0,1,4),(0,2,5),(1,2,-2)],0)==[0,4,2]
+try:bellman_ford(2,[(0,1,1),(1,0,-2)],0)
+except ValueError:pass
+else:raise AssertionError('negative cycle missed')
+print('Negative edges work; a reachable negative cycle is rejected')
+</code></pre>
+<p>Worst-case time is <code>O(VE)</code>, space <code>O(V)</code> excluding input. An unreachable negative cycle does not affect distances from this source and is not detected by this source-based check. For all-pairs shortest paths, consider repeated suitable single-source algorithms or Floyd–Warshall, depending on density and constraints.</p>
+<h2 id="section-98">10. Timed rounds with alternatives and scoring</h2>
+<p><strong>Round A, 20 minutes:</strong> Find duplicate values. Start with pairwise comparison <code>O(n²)</code>, then a hash set with expected <code>O(n)</code> time and <code>O(n)</code> space, then sorting with <code>O(n log n)</code> time if mutation or a copy is acceptable. Award 2 points each for assumptions, working code, complexity, edge cases and tradeoffs.</p>
+<p><strong>Round B, 30 minutes:</strong> Determine whether prerequisites are schedulable. Give Kahn's algorithm and a DFS color alternative. In DFS, gray means on the current recursion path, black means completed. An edge to gray detects a directed cycle; an edge to black does not. Award 3 points for modeling, 3 for correct cycle handling, 2 for complexity and 2 for empty/disconnected cases.</p>
+<p><strong>Round C, 40 minutes:</strong> Solve 0/1 knapsack. Explain brute-force include/exclude recursion, memoization by <code>(item,capacity)</code>, and bottom-up optimization. Award 4 points for recurrence, 4 for one-use correctness, 4 for boundary cases, 4 for pseudo-polynomial complexity, and 4 for explaining why the greedy ratio fails.</p>
+<p><strong>Round D, debugging:</strong> A tree validator accepts a left grandchild greater than the root. The missing invariant is the ancestor bound. A DP returns twice an item's value with only one item available. The likely bug is upward capacity iteration. A path algorithm produces nonsense with a negative cycle. The problem has no finite minimum for affected reachable destinations; changing a heap implementation cannot fix the mathematical issue.</p>
+<p>Further specialist topics include balanced-tree rotations, segment/Fenwick trees, strongly connected components, max flow, string matching, suffix structures, randomized algorithms and approximation. This notebook supplies core implementations and proof habits, not a claim that the finite list exhausts algorithm research.</p>
+</main></body></html>

@@ -1,0 +1,261 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 2 — Python for AI, ML, and Generative AI</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. A program is a careful recipe</a></li><li><a href="#section-22">2. Mutability, copying, and common traps</a></li><li><a href="#section-35">3. Iteration, comprehensions, and generators</a></li><li><a href="#section-45">4. Functions, closures, decorators, and types</a></li><li><a href="#section-58">5. Classes, dataclasses, and composition</a></li><li><a href="#section-68">6. Files, JSON, exceptions, and cleanup</a></li><li><a href="#section-78">7. NumPy: a fast table of numbers</a></li><li><a href="#section-94">8. pandas: records, missingness, and joins</a></li><li><a href="#section-104">9. scikit-learn: prevent leakage with pipelines</a></li><li><a href="#section-114">10. PyTorch: tensors and gradients</a></li><li><a href="#section-127">11. Text, tokens, embeddings, and retrieval in Python</a><details><summary>Examples and subtopics</summary><ul><li><a href="#section-133">Lab: retrieval mechanics with transparent word vectors</a></li></ul></details></li><li><a href="#section-140">12. Async, threads, processes, and batching</a></li><li><a href="#section-150">13. Architecture and design principles for ML code</a></li><li><a href="#section-163">14. Testing, environments, packaging, and debugging</a></li><li><a href="#section-175">15. Capstone and exam practice</a></li></ul></nav><main id="content"><p class="downloads"><a href="02-python-for-ai.ipynb">Jupyter notebook</a><a href="02-python-for-ai.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 2 — Python for AI, ML, and Generative AI</h1>
+<p>Learn only the Python foundations and engineering habits that support data, models, retrieval, agents, and services. This is an original self-contained lesson sequence, not a catalog of every Python feature. Read without installing anything; running labs requires the recorded Python packages. Start from the first cell and run in order.</p>
+<h2 id="section-6">1. A program is a careful recipe</h2>
+<p>A variable is a label attached to an object. A function is a reusable recipe. A list stores an ordered collection. A dictionary associates keys with values. A loop repeats work. An exception signals that a requested operation could not complete normally.</p>
+<p>Python indentation marks blocks. <code>=</code> assigns; <code>==</code> compares. Strings hold text. Integers represent whole numbers, floats approximate many real numbers, and Booleans represent true or false. <code>None</code> represents an absent value by convention; it differs from zero, an empty string, and false.</p>
+<pre><code class="language-python"># lab: values_and_functions
+def total_price(count, unit_price, delivery=0):
+    if count &lt; 0:
+        raise ValueError(&quot;count cannot be negative&quot;)
+    return count * unit_price + delivery
+
+assert total_price(3, 10, delivery=5) == 35
+prices = {&quot;pencil&quot;:5, &quot;book&quot;:20}
+cart = [&quot;pencil&quot;, &quot;book&quot;, &quot;pencil&quot;]
+total = sum(prices[item] for item in cart)
+assert total == 30
+print(total)
+</code></pre>
+<p>The function receives two required values and one default. The conditional rejects an invalid count. The return statement produces the answer. The dictionary connects each name to a price. The generator expression looks up one price per item, and <code>sum</code> adds them. In a money-handling system use integer minor units or deliberate decimal arithmetic rather than casual float rounding.</p>
+<p><strong>Exercise:</strong> What happens when a cart item is absent from the dictionary? <strong>Answer:</strong> Direct lookup raises KeyError. Decide whether missing means invalid, unavailable, or eligible for a default; do not silently treat every missing price as zero.</p>
+<h2 id="section-22">2. Mutability, copying, and common traps</h2>
+<p>Two labels can point to the same list. Changing that list is visible through both names. A shallow copy creates a new outer container while nested mutable objects can remain shared. A deep copy recursively copies more structure, but copying everything is not always the correct design.</p>
+<pre><code class="language-python"># lab: mutation
+original = [[1], [2]]
+shallow = original.copy()
+shallow[0].append(9)
+assert original[0] == [1, 9]
+
+def append_label(label, labels=None):
+    result = [] if labels is None else list(labels)
+    result.append(label)
+    return result
+
+assert append_label(&quot;a&quot;) == [&quot;a&quot;]
+assert append_label(&quot;b&quot;) == [&quot;b&quot;]
+print(&quot;Each call receives its intended list&quot;)
+</code></pre>
+<p>A mutable default such as <code>labels=[]</code> is created when the function is defined, not freshly on every call. The <code>None</code> pattern avoids surprising shared defaults. A tuple is an immutable sequence but can contain mutable objects. Sets keep distinct hashable members and are useful for membership tests; they do not replace ordered records when order matters.</p>
+<p><strong>Interview check:</strong> Is Python pass-by-value or pass-by-reference? <strong>Answer:</strong> A useful precise account is that arguments bind local names to passed objects. Mutating a shared object can be visible; rebinding a local name does not rebind the caller's variable.</p>
+<h2 id="section-35">3. Iteration, comprehensions, and generators</h2>
+<p><code>enumerate</code> supplies index and value. <code>zip</code> pairs corresponding values but normally stops at the shortest input; use deliberate length checking when silent truncation is wrong. A comprehension builds a collection. A generator yields items on demand, avoiding a full intermediate list.</p>
+<pre><code class="language-python"># lab: batches
+from itertools import islice
+
+def batches(items, size):
+    if size &lt;= 0:
+        raise ValueError(&quot;size must be positive&quot;)
+    iterator = iter(items)
+    while True:
+        group = list(islice(iterator, size))
+        if not group:
+            return
+        yield group
+
+assert list(batches(range(7), 3)) == [[0,1,2],[3,4,5],[6]]
+print(&quot;Batches preserve the last partial group&quot;)
+</code></pre>
+<p><code>iter</code> gives a stream of items. <code>islice</code> reads at most the next size items. An empty group signals completion. <code>yield</code> returns one group while preserving the function's continuation. This is useful for documents, embedding requests, and minibatches. A generator can be exhausted; do not expect it to restart automatically.</p>
+<h2 id="section-45">4. Functions, closures, decorators, and types</h2>
+<p>Functions are objects: you can pass a scoring function to a sorter. A closure remembers bindings from an enclosing scope. A decorator accepts a callable or class and returns a replacement or wrapped object; it is how many tool registries register functions.</p>
+<pre><code class="language-python"># lab: function_registry
+registry = {}
+def register(function):
+    registry[function.__name__] = function
+    return function
+
+@register
+def square(value: float) -&gt; float:
+    &quot;&quot;&quot;Multiply a value by itself.&quot;&quot;&quot;
+    return value * value
+
+assert registry[&quot;square&quot;](4) == 16
+print(sorted(registry))
+</code></pre>
+<p><code>@register</code> applies the registration function after defining <code>square</code>. The annotation describes expected types; ordinary Python does not enforce all annotations at runtime. Use explicit checks or a validation library at untrusted boundaries. Wrapping decorators should preserve metadata when needed, commonly with <code>functools.wraps</code>.</p>
+<p>Use small pure functions for calculations. A pure function does not secretly read changing global state or perform external effects. File access, network calls, and model loading belong in visible boundaries so tests can substitute controlled implementations.</p>
+<h2 id="section-58">5. Classes, dataclasses, and composition</h2>
+<p>A class groups state and behavior. An instance is one created object. A dataclass generates common record methods from declared fields. Prefer combining objects through explicit interfaces over building deep inheritance trees only to reuse a few lines.</p>
+<pre><code class="language-python"># lab: composition
+from dataclasses import dataclass
+from typing import Protocol
+
+class Scorer(Protocol):
+    def score(self, text: str) -&gt; int: ...
+
+@dataclass(frozen=True)
+class LengthScorer:
+    def score(self, text: str) -&gt; int:
+        return len(text.split())
+
+def choose_longest(texts: list[str], scorer: Scorer) -&gt; str:
+    if not texts:
+        raise ValueError(&quot;at least one text required&quot;)
+    return max(texts, key=scorer.score)
+
+assert choose_longest([&quot;hello&quot;, &quot;hello learner&quot;], LengthScorer()) == &quot;hello learner&quot;
+print(&quot;A scorer was supplied as a dependency&quot;)
+</code></pre>
+<p>The protocol states the capability the caller needs. The concrete object supplies it. <code>frozen=True</code> prevents ordinary field reassignment, not every possible deep mutation. Injecting dependencies makes it easy to replace a real model with a deterministic fake during tests.</p>
+<h2 id="section-68">6. Files, JSON, exceptions, and cleanup</h2>
+<p>JSON exchanges basic structured values; it does not safely encode arbitrary executable Python objects. <code>with</code> manages cleanup even when an exception occurs. Catch specific expected failures, preserve useful context, and do not silently turn every failure into a success-shaped empty result.</p>
+<pre><code class="language-python"># lab: json_roundtrip
+import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+with TemporaryDirectory() as folder:
+    target = Path(folder) / &quot;record.json&quot;
+    target.write_text(json.dumps({&quot;id&quot;:&quot;doc-1&quot;, &quot;text&quot;:&quot;Hello&quot;}), encoding=&quot;utf-8&quot;)
+    data = json.loads(target.read_text(encoding=&quot;utf-8&quot;))
+    assert data[&quot;id&quot;] == &quot;doc-1&quot;
+print(&quot;JSON read back; temporary directory cleaned up&quot;)
+</code></pre>
+<p>Use explicit encodings. Validate record shape after loading. Treat pickle and other executable serialization formats as trusted-input-only unless you have a deliberately controlled security model. Do not <code>eval</code> user text. Path validation matters when a user chooses filenames; joining a path alone does not prevent traversal outside an allowed directory.</p>
+<h2 id="section-78">7. NumPy: a fast table of numbers</h2>
+<p>An ndarray has a shape and a data type. Think of shape as the box dimensions. <code>(3,2)</code> means three rows with two values each. Vectorization sends work to optimized array routines rather than a Python loop per element. Broadcasting aligns compatible dimensions; it is convenient but can silently create the wrong shape if you do not check.</p>
+<pre><code class="language-python"># lab: numpy_shapes
+import numpy as np
+X = np.array([[1.,2.],[3.,4.],[5.,6.]])
+w = np.array([2.,-1.])
+prediction = X @ w
+assert prediction.shape == (3,)
+assert np.allclose(prediction, [0.,2.,4.])
+centered = X - X.mean(axis=0)
+assert np.allclose(centered.mean(axis=0), [0.,0.])
+print(prediction.tolist())
+</code></pre>
+<p><code>@</code> performs matrix multiplication. <code>axis=0</code> averages down rows, producing one mean per column. Broadcasting subtracts those two means from each row. <code>*</code> instead performs elementwise multiplication under broadcasting. Shape <code>(n,)</code> is not interchangeable with <code>(n,1)</code> in all expressions: mixing them can create an unintended <code>(n,n)</code> result.</p>
+<p>Views may share underlying storage; <code>.copy()</code> requests independent data. Check dtype before accumulating large counts or using low precision. Numerical stability matters: subtract the maximum score before softmax and avoid taking log of an unintended zero.</p>
+<p><strong>Exercise:</strong> Multiply shape <code>(4,3)</code> by <code>(3,2)</code> using <code>@</code>. <strong>Answer:</strong> <code>(4,2)</code>. Explain the shared dimension before doing arithmetic.</p>
+<h2 id="section-94">8. pandas: records, missingness, and joins</h2>
+<p>A DataFrame is a labeled table. It is useful for ingestion and analysis, while tensors or arrays feed many models. Missing is not always zero. A join combines records using keys, and duplicate keys can multiply rows unexpectedly.</p>
+<pre><code class="language-python"># lab: pandas_join
+import pandas as pd
+users = pd.DataFrame({&quot;user_id&quot;:[1,2], &quot;group&quot;:[&quot;A&quot;,&quot;B&quot;]})
+events = pd.DataFrame({&quot;user_id&quot;:[1,1,2], &quot;value&quot;:[2,3,4]})
+joined = events.merge(users, on=&quot;user_id&quot;, validate=&quot;many_to_one&quot;)
+totals = joined.groupby(&quot;group&quot;)[&quot;value&quot;].sum().to_dict()
+assert totals == {&quot;A&quot;:5,&quot;B&quot;:4}
+print(totals)
+</code></pre>
+<p>The merge attaches a group to each event. <code>validate</code> asserts the expected key relationship. <code>groupby</code> gathers rows by group; selecting <code>value</code> and summing produces group totals. Before training, inspect duplicate identifiers, label availability dates, missing values, and unexpected types. Train-serving consistency begins in these mundane checks.</p>
+<h2 id="section-104">9. scikit-learn: prevent leakage with pipelines</h2>
+<p>Imagine practicing an exam with its answer distribution already revealed. Preprocessing on the whole dataset can create a milder form of that problem. Fit preprocessing only on training examples, including inside each cross-validation fold. Pipelines tie transformations and predictors into one fitting procedure. <a href="https://scikit-learn.org/stable/common_pitfalls.html">Official leakage guidance</a>.</p>
+<pre><code class="language-python"># lab: sklearn_pipeline
+import numpy as np
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+X = np.array([[i, i % 3] for i in range(-20, 21)], dtype=float)
+y = np.array([int(i &gt;= 0) for i in range(-20, 21)])
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=7, stratify=y)
+model = make_pipeline(StandardScaler(), LogisticRegression(random_state=7))
+model.fit(X_train, y_train)
+probabilities = model.predict_proba(X_test)[:,1]
+assert probabilities.shape == y_test.shape
+assert np.all((probabilities &gt;= 0) &amp; (probabilities &lt;= 1))
+print(&quot;Held-out predictions:&quot;, len(probabilities))
+</code></pre>
+<p>This toy has an intentionally simple label rule; its score would not prove real-world usefulness. <code>fit</code> learns both scaler and classifier using training only. <code>predict_proba</code> returns columns per class; here column one corresponds to class 1. Real evaluation additionally needs the correct time/group split, metrics, threshold choice, uncertainty, and an untouched final test.</p>
+<h2 id="section-114">10. PyTorch: tensors and gradients</h2>
+<p>A tensor resembles an array with support for devices and automatic differentiation. A computation graph records differentiable operations. <code>backward()</code> computes gradients; an optimizer changes parameters. Those are different responsibilities.</p>
+<pre><code class="language-python"># lab: torch_gradient
+import torch
+w = torch.tensor(7.0, requires_grad=True)
+prediction = w * 2.0
+loss = 0.5 * (prediction - 20.0) ** 2
+loss.backward()
+assert abs(w.grad.item() + 12.0) &lt; 1e-6
+with torch.no_grad():
+    w -= 0.1 * w.grad
+    w.grad.zero_()
+assert abs(w.item() - 8.2) &lt; 1e-5
+print(round(w.item(), 2))
+</code></pre>
+<p>The first tensor is trainable. Loss is half the squared price error. Backpropagation produces -12. <code>no_grad</code> prevents the parameter update from building an unnecessary derivative graph. Gradients accumulate by default, so clear them for the next intended independent update. <code>.item()</code> extracts a scalar for reporting; doing this inside a differentiable calculation disconnects that value from autograd.</p>
+<p>In a normal loop: load a batch, clear gradients, predict, compute loss, backpropagate, and step the optimizer. <code>model.train()</code> changes behavior of modules such as dropout; <code>model.eval()</code> changes that behavior for evaluation. Neither alone disables autograd. Use an appropriate no-gradient/inference context for evaluation. Seed experiments and report nondeterminism limits rather than assuming every device produces identical runs.</p>
+<h2 id="section-127">11. Text, tokens, embeddings, and retrieval in Python</h2>
+<p>A token is a unit from a tokenizer, not necessarily a whole word. An embedding is a numerical representation. A similarity score measures closeness under a representation and metric; it is not automatically a probability of correctness.</p>
+<h3 id="section-133">Lab: retrieval mechanics with transparent word vectors</h3>
+<pre><code class="language-python"># lab: toy_retrieval
+from collections import Counter
+import math
+def bag(text):
+    return Counter(text.lower().split())
+
+def cosine_counts(a, b):
+    dot = sum(value*b.get(word,0) for word,value in a.items())
+    norm_a = math.sqrt(sum(v*v for v in a.values()))
+    norm_b = math.sqrt(sum(v*v for v in b.values()))
+    return dot/(norm_a*norm_b) if norm_a and norm_b else 0.0
+
+documents = {&quot;A&quot;:&quot;plants need water&quot;, &quot;B&quot;:&quot;planets orbit stars&quot;}
+query = bag(&quot;plants water&quot;)
+ranking = sorted(documents, key=lambda k: cosine_counts(query, bag(documents[k])), reverse=True)
+assert ranking[0] == &quot;A&quot;
+print(ranking)
+</code></pre>
+<p>This is lexical bag-of-words retrieval, not a pretrained semantic embedding model. Counters store term frequencies. The numerator combines shared coordinates, and norms normalize vector length. Empty input has an explicit score convention. A full RAG system adds parsing, chunk metadata, authorization, reranking, context selection, generation, citation verification, and evaluation.</p>
+<h2 id="section-140">12. Async, threads, processes, and batching</h2>
+<p>Async is useful when work waits on sockets, files, or other supported asynchronous operations. A coroutine must yield for others to proceed on the same event loop. A blocking call inside it can stall the loop. Threads can help I/O and native routines; ordinary CPU-heavy Python code often needs processes or native kernels for useful parallelism on conventional GIL-enabled builds. Python builds and extensions vary, so benchmark the actual runtime.</p>
+<pre><code class="language-python"># lab: async_limit
+import asyncio
+async def double_later(value, limit):
+    async with limit:
+        await asyncio.sleep(0)
+        return value*2
+
+async def run_batch():
+    limit = asyncio.Semaphore(2)
+    return await asyncio.gather(*(double_later(v, limit) for v in range(4)))
+
+values = await run_batch()
+assert values == [0,2,4,6]
+print(values)
+</code></pre>
+<p>Notebook code uses top-level <code>await</code>; a normal standalone script can call <code>asyncio.run(run_batch())</code>. Do not call <code>asyncio.run</code> inside an already-running notebook event loop. Bound concurrency and timeouts, distinguish retryable errors, and maintain cancellation semantics. More concurrent requests can cause rate limiting rather than more throughput.</p>
+<h2 id="section-150">13. Architecture and design principles for ML code</h2>
+<p>Separate data ingestion, transformation, training, evaluation, model artifacts, and serving. Keep the feature transformation and model version together. A result should identify its data snapshot and configuration so you can reproduce or diagnose it.</p>
+<pre><code class="language-text">raw records -&gt; validated records -&gt; split -&gt; fitted pipeline -&gt; artifact
+                                       |                         |
+                                  held-out evaluation       serving adapter
+</code></pre>
+<p>Use dependency injection for repositories, model clients, clocks, and random generators. Define a narrow predictor interface instead of importing provider SDKs throughout the business logic. Configuration belongs in explicit validated settings; secrets belong in a controlled environment or secret store rather than source code or notebooks.</p>
+<p>Design pure transformations that accept data and return data. Keep effects in adapters. Prefer composition to inheritance when swapping a retriever or scorer. Use Strategy for interchangeable scoring, Adapter for provider APIs, Factory for configuration-driven construction, and Repository for persistent access. A pattern is useful only when it simplifies a real variation or boundary.</p>
+<h2 id="section-163">14. Testing, environments, packaging, and debugging</h2>
+<p>A unit test checks a small function. An integration test checks connected components. A contract test checks request/response shape. An end-to-end test checks a user journey. ML additionally needs data-quality checks, leakage checks, slice metrics, and regression evaluation. Test the property you care about, not merely that a method was called.</p>
+<p>Use virtual environments to isolate dependencies, pin compatible versions for repeatable labs, and keep an environment report with results. A lockfile describes a resolved environment more exactly than a loose list of package names. A notebook can hide execution order; restart the kernel and run all cells to reveal missing dependencies between cells.</p>
+<p>Debug from the first failing assumption: input shape, dtype, missingness, target definition, gradient connection, device placement, then optimization. Profile before optimizing. Vectorization, batching, caching, and better algorithms have different effects; a faster incorrect pipeline is still incorrect.</p>
+<h2 id="section-175">15. Capstone and exam practice</h2>
+<p>Build a document classifier with a clean input schema, leakage-safe split, baseline, fitted preprocessing, evaluation report, saved artifact, and prediction wrapper. Add a deterministic fake predictor for interface tests. Explain how deployment receives exactly the same transformations and what happens to unknown categories or empty text.</p>
+<p><strong>1. Why zero gradients?</strong> Because autograd accumulates them unless cleared; accumulation should be intentional.</p>
+<p><strong>2. Why a pipeline?</strong> It keeps preprocessing fitting within the correct training boundary and makes inference consistent.</p>
+<p><strong>3. Why not <code>.item()</code> midway through a loss?</strong> It converts to a Python scalar and loses the gradient connection for that path.</p>
+<p><strong>4. List comprehension versus generator?</strong> The first materializes results; the second yields lazily, with different lifetime and reuse behavior.</p>
+<p><strong>5. Why use a context manager?</strong> It scopes resource acquisition and cleanup, including exceptional exits.</p>
+<p><strong>6. Does a type hint validate hostile JSON?</strong> No. Perform runtime validation.</p>
+<p><strong>7. Why is a shared notebook global risky?</strong> Later cells can accidentally depend on earlier hidden state. Test fresh execution.</p>
+<p><strong>8. When can a data join leak the future?</strong> When historical rows receive attributes updated after their prediction time. Use point-in-time semantics.</p>
+<p>Detailed coverage: Python values, collections, mutation, functions, decorators, protocols, files, JSON, generators, NumPy, pandas, scikit-learn, PyTorch, retrieval, async, testing, and architecture. Introductions only: distributed training internals, GPU kernel programming, advanced numerical analysis, metaclasses, and packaging native extensions. Those are specialized topics, not prerequisites for every AI engineering role. The <a href="https://docs.python.org/3/tutorial/">official Python tutorial</a> supports the language baseline; no external reading is needed for these labs.</p>
+<p>Advanced continuation: <a href="09-python-ai-depth.html">09-python-ai-depth</a>. The advanced workshop and accompanying projects extend the introductory scope described above.</p>
+</main></body></html>

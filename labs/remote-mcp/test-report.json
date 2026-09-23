@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "missing and invalid credentials rejected over HTTP",
+    "Alice read is owner-scoped",
+    "reader cannot directly call the write tool",
+    "resource and prompt work over HTTP",
+    "Bob sees his own note",
+    "editor writes and malformed note is rejected",
+    "client deadline stops waiting for slow tool"
+  ]
+}

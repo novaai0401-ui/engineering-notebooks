@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "passed": [
+    "Timeout, connection failure and malformed response preserve only permitted excerpts with explicit fallback label",
+    "No permitted evidence means no model invocation",
+    "Successful adapter output remains explicitly unverified generation; configured timeout reaches transport",
+    "Malformed and unbounded timeout configuration rejected"
+  ],
+  "limitations": "Transport fault injection verifies application behavior, not factual correctness or actual provider availability. Actual model failures are preserved in separate reports."
+}

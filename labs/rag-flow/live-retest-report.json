@@ -1,0 +1,9 @@
+{
+  "status": "completed_and_reviewed",
+  "attempt": "Expanded four-case run after clarifying the checkpoint source",
+  "observed": "After the recorded timeout, the local service recovered. A subsequent four-case run completed with the clarified source and explicit small model context/output budget. All four answers passed the tutor's source review.",
+  "completed_new_cases": 4,
+  "tutor_source_reviews_passed": 4,
+  "previous_evidence": "live-report-initial.json and live-review-initial.json preserve the two earlier generated answers and their claim-level review.",
+  "consequence": "Four revised development cases passed, not a general accuracy estimate. Default extractive mode remains appropriate until broader independent evaluation. Earlier timeout evidence is retained in live-retest-timeout-report.json."
+}

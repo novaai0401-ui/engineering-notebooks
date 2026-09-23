@@ -1,0 +1,8 @@
+{
+  "mode": "multi_hop",
+  "top_k": 2,
+  "max_steps": 3,
+  "context_chars": 1800,
+  "generator": "extractive",
+  "subquestions": ["Which team maintains Orion?", "Who leads the Payments team?"]
+}

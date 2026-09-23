@@ -1,0 +1,8 @@
+# lab: bootstrap_mean
+import numpy as np
+rng=np.random.default_rng(42)
+sample=np.array([2.,3.,3.,4.,5.,6.,7.,8.])
+resamples=rng.choice(sample,size=(3000,len(sample)),replace=True).mean(axis=1)
+low,high=np.quantile(resamples,[0.025,0.975])
+assert low < sample.mean() < high
+print({'mean':sample.mean(),'bootstrap_interval':(round(low,2),round(high,2))})

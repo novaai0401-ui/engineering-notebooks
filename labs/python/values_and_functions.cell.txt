@@ -1,0 +1,12 @@
+# lab: values_and_functions
+def total_price(count, unit_price, delivery=0):
+    if count < 0:
+        raise ValueError("count cannot be negative")
+    return count * unit_price + delivery
+
+assert total_price(3, 10, delivery=5) == 35
+prices = {"pencil":5, "book":20}
+cart = ["pencil", "book", "pencil"]
+total = sum(prices[item] for item in cart)
+assert total == 30
+print(total)

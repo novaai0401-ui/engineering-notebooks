@@ -1,0 +1,13 @@
+# lab: pattern_proxy
+class SecretStore:
+    def read(self):return 'private lesson'
+class PermissionProxy:
+    def __init__(self,target,allowed):self.target=target;self.allowed=allowed
+    def read(self):
+        if not self.allowed:raise PermissionError('denied')
+        return self.target.read()
+assert PermissionProxy(SecretStore(),True).read()=='private lesson'
+try:PermissionProxy(SecretStore(),False).read()
+except PermissionError:pass
+else:raise AssertionError('access bypassed')
+print('Proxy enforces a check before delegation')

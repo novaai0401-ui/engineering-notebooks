@@ -1,0 +1,21 @@
+# lab: dijkstra
+import heapq
+def distances_from(graph, start):
+    if any(weight < 0 for edges in graph.values() for _, weight in edges):
+        raise ValueError("Dijkstra requires nonnegative weights")
+    distance = {start:0}
+    heap = [(0,start)]
+    while heap:
+        cost, node = heapq.heappop(heap)
+        if cost != distance[node]:
+            continue
+        for neighbor, weight in graph.get(node, []):
+            candidate = cost + weight
+            if candidate < distance.get(neighbor, float('inf')):
+                distance[neighbor] = candidate
+                heapq.heappush(heap, (candidate,neighbor))
+    return distance
+
+g = {"A":[("B",4),("C",1)], "C":[("B",1)], "B":[]}
+assert distances_from(g,"A")["B"] == 2
+print("Cheaper indirect weighted route found")

@@ -1,0 +1,28 @@
+# lab: idempotent_operation
+import hashlib, json
+records = {}
+effects = []
+
+def perform_once(user, key, payload):
+    identity = (user, key)
+    digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+    if identity in records:
+        old_digest, result = records[identity]
+        if old_digest != digest:
+            raise ValueError("key reused with different payload")
+        return result
+    result = {"operation_id": len(effects)+1, "topic":payload["topic"]}
+    effects.append(result)
+    records[identity] = (digest, result)
+    return result
+
+first = perform_once("user-1", "key-1", {"topic":"agents"})
+second = perform_once("user-1", "key-1", {"topic":"agents"})
+assert first == second and len(effects) == 1
+try:
+    perform_once("user-1", "key-1", {"topic":"databases"})
+except ValueError:
+    pass
+else:
+    raise AssertionError("conflicting retry accepted")
+print("Sequential retry did not duplicate the demonstration effect")

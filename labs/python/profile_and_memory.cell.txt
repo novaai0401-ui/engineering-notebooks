@@ -1,0 +1,15 @@
+# lab: profile_and_memory
+import cProfile, io, pstats, tracemalloc
+profiler = cProfile.Profile()
+profiler.enable()
+total = sum(i*i for i in range(10000))
+profiler.disable()
+buffer = io.StringIO()
+pstats.Stats(profiler, stream=buffer).sort_stats('cumulative').print_stats(3)
+assert 'function calls' in buffer.getvalue() and total > 0
+tracemalloc.start()
+items = [str(i) for i in range(5000)]
+current, peak = tracemalloc.get_traced_memory()
+tracemalloc.stop()
+assert peak >= current > 0
+print('Profile captured; Python allocation peak observed')

@@ -1,0 +1,7 @@
+# lab: gradient_check_workshop
+def loss(w):return (w*2-6)**2/2
+w=1.0;gradient=(w*2-6)*2;eps=1e-6
+numeric=(loss(w+eps)-loss(w-eps))/(2*eps)
+assert abs(numeric-gradient)<1e-6
+assert loss(w-.1*gradient)<loss(w)
+print({'analytic_gradient':gradient,'finite_difference':round(numeric,6)})

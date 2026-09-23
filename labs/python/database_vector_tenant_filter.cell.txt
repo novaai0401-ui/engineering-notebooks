@@ -1,0 +1,9 @@
+# lab: database_vector_tenant_filter
+from math import sqrt
+rows=[('a','alice',(1.,0.)),('b','bob',(1.,0.)),('c','alice',(0.,1.))]
+def cosine(a,b):
+    denominator=sqrt(sum(x*x for x in a))*sqrt(sum(x*x for x in b))
+    return sum(x*y for x,y in zip(a,b))/denominator if denominator else 0.
+ranked=sorted(((cosine(v,(1.,0.)),doc) for doc,owner,v in rows if owner=='alice'),reverse=True)
+assert ranked[0]==(1.,'a') and all(doc!='b' for _,doc in ranked)
+print(ranked)

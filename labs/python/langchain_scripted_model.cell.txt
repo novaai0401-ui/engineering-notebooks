@@ -1,0 +1,30 @@
+# lab: langchain_scripted_model
+from langchain.agents import create_agent
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+
+class ScriptedStockModel(BaseChatModel):
+    @property
+    def _llm_type(self):
+        return "teaching-scripted-stock"
+    def bind_tools(self, tools, **kwargs):
+        return self
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        if isinstance(messages[-1], ToolMessage):
+            reply = AIMessage(content="Stock result: " + messages[-1].content)
+        else:
+            reply = AIMessage(content="", tool_calls=[{
+                "name":"stock_count", "args":{"item":"pencil"},
+                "id":"stock-call-1", "type":"tool_call"}])
+        return ChatResult(generations=[ChatGeneration(message=reply)])
+
+def stock_count(item: str) -> int:
+    """Return demonstration stock for a named item."""
+    return {"pencil":12, "notebook":7}.get(item.lower(), 0)
+
+stock_agent = create_agent(model=ScriptedStockModel(), tools=[stock_count])
+stock_result = stock_agent.invoke({"messages":[{"role":"user","content":"Pencil stock?"}]})
+assert stock_result["messages"][-1].content == "Stock result: 12"
+assert any(isinstance(message, ToolMessage) for message in stock_result["messages"])
+print("LangChain invoked the tool and supplied its result to the scripted model")

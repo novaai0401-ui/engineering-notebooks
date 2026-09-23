@@ -1,0 +1,10 @@
+{
+ "realm":"study","enabled":true,"sslRequired":"external","registrationAllowed":false,"loginWithEmailAllowed":false,"resetPasswordAllowed":true,
+ "roles":{"realm":[{"name":"coach-learner"},{"name":"coach-admin"}]},
+ "clients":[{"clientId":"study-coach","enabled":true,"publicClient":false,"secret":"${COACH_OIDC_SECRET}","standardFlowEnabled":true,"directAccessGrantsEnabled":false,"redirectUris":["http://127.0.0.1:8091/login/oauth2/code/coach"],"webOrigins":["http://127.0.0.1:8091"],"attributes":{"pkce.code.challenge.method":"S256","post.logout.redirect.uris":"http://127.0.0.1:8091/*"},"protocolMappers":[{"name":"realm roles","protocol":"openid-connect","protocolMapper":"oidc-usermodel-realm-role-mapper","config":{"claim.name":"realm_access.roles","multivalued":"true","jsonType.label":"String","id.token.claim":"true","access.token.claim":"true","userinfo.token.claim":"true"}}]}],
+ "users":[
+  {"username":"alice","enabled":true,"emailVerified":true,"firstName":"Alice","lastName":"Learner","email":"alice@example.invalid","credentials":[{"type":"password","value":"${COACH_IDENTITY_PASSWORD}","temporary":false}],"realmRoles":["coach-learner"]},
+  {"username":"bob","enabled":true,"emailVerified":true,"firstName":"Bob","lastName":"Learner","email":"bob@example.invalid","credentials":[{"type":"password","value":"${COACH_IDENTITY_PASSWORD}","temporary":false}],"realmRoles":["coach-learner"]},
+  {"username":"coachadmin","enabled":true,"emailVerified":true,"firstName":"Classroom","lastName":"Administrator","email":"admin@example.invalid","credentials":[{"type":"password","value":"${COACH_IDENTITY_ADMIN_PASSWORD}","temporary":false}],"realmRoles":["coach-learner","coach-admin"]}
+ ]
+}

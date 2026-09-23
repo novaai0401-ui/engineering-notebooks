@@ -1,0 +1,25 @@
+# lab: scc_workshop
+def components(graph):
+    vertices=set(graph)
+    for edges in graph.values():vertices.update(edges)
+    reverse={v:[] for v in vertices}
+    for u,edges in graph.items():
+        for v in edges:reverse[v].append(u)
+    seen=set();order=[]
+    def visit(u):
+        if u in seen:return
+        seen.add(u)
+        for v in graph.get(u,[]):visit(v)
+        order.append(u)
+    for u in vertices:visit(u)
+    seen=set();result=[]
+    def collect(u,group):
+        if u in seen:return
+        seen.add(u);group.add(u)
+        for v in reverse[u]:collect(v,group)
+    for u in reversed(order):
+        if u not in seen:
+            group=set();collect(u,group);result.append(group)
+    return result
+assert {frozenset(x) for x in components({0:[1],1:[0,2],2:[3],3:[2]})}=={frozenset([0,1]),frozenset([2,3])}
+print('Four vertices collapse into two strongly connected components.')

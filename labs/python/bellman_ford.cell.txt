@@ -1,0 +1,15 @@
+# lab: bellman_ford
+def bellman_ford(n,edges,source):
+    dist=[float('inf')]*n;dist[source]=0
+    for _ in range(n-1):
+        changed=False
+        for a,b,w in edges:
+            if dist[a]+w<dist[b]:dist[b]=dist[a]+w;changed=True
+        if not changed:break
+    if any(dist[a]+w<dist[b] for a,b,w in edges):raise ValueError('reachable negative cycle')
+    return dist
+assert bellman_ford(3,[(0,1,4),(0,2,5),(1,2,-2)],0)==[0,4,2]
+try:bellman_ford(2,[(0,1,1),(1,0,-2)],0)
+except ValueError:pass
+else:raise AssertionError('negative cycle missed')
+print('Negative edges work; a reachable negative cycle is rejected')

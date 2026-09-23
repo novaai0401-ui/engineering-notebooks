@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "Two real service processes share an event journal",
+    "Write on A delivered through live WebSocket and SSE on B",
+    "B rejects stale cache version/ETag after write on A",
+    "Concurrent same-key requests across instances return one durable sequence",
+    "Eighty concurrent distinct writes across instances retain unique sequences"
+  ],
+  "logical_writes": 83,
+  "limitations": "Same-host SQLite WAL journal, polling fanout, separate in-memory sessions. Not Redis pub/sub, independent hosts, shared-session revocation, unbounded fanout or cloud capacity."
+}

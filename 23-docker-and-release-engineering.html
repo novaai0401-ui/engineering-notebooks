@@ -1,0 +1,67 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>23 — Docker: pack the lunchbox before sending it to school</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-3">1. Image, container, registry and volume</a></li><li><a href="#section-12">2. Build context and reproducibility</a></li><li><a href="#section-21">3. Multi-stage builds</a></li><li><a href="#section-30">4. Networking without the localhost trap</a></li><li><a href="#section-40">5. State and graceful shutdown</a></li><li><a href="#section-49">6. Resource and security boundaries</a></li><li><a href="#section-58">7. Readiness is not startup order</a></li><li><a href="#section-64">8. The supplied executable recipe</a></li><li><a href="#section-77">9. Rolling releases and database compatibility</a></li><li><a href="#section-86">10. Release gates and interview drill</a></li><li><a href="#section-95">11. Run the supplied image acceptance test</a></li></ul></nav><main id="content"><p class="downloads"><a href="23-docker-and-release-engineering.ipynb">Jupyter notebook</a><a href="23-docker-and-release-engineering.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">23 — Docker: pack the lunchbox before sending it to school</h1>
+<h2 id="section-3">1. Image, container, registry and volume</h2>
+<p>An image is the lunchbox recipe plus prepared ingredients: application files, runtime and filesystem layers. A container is a running instance with process isolation and a writable layer. A registry stores images. A volume keeps data independently of a particular container's writable layer.</p>
+<p>A container is not a complete virtual machine with its own kernel. Linux containers need a Linux kernel. On this Windows machine, neither a Docker engine nor a WSL distribution was available during the environment check. A Dockerfile can be reviewed here, but a successful native Java run is not a successful container test. The validation report preserves that distinction.</p>
+<h2 id="section-12">2. Build context and reproducibility</h2>
+<p>The build context is the set of files the builder can access. Copy only what is needed. Exclude credentials, local databases, dependencies, test recordings and runtime downloads with <code>.dockerignore</code>. A secret removed in a later layer may still exist in an earlier layer, so never bake it into the image.</p>
+<p>Pin application dependencies with lockfiles and tested versions. Image tags can move; a digest identifies particular content. Pinning alone does not solve security updates: record the digest, scan the artifact, then deliberately update and retest. Separate a reproducible build from a permanently frozen vulnerable build.</p>
+<h2 id="section-21">3. Multi-stage builds</h2>
+<p>Study Coach first builds the React bundle with Node, then packages Java with Maven, then copies only the runnable JAR into a Java runtime image. Build tools do not need to live in the final runtime. The Python image installs pinned service dependencies and runs under a non-root account.</p>
+<p>Layer caching works best when stable dependency manifests are copied before frequently changed application source. A changed source file should not force a dependency download if the manifests are unchanged. Cache behavior improves speed; it is not evidence that tests ran.</p>
+<h2 id="section-30">4. Networking without the localhost trap</h2>
+<p>Inside a container, <code>localhost</code> means that container's network namespace. If Java and Python are separate Compose services, Java must call the Python service name, such as <code>http://ai:8092/answer</code>. Publishing a port exposes a container port on the host. Services on the same private Compose network can communicate without publishing every port.</p>
+<p>Bind development ports to host loopback when external access is unnecessary. A service listening only on 127.0.0.1 inside its container cannot normally be reached through the container network. Study Coach's runtime image sets the server bind address to 0.0.0.0 inside the container while its Compose host port remains loopback-only.</p>
+<pre><code class="language-python"># lab: container_address_reasoning
+services={'web':'http://web:8091','ai':'http://ai:8092'}
+java_upstream=services['ai']+'/answer'
+assert java_upstream=='http://ai:8092/answer'
+assert 'localhost' not in java_upstream
+print('Use service DNS for container-to-container traffic; publish only the intended host entry point.')
+</code></pre>
+<h2 id="section-40">5. State and graceful shutdown</h2>
+<p>Containers are replaceable; business data is not. Mount persistent data explicitly. A database volume without tested backups is still a single failure domain. Avoid deleting volumes as a routine troubleshooting step.</p>
+<p>On shutdown, stop accepting new requests, finish bounded work, flush important state and exit within the configured grace period. If a worker cannot finish, its durable lease should permit recovery elsewhere. The image entrypoint should let the application receive termination signals rather than hiding it behind a shell that mishandles them.</p>
+<h2 id="section-49">6. Resource and security boundaries</h2>
+<p>Run with a non-root UID, drop unnecessary Linux capabilities, avoid privileged containers and mount only required paths. A read-only root filesystem reduces accidental writes; give the application an explicit temporary directory where needed. Configure CPU/memory requests or limits at the appropriate deployment layer and test out-of-memory behavior.</p>
+<p>Secrets belong in runtime secret delivery, not Git, build arguments or browser bundles. Build arguments are not a secret store. Use a trusted registry, a software bill of materials and artifact scanning as part of a release process. These measures complement application authorization; they do not replace it.</p>
+<h2 id="section-58">7. Readiness is not startup order</h2>
+<p>“Start database before web” does not mean the database is ready when web connects. Applications need bounded retries or explicit readiness checks. A process may have started but still be loading a model or applying migrations. Readiness controls traffic admission; liveness decides whether restarting a process is useful. An external database outage should not automatically restart every web instance continuously.</p>
+<h2 id="section-64">8. The supplied executable recipe</h2>
+<p><code>labs/study-coach/compose.yaml</code> connects Java and Python and retains H2 data in a volume. <code>container_smoke.py</code> authenticates, obtains CSRF, creates and approves a job, then checks its completed answer. The reference GitHub workflow builds the UI, tests Java, runs native browser/recovery checks, builds containers and invokes that smoke test.</p>
+<p>These files are runnable instructions, not a claim that Docker was executed here. With an available engine, run from the Study Coach directory:</p>
+<pre><code class="language-powershell"># Set fresh COACH_PASSWORD and COACH_SERVICE_TOKEN in your environment first.
+docker compose config
+docker compose build
+docker compose up -d
+python container_smoke.py
+docker compose logs --tail 100
+docker compose down
+</code></pre>
+<p>Do not add volume deletion options if you intend to keep data. <code>docker compose config</code> can expand secret environment values, so avoid posting its full output publicly.</p>
+<h2 id="section-77">9. Rolling releases and database compatibility</h2>
+<p>Consider version A reading <code>name</code>, while version B wants <code>display_name</code>. First add the new field in a backward-compatible migration. Deploy code that can coexist with both schemas or dual-write when justified. Backfill carefully. Switch readers after verification. Remove the old field only after all old readers have gone. This expand/contract sequence keeps rollback possible longer.</p>
+<p>Do not assume rolling back application code rolls back a database migration. A destructive migration may make the old application unusable. Practice rollback with a realistic database copy before treating it as a reliable release strategy.</p>
+<h2 id="section-86">10. Release gates and interview drill</h2>
+<p>A release gate should identify the exact artifact, tested configuration and measured outcomes. Check HTTP behavior, database migrations, authentication, streaming, restart recovery and resource use. Container success does not establish cloud load-balancer behavior or public TLS configuration; verify those after deployment to the actual environment.</p>
+<p>Debugging question: a container works with a bind mount but the built image fails. Investigate missing copied files, ignored files, incorrect working directory, permissions and reliance on host dependencies. Question: the app cannot call Python at localhost. Explain the network namespace and service DNS. Question: an image contains a key deleted in a later layer. Revoke the key, rebuild without it and remove exposed artifacts according to your registry policy; deleting a later-layer file is insufficient.</p>
+<h2 id="section-95">11. Run the supplied image acceptance test</h2>
+<p>Follow the optional WSL setup in STUDY-ON-ANY-DEVICE, then run <code>python labs/study-coach/test_containers.py</code> from the library root. The runner builds the supplied Dockerfiles rather than copying a host-built application into an unrelated image. Node compiles React, Maven packages Java, and the final image contains a Java runtime; Python has its own service image. Think of building a lunchbox in a kitchen: the final box contains the meal, not every appliance used to prepare it.</p>
+<p>The runner creates a uniquely named Compose project and random credentials in excluded .runtime. It checks anonymous rejection, authenticated CSRF handling, duplicate job submission, human approval, a real Java-to-Python answer delivered over SSE and retained data after a web-container restart. It records image IDs in container-report.json. Its final cleanup removes only that test project's services and volume; images stay available for the Kubernetes exercise. An image build or a running container alone is not sufficient acceptance evidence.</p>
+<p>This classroom profile uses Basic authentication over local loopback and one H2 writer. It does not claim production identity or a multi-writer database. Initial downloads can be slow, and subsequent cached builds are different performance measurements. Inspect the report for an actual passed result before moving to the cluster capstone. No public-cloud resources are created by this command.</p>
+</main></body></html>

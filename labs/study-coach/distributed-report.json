@@ -1,0 +1,23 @@
+{
+  "passed": [
+    "PostgreSQL migrations and broker-delivered approved job completed",
+    "Republished duplicate event preserved one result and one inbox receipt",
+    "Broker outage retained database outbox; restart delivered pending work",
+    "Twelve jobs completed under four concurrent authenticated clients",
+    "PostgreSQL SERIALIZABLE rejected write skew; business invariant retained",
+    "Logical backup restored into separate PostgreSQL database with matching job count",
+    "W3C trace context linked Java job spans to Python request spans"
+  ],
+  "jobs": 12,
+  "concurrency": 4,
+  "elapsed_seconds": 18.085136799985776,
+  "throughput_jobs_per_second": 0.6635282957886964,
+  "p50_ms": 6052.304299999378,
+  "p95_ms": 6473.710399994161,
+  "linked_traces": 14,
+  "worker_trace_files": [
+    "worker-one-traces.jsonl",
+    "worker-two-traces.jsonl"
+  ],
+  "limitations": "Local native deployment; small load sample; logical backup does not prove PITR; Docker/cloud not executed."
+}

@@ -1,0 +1,166 @@
+{
+  "dataset_version": 1,
+  "source_sha256": "924adf6133226f0461b90730338076ca2aa30d7e55dcd6dbe0c8fa1bf6ab1350",
+  "categories": {
+    "no-evidence": {
+      "passed": 2,
+      "total": 2
+    },
+    "ownership": {
+      "passed": 4,
+      "total": 4
+    },
+    "retrieval": {
+      "passed": 10,
+      "total": 10
+    }
+  },
+  "median_latency_ms": 4.757,
+  "cases": [
+    {
+      "id": "r01",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "checkpoint"
+      ],
+      "latency_ms": 31.133
+    },
+    {
+      "id": "r02",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "checkpoint"
+      ],
+      "latency_ms": 4.458
+    },
+    {
+      "id": "r03",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "checkpoint"
+      ],
+      "latency_ms": 2.718
+    },
+    {
+      "id": "r04",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "transaction",
+        "bob-plan"
+      ],
+      "latency_ms": 2.307
+    },
+    {
+      "id": "r05",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "transaction"
+      ],
+      "latency_ms": 3.283
+    },
+    {
+      "id": "r06",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "transaction"
+      ],
+      "latency_ms": 5.414
+    },
+    {
+      "id": "r07",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "react-state",
+        "checkpoint"
+      ],
+      "latency_ms": 5.056
+    },
+    {
+      "id": "r08",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "react-state",
+        "checkpoint"
+      ],
+      "latency_ms": 4.405
+    },
+    {
+      "id": "r09",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "alice-plan"
+      ],
+      "latency_ms": 4.242
+    },
+    {
+      "id": "r10",
+      "category": "retrieval",
+      "passed": true,
+      "returned_ids": [
+        "bob-plan"
+      ],
+      "latency_ms": 6.059
+    },
+    {
+      "id": "a01",
+      "category": "ownership",
+      "passed": true,
+      "returned_ids": [
+        "alice-plan"
+      ],
+      "latency_ms": 3.915
+    },
+    {
+      "id": "a02",
+      "category": "ownership",
+      "passed": true,
+      "returned_ids": [
+        "bob-plan"
+      ],
+      "latency_ms": 3.942
+    },
+    {
+      "id": "a03",
+      "category": "ownership",
+      "passed": true,
+      "returned_ids": [
+        "alice-plan",
+        "react-state"
+      ],
+      "latency_ms": 8.251
+    },
+    {
+      "id": "a04",
+      "category": "ownership",
+      "passed": true,
+      "returned_ids": [
+        "bob-plan"
+      ],
+      "latency_ms": 5.433
+    },
+    {
+      "id": "e01",
+      "category": "no-evidence",
+      "passed": true,
+      "returned_ids": [],
+      "latency_ms": 6.437
+    },
+    {
+      "id": "e02",
+      "category": "no-evidence",
+      "passed": true,
+      "returned_ids": [],
+      "latency_ms": 5.692
+    }
+  ],
+  "limitations": "Small deterministic development regression set, not a held-out measure of LLM reasoning or production quality."
+}

@@ -1,0 +1,19 @@
+{
+  "review_method": "Tutor inspection against the exact evidence in live-report.json; four revised development cases, not an independent held-out benchmark",
+  "cases": [
+    {
+      "id": "two-hop-team",
+      "status": "passed",
+      "finding": "Mira leads Payments and Payments maintains Orion. The answer cites both d1 and d2 and preserves the relationship chain."
+    },
+    {
+      "id": "checkpoint-boundary",
+      "status": "passed",
+      "finding": "Revised answer correctly distinguishes saving workflow progress from idempotent external operations, citing d3."
+    },
+    {"id":"reconciliation-boundary","status":"passed","finding":"Correctly states that reconciliation detects/repairs discrepancies and does not guarantee idempotent execution, citing d3."},
+    {"id":"error-retry","status":"passed","finding":"Correctly identifies E104 as a payment-request timeout and preserves the same-idempotency-key instruction, citing d4."}
+  ],
+  "history": "Initial answers/review and a runtime timeout are preserved in the initial and timeout reports. The separate Study Coach factual failure remains unchanged.",
+  "release_decision": "Four revised development answers passed tutor review. Keep the extractive default until broader independent factual and adversarial evaluation is complete."
+}

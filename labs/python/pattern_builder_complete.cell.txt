@@ -1,0 +1,19 @@
+# lab: pattern_builder_complete
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class StudyPlan:
+    title:str
+    topics:tuple[str,...]
+class PlanBuilder:
+    def __init__(self,title):self.title=title;self.topics=[]
+    def add(self,topic):self.topics.append(topic);return self
+    def build(self):
+        if not self.title.strip() or not self.topics:raise ValueError('title and topics required')
+        return StudyPlan(self.title,tuple(self.topics))
+builder=PlanBuilder('Interview').add('graphs')
+plan=builder.build();builder.add('SQL')
+assert plan.topics==('graphs',)
+try:PlanBuilder('').build()
+except ValueError:pass
+else:raise AssertionError('invalid plan accepted')
+print('Built values are validated and independent of later builder changes')

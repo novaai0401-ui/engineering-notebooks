@@ -1,0 +1,1 @@
+{"mode":"agentic","embedding":"pretrained","controller":"ollama","top_k":2,"max_steps":3,"context_chars":1800,"generator":"extractive"}

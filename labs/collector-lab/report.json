@@ -1,0 +1,10 @@
+{
+  "version": "0.161.0",
+  "archive_sha256": "d51435b421f78bcbb17200adc2ee802abf629bc77dcb2edd44c2566078515f08",
+  "passed": [
+    "Official collector archive digest verified",
+    "Collector configuration validation passed",
+    "Python SDK exported a real OTLP/HTTP span and collector debug output contained its trace ID and name"
+  ],
+  "limitations": "Local loopback HTTP and debug exporter only; no TLS/auth, durable telemetry backend, tail sampling, Grafana or collector outage/load validation."
+}

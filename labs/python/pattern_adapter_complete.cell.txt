@@ -1,0 +1,8 @@
+# lab: pattern_adapter_complete
+class LegacyThermometer:
+    def fahrenheit(self):return 68
+class CelsiusAdapter:
+    def __init__(self,legacy):self.legacy=legacy
+    def read(self):return (self.legacy.fahrenheit()-32)*5/9
+assert CelsiusAdapter(LegacyThermometer()).read()==20
+print('Adapter translates both method shape and units')

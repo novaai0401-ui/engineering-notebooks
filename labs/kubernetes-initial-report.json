@@ -1,0 +1,9 @@
+{
+  "status": "failed",
+  "passed": [
+    "Actual K3s API and node reached ready state",
+    "Two real pods became ready; deleted pod was replaced with a new UID",
+    "Deployment controller reconciled requested scale-down"
+  ],
+  "version": "v1.37.0+k3s1"
+}

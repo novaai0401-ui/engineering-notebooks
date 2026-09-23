@@ -1,0 +1,10 @@
+{
+  "passed": [
+    "Forged signature and incorrect audience rejected before persistence",
+    "Signed logout acknowledged after durable encrypted SQLite journal commit",
+    "Reachable receiver revoked while unavailable receiver stayed pending",
+    "Duplicate event did not create duplicate journal records",
+    "Hard relay process kill/restart preserved pending delivery; recovered destination revoked its retained session"
+  ],
+  "limitations": "Real network/process test with RSA-signed identity fixtures and receiver fixtures, not an additional Keycloak/Spring end-to-end test. Five-minute maximum delivery validity; expiry is reported, not silently claimed delivered. Production needs readiness/session reconciliation beyond expiry, key rotation, retention, TLS and replicated journal storage."
+}

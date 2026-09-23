@@ -1,0 +1,115 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Completion audit: implemented work and verified boundaries</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">Completed local work</a></li><li><a href="#section-175">AI quality is still an open limitation</a></li><li><a href="#section-184">Acceptance work that still requires input or access</a></li><li><a href="#section-207">Practical scope of the local evidence</a></li><li><a href="#section-219">Study on laptop or mobile</a></li></ul></nav><main id="content"><h1 id="section-0">Completion audit: implemented work and verified boundaries</h1>
+<p>Updated 24 September 2026. Thirty notebooks cover the requested curriculum. This audit separates implemented lessons, executed local tests and acceptance checks requiring your environment or participation. It does not promise every possible exam or algorithm.</p>
+<h2 id="section-6">Completed local work</h2>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>What actually ran</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Notebook exercises</td>
+<td>134 recorded passing executable cells; thirty reading notebooks</td>
+<td><a href="VALIDATION.html">Validation</a></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>Current recorded result: <strong>passed</strong>. Supplied multi-stage images, authenticated Java/Python job, approval, idempotency, SSE and volume restart test</td>
+<td><a href="labs/study-coach/container-report.json">Container report</a></td>
+</tr>
+<tr>
+<td>Kubernetes</td>
+<td>Current recorded result: <strong>passed</strong>. Actual K3s node, pod replacement and scaling; capstone Services, Secret and persistent volume checks</td>
+<td><a href="labs/kubernetes-report.json">Cluster report</a></td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>Three actual servers and three Sentinels; primary killed, replacement discovered, data/write/TTL checked, old primary rejoins as replica</td>
+<td><a href="labs/redis-failover-report.json">Redis report</a></td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>Post-mitigation ten fresh logins and forty anonymous probes passed. Real Keycloak/Spring durable logout survives relay restart while a receiver is network-unavailable</td>
+<td><a href="labs/study-coach/identity-repeat-report.json">Login report</a>, <a href="labs/study-coach/durable-spring-report.json">durable delivery</a></td>
+</tr>
+<tr>
+<td>Kafka</td>
+<td>Three real broker processes; leader loss, further acknowledged writes and recovered in-sync replicas</td>
+<td><a href="labs/kafka-lab/cluster-report.json">Cluster report</a></td>
+</tr>
+<tr>
+<td>Real-time/cache</td>
+<td>Two actual processes share durable state: cross-instance SSE/WebSocket delivery, changed ETags and concurrent idempotency/sequence allocation</td>
+<td><a href="labs/realtime-cache/multi-instance-report.json">Two-instance report</a></td>
+</tr>
+<tr>
+<td>Endurance/recovery</td>
+<td>Ten-minute rerun: 2,678 writes and 8,035 requests, with memory/handle samples. Original five-minute soak and separate crash/retry experiment retained</td>
+<td><a href="labs/realtime-cache/endurance-600-report.json">Ten-minute report</a>, <a href="labs/realtime-cache/recovery-report.json">recovery</a></td>
+</tr>
+<tr>
+<td>Telemetry</td>
+<td>Real collector persists queued spans across its crash; SQLite destination retains committed spans across restart</td>
+<td><a href="labs/collector-lab/persistent-report.json">Persistent queue report</a></td>
+</tr>
+<tr>
+<td>Pretrained RAG</td>
+<td>Actual MiniLM encoder: twelve relevance and four ownership cases; configurable retrieval and bounded model-selected search</td>
+<td><a href="labs/rag-flow/pretrained-report.json">Retrieval report</a>, <a href="labs/rag-flow/model-integration-report.json">integration</a></td>
+</tr>
+<tr>
+<td>Graph pipeline</td>
+<td>Actual model extracts relationships, then provenance/ACL checks, SQLite persistence, multi-hop traversal, communities, updates and deletion run</td>
+<td><a href="labs/rag-flow/graph-pipeline-report.json">Graph report</a></td>
+</tr>
+<tr>
+<td>Generation failure handling</td>
+<td>Timeout/connection/malformed-output faults return clearly labelled authorized excerpts; no-evidence requests skip generation</td>
+<td><a href="labs/rag-flow/generation-recovery-report.json">Recovery tests</a></td>
+</tr>
+<tr>
+<td>Reading/accessibility automation</td>
+<td>Seventy desktop/narrow reading layouts, selected keyboard journeys and automated accessibility checks; portable archive smoke tests</td>
+<td><a href="VALIDATION.html">Validation</a>, <a href="portable-report.json">portable report</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>Raw reports preserve limitations and failed attempts. Follow <a href="labs/RELIABILITY-EXTENSIONS.md">Reliability extensions</a> to reproduce advanced checks. The Docker and Kubernetes rows display actual report status, not an assumption that a recipe passed.</p>
+<p>The first Kubernetes attempt exposed a loopback-only API listener that blocked in-cluster DNS/storage services. The listener was corrected and system-service readiness made an explicit gate. A subsequent startup race required waiting for system Deployments to exist before checking rollout. <a href="labs/kubernetes-initial-report.json">Initial evidence</a> and <a href="labs/kubernetes-initial-review.json">diagnosis</a> remain available. The latest report determines the final result.</p>
+<h2 id="section-175">AI quality is still an open limitation</h2>
+<p>The original strict eight-case factual baseline passed five; tutor review identified one additional semantically correct answer, one unnecessary abstention and one timeout. The baseline has not been overwritten. A bounded injection retest subsequently answered correctly in 34.61 seconds. However, the broader revised <strong>development</strong> regression passed <strong>six of eight</strong>: an entity answer over-abstained and the absent-evidence case timed out. Reused questions are not an independent holdout, and a passing citation or retrieval check does not prove an answer is true.</p>
+<p><a href="labs/rag-flow/factual-holdout-report.json">Original baseline</a>, <a href="labs/rag-flow/bounded-generation-report.json">bounded retest</a>, <a href="labs/rag-flow/development-regression-report.json">development regression</a>. Earlier incorrect Study Coach generation remains in its factual review. Extractive output stays the default. The new fallback repairs availability during generation failure; it does not repair arbitrary model reasoning. Broader independent factual adjudication remains needed before relying on generated answers without review.</p>
+<h2 id="section-184">Acceptance work that still requires input or access</h2>
+<ol>
+<li><strong>Actual public-cloud deployment:</strong> provide the authorized account/project, region and spending limit. Local Docker/K3s execution is real, but it is not a cloud rollout. No destination or budget has been supplied.</li>
+<li><strong>Physical-device and manual screen-reader audit:</strong> use an actual device with Safari/VoiceOver or the chosen mobile browser/screen reader and record the tasks in <a href="labs/MANUAL-ACCEPTANCE.md">Manual acceptance</a>. Desktop WebKit and narrow viewports cannot establish physical iPhone behavior.</li>
+<li><strong>Personal interview grading:</strong> submit the unaided answer and elapsed time from that same worksheet. No personal score can be assigned before observing your work.</li>
+</ol>
+<p>These remain open, not silently marked completed. The tutorial package is usable now, but full external acceptance and general AI accuracy are not certified.</p>
+<h2 id="section-207">Practical scope of the local evidence</h2>
+<p>All broker, Redis and cluster nodes share one computer/VM. Tests do not certify independent-host partitions, disk destruction or multi-day endurance. H2 uses one writer and Kubernetes Recreate with a local persistent volume; scaling this profile to multiple database writers is not supported. Cloud ingress, production OIDC deployment and production storage require destination-specific configuration.</p>
+<p>The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; it was not an application-process crash with shared sessions. The historical intermittent-login root cause remains a hypothesis, even though the mitigation passed repeated checks. Expired-token reconciliation and zero-downtime secret overlap are not claimed. Initial failing evidence is retained.</p>
+<p>The graph pipeline is a small custom implementation, not Microsoft GraphRAG. Normalized name matching is not full entity resolution; extractive community summaries and quote-presence validation are not factual entailment proofs. The original offline RAG routes remain intentionally transparent teaching components alongside separately tested real integrations.</p>
+<h2 id="section-219">Study on laptop or mobile</h2>
+<p>Extract Engineering-Notebooks.zip and open engineering-notebooks/index.html for offline reading. From that folder, run <code>python study_server.py</code> for laptop HTTP access or <code>python study_server.py --lan</code> on trusted Wi-Fi for phone access. The server prints the addresses. Keep the laptop running. Detailed setup, optional service commands and lab shutdown are in <a href="STUDY-ON-ANY-DEVICE.html">Laptop and mobile commands</a>.</p>
+<p>Model weights, dependencies, private credentials, runtime databases and the WSL virtual disk are excluded from the reading archive. Reading needs no external website; executing optional frameworks and infrastructure requires the listed installed runtimes and initial downloads.</p>
+</main></body></html>

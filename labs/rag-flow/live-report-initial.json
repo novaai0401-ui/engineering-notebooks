@@ -1,0 +1,100 @@
+{
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "cases": [
+    {
+      "id": "two-hop-team",
+      "question": "Who leads the team maintaining Orion?",
+      "seconds": 46.84,
+      "mode": "multi_hop",
+      "answer": "Based on the provided evidence, the team maintaining Orion is led by Mira. Document IDs supporting this are d1 and d2.",
+      "evidence": [
+        {
+          "id": "d1",
+          "text": "Orion is maintained by the Payments team."
+        },
+        {
+          "id": "d2",
+          "text": "The Payments team is led by Mira."
+        }
+      ],
+      "trace": [
+        {
+          "step": "authorize",
+          "visible_documents": 7
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Orion maintained",
+          "ranking": [
+            [
+              "d1",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Payments led",
+          "ranking": [
+            [
+              "d2",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "assemble",
+          "evidence_ids": [
+            "d1",
+            "d2"
+          ],
+          "context_chars": 86,
+          "generator": "ollama"
+        }
+      ],
+      "quality": "Generated answer requires factual review; citation presence is insufficient"
+    },
+    {
+      "id": "checkpoint-boundary",
+      "question": "Does saving a checkpoint make external side effects idempotent?",
+      "seconds": 67.23,
+      "mode": "hybrid",
+      "answer": "Based on the provided evidence (d3), saving a checkpoint does not make external side effects idempotent on their own. External side effects require their own idempotency keys or reconciliation to achieve idempotency.",
+      "evidence": [
+        {
+          "id": "d3",
+          "text": "A checkpoint saves workflow progress. External side effects require their own idempotency keys or reconciliation."
+        }
+      ],
+      "trace": [
+        {
+          "step": "authorize",
+          "visible_documents": 7
+        },
+        {
+          "step": "retrieve",
+          "kind": "hybrid",
+          "query": "Does saving a checkpoint make external side effects idempotent?",
+          "ranking": [
+            [
+              "d3",
+              0.03278688524590164
+            ]
+          ]
+        },
+        {
+          "step": "assemble",
+          "evidence_ids": [
+            "d3"
+          ],
+          "context_chars": 119,
+          "generator": "ollama"
+        }
+      ],
+      "quality": "Generated answer requires factual review; citation presence is insufficient"
+    }
+  ],
+  "review_status": "pending claim-level review; successful generation is not factual validation"
+}

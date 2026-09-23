@@ -1,0 +1,13 @@
+{
+  "passed": [
+    "Promtool validated alert syntax and a timed firing-rule fixture",
+    "Unauthenticated metrics access was rejected",
+    "Prometheus scraped protected Python metrics with a runtime bearer credential",
+    "PromQL returned the counter for an actual completed answer request"
+  ],
+  "version": "3.14.0",
+  "recorded_at": "2026-09-23T14:47:15.130573+00:00",
+  "answer_requests": 1.0,
+  "targets_up": 1,
+  "limitations": "Local native Prometheus and one Python target; no public monitoring deployment, Grafana cluster or executed OTLP collector. Alert fixture tests a rule, not a production incident notification."
+}

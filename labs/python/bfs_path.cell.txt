@@ -1,0 +1,22 @@
+# lab: bfs_path
+from collections import deque
+def shortest_path(graph, start, goal):
+    queue = deque([start])
+    parent = {start:None}
+    while queue:
+        node = queue.popleft()
+        if node == goal:
+            path = []
+            while node is not None:
+                path.append(node); node = parent[node]
+            return path[::-1]
+        for neighbor in graph.get(node, []):
+            if neighbor not in parent:
+                parent[neighbor] = node
+                queue.append(neighbor)
+    return None
+
+g = {"A":["B","C"], "B":["D"], "C":["D"], "D":[]}
+assert shortest_path(g,"A","D") == ["A","B","D"]
+assert shortest_path(g,"D","A") is None
+print("Unweighted shortest route reconstructed")

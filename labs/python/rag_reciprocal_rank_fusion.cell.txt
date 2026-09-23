@@ -1,0 +1,9 @@
+# lab: rag_reciprocal_rank_fusion
+from collections import Counter
+def rrf(rankings,k=60):
+    result=Counter()
+    for ranking in rankings:
+        for rank,doc in enumerate(ranking,1):result[doc]+=1/(k+rank)
+    return sorted(result,key=lambda doc:(-result[doc],doc))
+assert rrf([['exact-code','shared'],['semantic','shared']])[0]=='shared'
+print(rrf([['exact-code','shared'],['semantic','shared']]))

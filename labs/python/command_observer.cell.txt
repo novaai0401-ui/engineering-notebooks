@@ -1,0 +1,14 @@
+# lab: command_observer
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class AddPoints:
+    amount: int
+    def execute(self, score): return score + self.amount
+
+events = []
+subscribers = [events.append]
+score = AddPoints(3).execute(2)
+for subscriber in subscribers:
+    subscriber({"type":"score_changed", "score":score})
+assert events == [{"type":"score_changed","score":5}]
+print(events)

@@ -1,0 +1,14 @@
+# lab: pattern_command_complete
+class Document:
+    def __init__(self):self.text=''
+class AppendCommand:
+    def __init__(self,document,text):self.document=document;self.text=text;self.before=None
+    def execute(self):
+        if self.before is not None:raise ValueError('already executed')
+        self.before=self.document.text;self.document.text+=self.text
+    def undo(self):
+        if self.before is None:raise ValueError('not executed')
+        self.document.text=self.before;self.before=None
+document=Document();command=AppendCommand(document,'hello')
+command.execute();assert document.text=='hello';command.undo();assert document.text==''
+print('Command captures an operation and restores its prior local state')

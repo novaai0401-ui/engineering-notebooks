@@ -1,0 +1,20 @@
+# lab: fastmcp_roundtrip
+from fastmcp import FastMCP, Client
+
+server = FastMCP("SchoolCatalog")
+
+@server.tool
+def book_count(topic: str) -> int:
+    """Return a demonstration catalog count for a topic."""
+    return {"space":3, "plants":2}.get(topic.strip().lower(), 0)
+
+async def check_catalog():
+    async with Client(server) as client:
+        tools = await client.list_tools()
+        assert "book_count" in {tool.name for tool in tools}
+        result = await client.call_tool("book_count", {"topic":"space"})
+        assert result.data == 3
+        return result.data
+
+count = await check_catalog()
+print("MCP returned:", count)

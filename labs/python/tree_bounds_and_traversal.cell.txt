@@ -1,0 +1,20 @@
+# lab: tree_bounds_and_traversal
+from dataclasses import dataclass
+@dataclass
+class Node:
+    value:int
+    left:object=None
+    right:object=None
+def valid_bst(node,low=float('-inf'),high=float('inf')):
+    return node is None or (low<node.value<high and valid_bst(node.left,low,node.value) and valid_bst(node.right,node.value,high))
+def inorder(root):
+    result=[];stack=[];node=root
+    while stack or node:
+        while node:stack.append(node);node=node.left
+        node=stack.pop();result.append(node.value);node=node.right
+    return result
+tree=Node(5,Node(2),Node(8,Node(6),Node(9)))
+assert valid_bst(tree) and inorder(tree)==[2,5,6,8,9]
+assert not valid_bst(Node(5,Node(2,None,Node(7))))
+assert inorder(None)==[]
+print('Ancestor bounds catch a violation that local child checks miss')

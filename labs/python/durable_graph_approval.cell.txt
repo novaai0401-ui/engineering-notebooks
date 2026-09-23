@@ -1,0 +1,42 @@
+# lab: durable_graph_approval
+from typing import TypedDict
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import interrupt, Command
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+class ApprovalState(TypedDict):
+    question: str
+    approved: bool
+    answer: str
+
+def approve_node(state):
+    decision = interrupt({'question': state['question'], 'action': 'prepare a study answer'})
+    return {'approved': decision is True}
+
+def answer_node(state):
+    return {'answer': 'Approved study answer' if state['approved'] else 'Declined'}
+
+def graph_builder():
+    graph = StateGraph(ApprovalState)
+    graph.add_node('approval', approve_node)
+    graph.add_node('answer', answer_node)
+    graph.add_edge(START, 'approval')
+    graph.add_edge('approval', 'answer')
+    graph.add_edge('answer', END)
+    return graph
+
+with TemporaryDirectory() as directory:
+    database = str(Path(directory)/'checkpoints.sqlite')
+    config = {'configurable': {'thread_id': 'alice-request-42'}}
+    with SqliteSaver.from_conn_string(database) as saver:
+        graph = graph_builder().compile(checkpointer=saver)
+        paused = graph.invoke({'question': 'Explain checkpoints', 'approved': False, 'answer': ''}, config)
+        assert paused['__interrupt__']
+    # New saver and graph: the old in-memory graph is no longer relied upon.
+    with SqliteSaver.from_conn_string(database) as saver:
+        graph = graph_builder().compile(checkpointer=saver)
+        resumed = graph.invoke(Command(resume=True), config)
+        assert resumed['answer'] == 'Approved study answer'
+print('Persistent approval resumed from a reopened SQLite checkpoint')

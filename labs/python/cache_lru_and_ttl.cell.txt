@@ -1,0 +1,17 @@
+# lab: cache_lru_and_ttl
+from collections import OrderedDict
+class Cache:
+    def __init__(self,capacity): self.data=OrderedDict();self.capacity=capacity
+    def put(self,key,value,now,ttl):
+        self.data[key]=(value,now+ttl);self.data.move_to_end(key)
+        while len(self.data)>self.capacity:self.data.popitem(last=False)
+    def get(self,key,now):
+        if key not in self.data:return None
+        value,expires=self.data[key]
+        if now>=expires:del self.data[key];return None
+        self.data.move_to_end(key);return value
+c=Cache(2);c.put('a',1,0,10);c.put('b',2,0,10)
+assert c.get('a',1)==1
+c.put('c',3,1,10)
+assert c.get('b',2) is None and c.get('a',10) is None
+print('Capacity evicted b; time expired a.')

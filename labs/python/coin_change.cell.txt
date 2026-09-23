@@ -1,0 +1,15 @@
+# lab: coin_change
+def fewest_coins(coins, amount):
+    if amount < 0 or any(c <= 0 for c in coins):
+        raise ValueError("positive coins and nonnegative amount required")
+    dp = [0] + [float('inf')]*amount
+    for value in range(1, amount+1):
+        for coin in coins:
+            if coin <= value:
+                dp[value] = min(dp[value], 1+dp[value-coin])
+    return -1 if dp[amount] == float('inf') else int(dp[amount])
+
+assert fewest_coins([1,3,4], 6) == 2
+assert fewest_coins([2], 3) == -1
+assert fewest_coins([2], 0) == 0
+print("Optimal count found; unreachable case handled")

@@ -1,0 +1,279 @@
+# 29 — Databases: the organised memory of your application
+
+This separate database notebook joins the Python, Java/Spring, React and AI tracks. Start with the stories, run the small SQL experiments, then answer the interview questions without looking at the solutions. The embedded labs use Python's SQLite so they run without a server. PostgreSQL-specific SQL is explicitly a recipe; SQLite success does not prove PostgreSQL concurrency behavior. The existing distributed lab separately exercised real PostgreSQL, serializable conflicts and backup/restore.
+
+## 1. Why a database exists
+
+Imagine a classroom cupboard. A Java variable is a note in a child's hand: it disappears when the child leaves. A database is the class register: it survives the application restarting, can be shared, and enforces rules about what may be written.
+
+A database management system handles storage, queries, concurrent changes, permissions and recovery. Persistence alone is insufficient. A text file can persist, but coordinating simultaneous seat reservations, searching millions of orders and recovering a half-written transfer require more machinery.
+
+Draw the application as browser → API → business rules → database. The browser never receives database credentials. Python and Java access storage through bounded connection pools. AI retrieval reads only documents the authenticated user may access. Kafka carries events about changes; it is not automatically the authoritative store for every screen.
+
+## 2. Which kind of database should I learn?
+
+| Kind | Child-sized picture | Suitable workload | Cost or caution |
+| --- | --- | --- | --- |
+| Relational: PostgreSQL, MySQL | Related class registers | Orders, payments, users, inventory | Schema design and transaction boundaries matter |
+| SQLite | A register in one file | Local apps, small experiments, embedded storage | Writer concurrency and deployment differ from a database server |
+| Document: MongoDB | One folder containing a whole form | Variable product attributes, aggregate-shaped records | Unbounded arrays and repeated data create update problems |
+| Key/value: Redis | A numbered locker | Shared caches, counters, rate limits | Eviction and persistence settings determine what may disappear |
+| Wide-column | Very large sorted filing cabinets | High write volume with known partition-key queries | Query design follows access patterns; hot partitions hurt |
+| Graph | People and strings connecting them | Paths, dependencies, fraud relationships | Traversal growth must be bounded |
+| Search engine | A book's word index | Full-text search and relevance ranking | Search index can lag the source of truth |
+| Vector index/database | Shelves arranged by similarity | Semantic retrieval and recommendations | Similarity is not truth, authorization or exact equality |
+| Columnar warehouse | A calculator scanning selected columns | Aggregation over large historical datasets | Different latency/cost goals from transactional APIs |
+
+For this course, master SQL and PostgreSQL first, then Redis and vector retrieval; learn document modelling and analytics when the workload requires them. This is a learning order, not a rule that every product needs all these databases. Adding a second database adds backup, access control, monitoring, upgrade and reconciliation work.
+
+## 3. Tables, keys, types and constraints
+
+A row is one fact about one entity. A primary key uniquely names it. A foreign key points to a related row. A unique constraint prevents repeated business identifiers. NOT NULL rejects missing values, and CHECK validates a row-level rule.
+
+Use exact decimal types or integer minor units for money with an explicit currency; binary floating point is unsuitable for exact monetary accounting. Store instants with clear timezone semantics; retain a user's timezone separately for calendar rules. A generated identifier is not a secret, an authorization check, or a promise of gapless numbering.
+
+```python
+# lab: database_constraints
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('PRAGMA foreign_keys=ON')
+db.executescript('''
+CREATE TABLE customer(id INTEGER PRIMARY KEY, email TEXT NOT NULL UNIQUE);
+CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER NOT NULL REFERENCES customer(id),
+                    total_cents INTEGER NOT NULL CHECK(total_cents>=0));
+INSERT INTO customer VALUES(1,'alice@example.test');
+INSERT INTO orders VALUES(10,1,1250);
+''')
+for statement in ["INSERT INTO orders VALUES(11,99,100)",
+                  "INSERT INTO orders VALUES(12,1,-5)",
+                  "INSERT INTO customer VALUES(2,'alice@example.test')"]:
+    try: db.execute(statement)
+    except sqlite3.IntegrityError: pass
+    else: raise AssertionError('Invalid data was accepted')
+assert db.execute('SELECT COUNT(*) FROM orders').fetchone()[0]==1
+db.close()
+print('Foreign key, nonnegative money and unique email rules rejected invalid writes.')
+```
+
+Application validation gives friendly errors; database constraints protect against every writer, including another service and a race between two requests.
+
+## 4. Modelling relationships and normalisation
+
+One customer has many orders: orders holds customer_id. Students take many courses: an enrolment table holds student_id and course_id, with a composite unique key. A one-to-one profile can have a unique user_id foreign key.
+
+First normal form keeps values appropriate to the relational design rather than stuffing a comma-separated list into one column. Second normal form removes dependencies on only part of a composite candidate key. Third normal form removes inappropriate transitive dependencies on non-key attributes. BCNF tightens the rule: every nontrivial functional dependency has a superkey as its determinant.
+
+Example: OrderLine(order_id, product_id, product_name, quantity) repeats product_name. Put the current product name in Product. But preserve the purchased unit price and invoice description on the order line when the business requires historical truth. That duplication is deliberate history, not necessarily a modelling mistake. State the dependency and lifetime before applying a slogan about normalisation.
+
+Denormalise only for a measured query need and document who refreshes the copy, how stale it may be and how it is rebuilt. A materialized read model requires ownership and repair just like a cache.
+
+## 5. SQL: selecting, joining, grouping and NULL
+
+Think of SQL as describing the answer, while the database chooses a physical plan. FROM and JOIN assemble candidate rows, WHERE removes individual rows, GROUP BY gathers piles, HAVING removes piles, SELECT chooses output and ORDER BY establishes order. This is a useful logical model, not a required execution sequence.
+
+```python
+# lab: database_joins_and_null
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('''
+CREATE TABLE customer(id INTEGER PRIMARY KEY,name TEXT);
+CREATE TABLE orders(id INTEGER PRIMARY KEY,customer_id INTEGER,total INTEGER);
+INSERT INTO customer VALUES(1,'Alice'),(2,'Bob'),(3,'Chen');
+INSERT INTO orders VALUES(10,1,500),(11,1,700),(12,2,300);
+''')
+rows=db.execute('''SELECT c.name,COUNT(o.id),COALESCE(SUM(o.total),0)
+FROM customer c LEFT JOIN orders o ON o.customer_id=c.id
+GROUP BY c.id,c.name ORDER BY c.id''').fetchall()
+assert rows==[('Alice',2,1200),('Bob',1,300),('Chen',0,0)]
+assert db.execute('SELECT NULL = NULL, NULL IS NULL').fetchone()==(None,1)
+db.close()
+print(rows)
+```
+
+COUNT(*) counts rows, including the null-extended row created by a left join; COUNT(o.id) counts non-null order IDs. Filtering the right table in WHERE can unintentionally turn a left join into inner-join behavior. SQL NULL represents missing/unknown information; use IS NULL, not = NULL. NOT IN can surprise you when the subquery includes NULL; a correctly correlated NOT EXISTS is often clearer.
+
+Know INNER, LEFT, CROSS and self joins. A join can multiply rows: do not fix an accidental many-to-many join by blindly adding DISTINCT. Check cardinalities and the intended grain, meaning what exactly one result row represents.
+
+## 6. Windows, CTEs and pagination
+
+A GROUP BY collapses rows. A window function annotates each row while retaining it. ROW_NUMBER assigns positions; RANK leaves gaps for ties; DENSE_RANK does not. A common table expression names an intermediate query. It is not universally a performance improvement.
+
+```python
+# lab: database_windows_and_pagination
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('''CREATE TABLE result(id INTEGER PRIMARY KEY, learner TEXT,score INTEGER);
+INSERT INTO result VALUES(1,'Alice',90),(2,'Bob',80),(3,'Chen',80),(4,'Divya',70);''')
+ranked=db.execute('''SELECT learner,DENSE_RANK() OVER(ORDER BY score DESC)
+FROM result ORDER BY score DESC,id''').fetchall()
+assert ranked==[('Alice',1),('Bob',2),('Chen',2),('Divya',3)]
+first=db.execute('SELECT id,score FROM result ORDER BY score DESC,id LIMIT 2').fetchall()
+last_id,last_score=first[-1]
+second=db.execute('''SELECT id,score FROM result WHERE score<? OR (score=? AND id>?)
+ORDER BY score DESC,id LIMIT 2''',(last_score,last_score,last_id)).fetchall()
+assert first+second==[(1,90),(2,80),(3,80),(4,70)]
+db.close()
+print('Stable tie-breaking avoids skipping Chen at the page boundary.')
+```
+
+Offset pagination is simple but large offsets can scan/discard many rows and concurrent inserts can shift pages. Keyset pagination continues after a stable sort tuple. It still needs a stated consistency policy if sort keys change. Opaque cursors must be validated, tenant-bound and, when necessary, signed. Never accept arbitrary column names from an untrusted client; allowlist supported sort orders.
+
+## 7. Transactions and ACID with a transfer
+
+Atomicity: move both pieces or neither. Consistency: preserve declared constraints and correctly implemented business invariants. Isolation: define what concurrent operations may observe. Durability: committed data survives the failures covered by the configured storage guarantees.
+
+```python
+# lab: database_atomic_transfer
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('CREATE TABLE account(id INTEGER PRIMARY KEY,balance INTEGER CHECK(balance>=0))')
+db.executemany('INSERT INTO account VALUES(?,?)',[(1,100),(2,50)]);db.commit()
+def transfer(amount,fail=False):
+    with db:
+        changed=db.execute('UPDATE account SET balance=balance-? WHERE id=1 AND balance>=?',(amount,amount)).rowcount
+        if changed!=1: raise ValueError('Insufficient funds')
+        if fail: raise RuntimeError('Connection failed before credit')
+        db.execute('UPDATE account SET balance=balance+? WHERE id=2',(amount,))
+try: transfer(30,True)
+except RuntimeError: pass
+assert db.execute('SELECT SUM(balance) FROM account').fetchone()[0]==150
+assert db.execute('SELECT balance FROM account WHERE id=1').fetchone()[0]==100
+transfer(30)
+assert db.execute('SELECT balance FROM account ORDER BY id').fetchall()==[(70,),(80,)]
+db.close()
+print('Rollback restored the debit; successful transfer preserved total money.')
+```
+
+The toy transfer assumes both fixed accounts exist. A real API checks the recipient, currency, limits, audit trail and idempotency; it must reject or roll back when a credit affects no row. A database transaction cannot automatically roll back an email, external payment or Kafka publication. Use an outbox plus an idempotent consumer for reliable communication.
+
+## 8. Isolation, MVCC, locks and retries
+
+MVCC is like keeping several dated versions of a register so a reader can consult the version allowed by its snapshot. Dirty read means seeing uncommitted work; nonrepeatable read means rereading a changed row; phantom means a matching set changes. Write skew occurs when concurrent transactions read a shared condition and update different rows, together violating it.
+
+In PostgreSQL, Read Committed generally uses a fresh snapshot for each statement. Repeatable Read provides a stable transaction snapshot but can still admit serialization anomalies. Serializable can reject conflicting transactions; the application must retry the whole transaction with a bounded policy. PostgreSQL treats Read Uncommitted as Read Committed. These are engine-specific details, not SQLite lab results. [PostgreSQL isolation reference](https://www.postgresql.org/docs/current/transaction-iso.html).
+
+Optimistic locking adds a version: UPDATE item SET value=?,version=version+1 WHERE id=? AND version=?. Zero changed rows means a conflict. Pessimistic locking locks selected rows before dependent work. Acquire multiple locks in a stable order to reduce deadlocks; keep transactions short and avoid remote calls inside locks. Retry known transient failures with limits and jitter, not every SQL exception.
+
+## 9. Indexes: finding a name without reading the register
+
+A B-tree is a sorted branching guide useful for equality and ordered ranges. Hash indexes target equality. GIN supports inverted lookups such as tokens or suitable JSON operators. GiST supports extensible search strategies such as some geometric operations. BRIN summarizes block ranges and can be small when values correlate with physical order. Operator support matters. [PostgreSQL index types](https://www.postgresql.org/docs/current/indexes-types.html).
+
+```python
+# lab: database_index_plan
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('CREATE TABLE event(id INTEGER PRIMARY KEY,owner TEXT,created INTEGER)')
+db.executemany('INSERT INTO event VALUES(?,?,?)',[(i,'alice' if i%2 else 'bob',i) for i in range(1000)])
+db.execute('CREATE INDEX event_owner_created ON event(owner,created DESC,id DESC)')
+plan=db.execute('EXPLAIN QUERY PLAN SELECT id FROM event WHERE owner=? ORDER BY created DESC,id DESC LIMIT 5',('alice',)).fetchall()
+assert any('event_owner_created' in row[3] for row in plan)
+assert [r[0] for r in db.execute('SELECT id FROM event WHERE owner=? ORDER BY created DESC,id DESC LIMIT 3',('alice',))]==[999,997,995]
+db.close();print(plan)
+```
+
+An index costs storage and write work. Composite column order should match actual equality, range and sorting requirements. A partial index covers only rows satisfying its predicate. A covering index can reduce table access but does not guarantee zero heap visits on every engine and visibility state. An index used on a 1,000-row example is not a production speed benchmark.
+
+## 10. Reading plans and fixing slow queries
+
+Start with the slow endpoint and its query count, duration distribution and representative parameter values. Look at scans, join strategies, estimates versus actual rows, sorting spills, buffer use and lock waits. A sequential scan may be the correct plan when much of a table is needed. Nested-loop, hash and merge joins suit different cardinalities and ordering.
+
+PostgreSQL EXPLAIN describes the chosen plan; EXPLAIN ANALYZE actually executes it. Therefore a modifying statement can change data while being analysed. Use a safe test database and understand effects that rollback cannot undo. [PostgreSQL plan guide](https://www.postgresql.org/docs/current/using-explain.html).
+
+Check missing/selectively useful indexes, stale statistics, excessive rows fetched, N+1 queries, huge IN lists, implicit casts and unbounded sorts. Fix the measured bottleneck before increasing hardware. Record before/after latency, rows examined, throughput and correctness.
+
+## 11. Java/JPA and Python data access
+
+With JPA, an entity is a persistence-managed object, not the public API contract. Lazy relationships can cause N+1: one order query followed by one customer query for every order. Fetch joins, entity graphs, DTO projections or batching can help, with different pagination and memory costs. A collection fetch join combined with pagination needs particular care. Put transaction boundaries around business operations, account for proxy/self-invocation behavior and do not assume readOnly enforces all business restrictions.
+
+With Python, use parameterized driver calls or SQLAlchemy expressions. A session/connection should have a clear request or job lifetime, commit/rollback handling and guaranteed cleanup. Blocking database access inside an async server can block its event loop; use a compatible async driver or an appropriate bounded offload strategy. Async does not remove connection limits.
+
+Connection pool example: 10 replicas × 20 maximum connections = 200 possible application connections before background jobs and administrative reserve. More connections can increase contention. Measure acquisition wait and saturation; set query, transaction and pool-acquisition timeouts independently. Never hold a connection while waiting for a slow model response unnecessarily.
+
+```python
+# lab: database_parameter_safety
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('CREATE TABLE note(owner TEXT,body TEXT)')
+db.execute('INSERT INTO note VALUES(?,?)',('alice','private'))
+attack="alice' OR 1=1 --"
+assert db.execute('SELECT body FROM note WHERE owner=?',(attack,)).fetchall()==[]
+assert db.execute('SELECT body FROM note WHERE owner=?',('alice',)).fetchall()==[('private',)]
+db.close();print('Values remain values rather than becoming SQL instructions.')
+```
+
+Parameters do not make authorization automatic. The owner value must come from verified identity rather than a client-supplied claim.
+
+## 12. Migrations, backups, replication and recovery
+
+Use versioned Flyway/Liquibase migrations for Java or Alembic for Python. Expand first: add compatible columns/tables, deploy code able to read old and new shapes, backfill in bounded batches, validate, switch reads and only later contract. A rolling release may run old and new code together. A destructive migration can make application rollback impossible.
+
+A backup is a saved copy; replication keeps another system updated and may faithfully copy accidental deletion. Neither substitutes for a tested restore. Define RPO, the acceptable data-loss window, and RTO, the acceptable recovery duration. PostgreSQL WAL archiving plus base backups can support point-in-time recovery when configured and retained correctly; a logical dump serves a different purpose.
+
+Read replicas can lag. Immediately reading a recent write from a lagging replica can look like lost data. Route consistency-sensitive reads appropriately. Partitioning splits a table into managed pieces; sharding distributes responsibility across servers. Neither automatically fixes a poor partition key. Rebalancing, cross-shard queries and unique constraints become design issues. The existing distributed lab restored a logical PostgreSQL backup; it did not certify point-in-time disaster recovery.
+
+## 13. NoSQL without the myths
+
+A document can embed small data that is read and changed together, such as an address snapshot on an order. Reference shared or independently growing entities. Bound arrays and document size. MongoDB supports transactions; saying “NoSQL has no transactions” is false. Multi-document coordination has costs and does not replace modelling. [MongoDB modelling and consistency](https://www.mongodb.com/docs/v8.0/data-modeling/enforce-consistency/transactions/).
+
+For distributed storage, define which consistency promise the API needs. Linearizability concerns operations appearing to occur at a point between invocation and response; serializability concerns equivalence to a serial transaction order. They are related but different. During a network partition, systems face tradeoffs between serving every reachable request and preserving particular consistency guarantees. “Pick any two” without describing the partition and operation is an incomplete CAP explanation.
+
+For a wide-column store, model the partition key and allowed queries before inserting everything. For a graph, bound traversal depth and cardinality. For a warehouse, distinguish fact tables, dimensions, slowly changing dimensions and late-arriving events. OLTP optimizes many small business operations; OLAP optimizes analytical scans and aggregation.
+
+## 14. Redis and cache management in the data architecture
+
+A cache is a photocopy of selected facts. The primary database decides what is true unless the design explicitly assigns authority elsewhere. Choose cache-aside, read-through, write-through or write-behind based on failure and staleness requirements. Write-behind needs durable buffering and recovery because acknowledging only an in-memory cache write risks data loss.
+
+Include tenant, resource, schema version and relevant permissions in cache keys. Use TTLs, jitter, bounded capacity, invalidation after commit, stampede protection and metrics. A delayed loader can refill stale data after invalidation; version checks or a carefully defined consistency policy address this. Notebook 25 and the real-time cache lab demonstrate the race. Redis eviction policy, persistence and failover settings must match the intended use; a cache configured for eviction should not silently become the only store for irreplaceable records.
+
+## 15. Vector databases and RAG storage
+
+An embedding is a list of numbers placing content in a learned geometry. Store document ID, chunk ID, tenant/ACL, source revision, embedding-model version and deletion state alongside it. Vectors from incompatible models should not be mixed simply because their dimensions match.
+
+```python
+# lab: database_vector_tenant_filter
+from math import sqrt
+rows=[('a','alice',(1.,0.)),('b','bob',(1.,0.)),('c','alice',(0.,1.))]
+def cosine(a,b):
+    denominator=sqrt(sum(x*x for x in a))*sqrt(sum(x*x for x in b))
+    return sum(x*y for x,y in zip(a,b))/denominator if denominator else 0.
+ranked=sorted(((cosine(v,(1.,0.)),doc) for doc,owner,v in rows if owner=='alice'),reverse=True)
+assert ranked[0]==(1.,'a') and all(doc!='b' for _,doc in ranked)
+print(ranked)
+```
+
+This exact scan costs work proportional to candidates × dimensions. The helper's zero-vector return is a no-match fallback; mathematical cosine for a zero vector is undefined. Validate vector dimensions and validity at real storage boundaries. Approximate indexes such as HNSW and IVFFlat trade recall, memory, build time and query cost. PostgreSQL with pgvector can combine relational metadata and similarity search, but filtered approximate retrieval needs deliberate evaluation; index scans can produce too few permitted candidates. Compare with an exact filtered baseline and measure recall@k, latency and resource use. [pgvector reference](https://github.com/pgvector/pgvector).
+
+A database match does not establish that an LLM's answer follows from the cited text. Maintain separate retrieval relevance, authorization and answer-factuality tests. Handle deletion in source storage, search/vector indexes, caches and backups under the defined retention policy. Treat retrieved document text as untrusted data, never as authorization instructions.
+
+## 16. Idempotency, outbox and change data capture
+
+A client can retry after the database committed but the response was lost. Store (owner, idempotency_key, payload_hash, result) with a unique constraint and the business change in one transaction. Same key and payload returns the original result; same key and different payload fails. Define expiration and prevent key reuse from unexpectedly recreating an old action.
+
+The outbox stores an event in the same transaction as the business row. A publisher or CDC connector later sends it to Kafka. Delivery may repeat, so the consumer stores the event ID and business effect atomically in an inbox transaction. CDC reads changes from the database's change stream/log; it needs offsets, schema evolution, snapshot strategy and lag monitoring. It does not remove privacy filtering or downstream duplicate handling.
+
+## 17. A complete interview design: study platform
+
+Model User, Course, Enrolment, Lesson, Submission, Job, Outbox and DocumentChunk. Enrolment has a unique (user_id, course_id). Submission belongs to its authenticated owner. A submit command transaction creates Submission, Job and Outbox; a worker processes the event idempotently. PostgreSQL holds durable state. Redis optionally caches course metadata. Vector retrieval filters chunks by permission. SSE reports job progress with replay IDs. React renders explicit loading, stale, error and complete states.
+
+The model call happens outside a long database transaction. Save its result using a conditional job-state/version update. If the worker crashes after an external effect, recovery uses the effect's idempotency contract or reconciliation. Do not claim that restoring an agent checkpoint proves exactly-once execution.
+
+Use a schema diagram on paper, state transaction boundaries and demonstrate four failures: duplicate submission, cross-user read, worker crash and stale cache. Then explain an expand/contract migration, a restored backup and a measured query plan. This is stronger interview evidence than listing database brands.
+
+## 18. Timed exercises and answer key
+
+Allow 45 minutes. Award two points for each answer: one for the mechanism and one for a concrete failure or test. A score describes this exercise only, not universal interview readiness.
+
+1. Why does COUNT(*) give one for a customer with no orders in a left join?
+2. Design an index for owner-filtered newest-first pagination.
+3. Two doctors each see another on duty, then both leave. What failed?
+4. Why can payment still repeat after a database rollback?
+5. Why does a read replica show an old balance immediately after a write?
+6. When does embedding an address help and when does it hurt?
+7. How do you reject a duplicate request with a changed payload?
+8. Why can vector search return too few allowed documents?
+9. How do you deploy a column rename while old code still runs?
+10. What proves a backup works?
+
+Answers: (1) the null-extended joined row is still a row; count the non-null order key. (2) a candidate is (owner, created_at DESC, id DESC), tested against real plans and workload. (3) write skew violated the cross-row invariant; use a suitable serialization/locking design and bounded retries. (4) the external payment is outside the database transaction; use a provider-supported idempotency key and reconciliation. (5) asynchronous replication lag; use an appropriate read-after-write strategy. (6) immutable snapshots or small aggregate data fit; shared mutable and unbounded data may need references. (7) a unique scoped key plus stored request hash in the same atomic workflow. (8) approximate candidate selection and filtering interact; evaluate filtered recall and expansion strategies. (9) add compatible structure, dual-compatible code, backfill, validate, switch and later remove. (10) restore it into a separate environment and verify data, application behavior and recovery objectives.
+
+Next practical assessment: implement an order reservation with a stock invariant and two concurrent buyers. Test with real PostgreSQL, not just SQLite. Explain the observed isolation behavior before presenting the result as production evidence.

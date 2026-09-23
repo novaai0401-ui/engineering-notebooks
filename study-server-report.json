@@ -1,0 +1,7 @@
+{
+  "passed": [
+    "Index, database HTML, RAG HTML and Jupyter download served over real loopback HTTP",
+    "Hidden/runtime/dependency directories, traversal attempts and directory listing denied"
+  ],
+  "limitations": "Loopback tests only. LAN/mobile connectivity depends on the device, trusted Wi-Fi and firewall; no physical phone test was performed."
+}

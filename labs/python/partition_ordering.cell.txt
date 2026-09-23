@@ -1,0 +1,8 @@
+# lab: partition_ordering
+import hashlib
+def lane(key,count):return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8],'big')%count
+events=[('order-7','created'),('order-8','created'),('order-7','approved')]
+partitions=[[] for _ in range(3)]
+for key,value in events:partitions[lane(key,3)].append((key,value))
+assert [v for k,v in partitions[lane('order-7',3)] if k=='order-7']==['created','approved']
+print('Same-key order retained inside its lane. This teaching hash is not Kafka’s default partitioner.')

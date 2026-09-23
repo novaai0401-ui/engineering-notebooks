@@ -1,0 +1,23 @@
+# lab: parallel_failure_cleanup
+import asyncio
+async def failure_demo():
+    started = asyncio.Event()
+    cleaned = []
+    async def slow():
+        try:
+            started.set()
+            await asyncio.sleep(30)
+        finally:
+            cleaned.append('released')
+    async def broken():
+        await started.wait()
+        raise ValueError('retriever failed')
+    try:
+        async with asyncio.TaskGroup() as group:
+            group.create_task(slow())
+            group.create_task(broken())
+    except* ValueError:
+        pass
+    assert cleaned == ['released']
+await failure_demo()
+print('A failed child cancelled its sibling and cleanup ran')

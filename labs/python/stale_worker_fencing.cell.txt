@@ -1,0 +1,13 @@
+# lab: stale_worker_fencing
+import sqlite3
+db = sqlite3.connect(':memory:')
+db.execute('create table job(id integer primary key, token integer, answer text)')
+db.execute("insert into job values(1, 1, '')")
+old_token = 1
+db.execute('update job set token=2 where id=1')
+stale = db.execute("update job set answer='old' where id=1 and token=?", (old_token,))
+fresh = db.execute("update job set answer='new' where id=1 and token=2")
+assert stale.rowcount == 0 and fresh.rowcount == 1
+assert db.execute('select answer from job').fetchone()[0] == 'new'
+db.close()
+print('Only the current lease holder can publish its result')

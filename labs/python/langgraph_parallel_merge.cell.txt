@@ -1,0 +1,25 @@
+# lab: langgraph_parallel_merge
+from typing import TypedDict, Annotated
+import operator
+from langgraph.graph import StateGraph, START, END
+
+class ParallelState(TypedDict):
+    findings: Annotated[list[str], operator.add]
+    report: str
+
+def math_check(state): return {"findings":["math: 2+3=5"]}
+def source_check(state): return {"findings":["source: local lesson"]}
+def combine_checks(state): return {"report":"; ".join(sorted(state["findings"]))}
+
+parallel = StateGraph(ParallelState)
+parallel.add_node("math", math_check)
+parallel.add_node("source", source_check)
+parallel.add_node("combine", combine_checks)
+parallel.add_edge(START, "math")
+parallel.add_edge(START, "source")
+parallel.add_edge(["math","source"], "combine")
+parallel.add_edge("combine", END)
+merged = parallel.compile().invoke({"findings":[], "report":""})
+assert len(merged["findings"]) == 2
+assert merged["report"] == "math: 2+3=5; source: local lesson"
+print(merged["report"])

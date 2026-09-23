@@ -1,0 +1,14 @@
+# lab: two_sum
+def two_sum(numbers, target):
+    seen = {}
+    for index, value in enumerate(numbers):
+        complement = target - value
+        if complement in seen:
+            return seen[complement], index
+        seen[value] = index
+    return None
+
+assert two_sum([2,7,11,15], 9) == (0,1)
+assert two_sum([3,3], 6) == (0,1)
+assert two_sum([1], 2) is None
+print("Pair indices found without reusing one item")

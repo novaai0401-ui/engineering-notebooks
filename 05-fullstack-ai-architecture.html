@@ -1,0 +1,227 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 5 — Full-Stack Java, Python, React, and AI Engineering</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. Start from the user&#x27;s journey</a></li><li><a href="#section-22">2. Contracts are agreements between teams</a></li><li><a href="#section-38">3. SQL, keys, joins, and indexes</a></li><li><a href="#section-51">4. Transactions and distributed work</a></li><li><a href="#section-66">5. Idempotency and request identity</a></li><li><a href="#section-76">6. Authentication, authorization, and trust boundaries</a></li><li><a href="#section-91">7. A permission-aware retrieval lab</a></li><li><a href="#section-98">8. ML and generative AI service design</a></li><li><a href="#section-113">9. Queues, streaming, cancellation, and backpressure</a></li><li><a href="#section-128">10. Caching, retries, circuit breakers, and rate limits</a></li><li><a href="#section-140">11. Observability and evaluation</a></li><li><a href="#section-152">12. Deployment, containers, and CI/CD</a></li><li><a href="#section-164">13. End-to-end capstone specification</a></li><li><a href="#section-284">14. Exam answers and coverage</a></li></ul></nav><main id="content"><p class="downloads"><a href="05-fullstack-ai-architecture.ipynb">Jupyter notebook</a><a href="05-fullstack-ai-architecture.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 5 — Full-Stack Java, Python, React, and AI Engineering</h1>
+<p>This notebook teaches how the parts cooperate. A system is more than a collection of framework names. We use one story throughout: a learning portal where users manage study topics and ask for explanations supported by course notes. The labs are local teaching examples; the architecture sections describe what must be added for a real service.</p>
+<h2 id="section-6">1. Start from the user's journey</h2>
+<p>A learner opens a dashboard, signs in, selects a topic, asks a question, receives an explanation with sources, and records completion. Each step has a user-visible result and a possible failure. Begin with these outcomes before drawing microservices.</p>
+<p>React presents forms, progress, and results. A Java service owns users, study records, permissions, and transactional business actions. A Python service handles retrieval, model inference, and model-specific evaluation. A database stores authoritative records. Object storage can hold documents; a search index supports retrieval. A queue can manage long-running jobs.</p>
+<p>This division is an example, not a requirement that Java and Python must both appear in every system. A single language and a modular monolith may meet the same requirements more simply.</p>
+<pre><code class="language-text">Browser / React
+      |
+ HTTPS + authenticated request
+      v
+Java API ------&gt; relational database
+      |
+ authorized internal request
+      v
+Python AI service ---&gt; allowed document retrieval ---&gt; model adapter
+      |
+ structured answer + evidence + status
+      v
+Java response ---&gt; React loading/error/success display
+</code></pre>
+<p><strong>Practice:</strong> Should Python trust a user ID sent directly by the browser without verification? <strong>Answer:</strong> No. Identity must come from an authenticated and authorized boundary, not an arbitrary field.</p>
+<h2 id="section-22">2. Contracts are agreements between teams</h2>
+<p>An API contract says what inputs are accepted, what outputs mean, how errors are represented, and which guarantees exist. A typed schema is part of it; permissions and timing semantics are also part of it.</p>
+<p>For an explanation request, define question, course ID, request ID, and supported options. Derive identity from the authenticated context. For a response, include status, answer, evidence identifiers, and a request ID. A citation should refer to evidence actually provided, not a made-up URL.</p>
+<pre><code class="language-json">{
+  &quot;request_id&quot;: &quot;r-123&quot;,
+  &quot;status&quot;: &quot;complete&quot;,
+  &quot;answer&quot;: &quot;A gradient describes local rates of change.&quot;,
+  &quot;evidence&quot;: [{&quot;document_id&quot;:&quot;math-1&quot;, &quot;version&quot;:2}],
+  &quot;warnings&quot;: []
+}
+</code></pre>
+<p>Document whether complete means generation finished or the business task succeeded. Version schemas intentionally. Additive optional fields are often easier to evolve than changing the meaning of an existing field. Clients must not assume every error body matches the success shape.</p>
+<p><strong>Exercise:</strong> A service returns HTTP 200 with <code>{error:&quot;failed&quot;}</code> to every failure. Why is that harmful? <strong>Answer:</strong> Transport status and business meaning disagree, monitoring becomes misleading, and clients may treat failures as success.</p>
+<h2 id="section-38">3. SQL, keys, joins, and indexes</h2>
+<p>A relational table stores rows with named columns. A primary key identifies a row. A foreign key constrains a relationship. A unique constraint protects a business uniqueness rule. SQL selects, joins, groups, and changes records. Parameterized queries separate data from SQL syntax.</p>
+<pre><code class="language-python"># lab: relational_integrity
+import sqlite3
+db = sqlite3.connect(&quot;:memory:&quot;)
+db.execute(&quot;PRAGMA foreign_keys=ON&quot;)
+db.execute(&quot;CREATE TABLE learner(id INTEGER PRIMARY KEY, name TEXT NOT NULL)&quot;)
+db.execute(&quot;&quot;&quot;CREATE TABLE topic(
+  id INTEGER PRIMARY KEY,
+  learner_id INTEGER NOT NULL REFERENCES learner(id),
+  title TEXT NOT NULL,
+  UNIQUE(learner_id, title)
+)&quot;&quot;&quot;)
+with db:
+    db.execute(&quot;INSERT INTO learner VALUES (?,?)&quot;, (1,&quot;Asha&quot;))
+    db.execute(&quot;INSERT INTO topic VALUES (?,?,?)&quot;, (10,1,&quot;Gradients&quot;))
+row = db.execute(&quot;&quot;&quot;SELECT l.name,t.title FROM learner l
+ JOIN topic t ON l.id=t.learner_id WHERE l.id=?&quot;&quot;&quot;, (1,)).fetchone()
+assert row == (&quot;Asha&quot;,&quot;Gradients&quot;)
+try:
+    with db:
+        db.execute(&quot;INSERT INTO topic VALUES (?,?,?)&quot;, (11,1,&quot;Gradients&quot;))
+except sqlite3.IntegrityError:
+    pass
+else:
+    raise AssertionError(&quot;duplicate should be rejected&quot;)
+db.close()
+print(&quot;Join and uniqueness rule verified&quot;)
+</code></pre>
+<p>The database is temporary and in memory. Foreign keys are explicitly enabled for this SQLite connection. Placeholders carry data separately from the query. The transaction context commits or rolls back appropriately. The uniqueness rule is enforced in storage, not just by an earlier application check.</p>
+<p>An index is an auxiliary lookup structure. It speeds some reads but adds write and storage costs. Composite index order affects which predicates and orderings it supports. Inspect plans and representative data. Normalization reduces duplicated facts and update anomalies; denormalization can speed selected reads at the cost of consistency work.</p>
+<h2 id="section-51">4. Transactions and distributed work</h2>
+<p>A local database transaction can atomically record a study update. It cannot automatically make a remote model call and a message broker commit part of the same transaction. Distributed boundaries require explicit failure design.</p>
+<p>The outbox pattern records a business change and an event in the same database transaction. A relay later publishes the event. Publication can happen more than once, so consumers need idempotency. A saga coordinates a sequence of local transactions with compensating actions where feasible; compensation is not identical to restoring the world as if nothing happened.</p>
+<p>CQRS separates command and query models. Event sourcing stores state-changing events as the source of truth and derives current views. You can use an outbox without event sourcing and CQRS without multiple deployed services. Do not bundle unrelated patterns merely because they often appear in conference diagrams.</p>
+<p><strong>Failure story:</strong> The service reserves a place, publishes an event, then crashes before acknowledging. A retry must not reserve another place. Persistent uniqueness and request identity handle this better than hoping the network delivers exactly once.</p>
+<h2 id="section-66">5. Idempotency and request identity</h2>
+<p>An idempotency key identifies one logical operation. Bind it to the authenticated scope and the operation payload. Reusing the same key for a different request should be rejected rather than returning an unrelated old result.</p>
+<pre><code class="language-python"># lab: idempotent_operation
+import hashlib, json
+records = {}
+effects = []
+
+def perform_once(user, key, payload):
+    identity = (user, key)
+    digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+    if identity in records:
+        old_digest, result = records[identity]
+        if old_digest != digest:
+            raise ValueError(&quot;key reused with different payload&quot;)
+        return result
+    result = {&quot;operation_id&quot;: len(effects)+1, &quot;topic&quot;:payload[&quot;topic&quot;]}
+    effects.append(result)
+    records[identity] = (digest, result)
+    return result
+
+first = perform_once(&quot;user-1&quot;, &quot;key-1&quot;, {&quot;topic&quot;:&quot;agents&quot;})
+second = perform_once(&quot;user-1&quot;, &quot;key-1&quot;, {&quot;topic&quot;:&quot;agents&quot;})
+assert first == second and len(effects) == 1
+try:
+    perform_once(&quot;user-1&quot;, &quot;key-1&quot;, {&quot;topic&quot;:&quot;databases&quot;})
+except ValueError:
+    pass
+else:
+    raise AssertionError(&quot;conflicting retry accepted&quot;)
+print(&quot;Sequential retry did not duplicate the demonstration effect&quot;)
+</code></pre>
+<p>This demonstrates semantics, not production durability or concurrency safety. A real implementation needs transactional persistence, uniqueness, in-progress status, crash recovery, and a defined retention period. The toy can lose everything on restart and race under concurrent access. Returning references to mutable cached values also needs defensive handling in a deployed design.</p>
+<h2 id="section-76">6. Authentication, authorization, and trust boundaries</h2>
+<p>Authentication answers who the caller is. Authorization answers whether that caller may perform this action on this object. Enforce both at the authoritative service. Never take a model's statement that permission exists as evidence.</p>
+<p>Browser sessions can use secure cookie-based designs with appropriate CSRF defenses. Token-based API designs require signature/issuer/audience/expiry checks and safe storage. Service-to-service identity should be explicit; a forwarded user identifier alone is not authenticated delegation.</p>
+<p>Restrict document retrieval by tenant and entitlement before evidence reaches a model or logs. A secret excluded from the final answer can still leak through prompts, telemetry, or caches. Separate secret management from model-visible context.</p>
+<p>Use parameterized SQL, output encoding, controlled file paths, upload limits, and dependency hygiene. An AI feature inherits ordinary application-security responsibilities and adds prompt-injection and model-output risks. A model's generated SQL or code is a proposal, not something to execute with unlimited authority.</p>
+<h2 id="section-91">7. A permission-aware retrieval lab</h2>
+<pre><code class="language-python"># lab: authorized_retrieval
+docs = [
+    {&quot;id&quot;:&quot;public&quot;,&quot;tenant&quot;:&quot;school-A&quot;,&quot;text&quot;:&quot;gradient slope&quot;, &quot;roles&quot;:{&quot;student&quot;,&quot;teacher&quot;}},
+    {&quot;id&quot;:&quot;exam&quot;,&quot;tenant&quot;:&quot;school-A&quot;,&quot;text&quot;:&quot;gradient exam answers&quot;, &quot;roles&quot;:{&quot;teacher&quot;}},
+    {&quot;id&quot;:&quot;other&quot;,&quot;tenant&quot;:&quot;school-B&quot;,&quot;text&quot;:&quot;gradient notes&quot;, &quot;roles&quot;:{&quot;student&quot;}},
+]
+
+def retrieve(query, authenticated_tenant, authenticated_role):
+    terms = set(query.lower().split())
+    allowed = [d for d in docs if d[&quot;tenant&quot;] == authenticated_tenant
+               and authenticated_role in d[&quot;roles&quot;]]
+    return sorted(allowed,
+        key=lambda d: len(terms &amp; set(d[&quot;text&quot;].split())), reverse=True)
+
+found = retrieve(&quot;gradient&quot;, &quot;school-A&quot;, &quot;student&quot;)
+assert [d[&quot;id&quot;] for d in found] == [&quot;public&quot;]
+print(&quot;Restricted and cross-tenant documents excluded before ranking&quot;)
+</code></pre>
+<p>Identity arguments in this lab represent already-verified server context. The function itself does not authenticate a browser. Filtering precedes ranking so restricted documents never become candidate evidence. The score is transparent word overlap, not a semantic embedding model. Production needs versioning, expiry, policy updates, authorization-aware caching, and tests for permission changes.</p>
+<h2 id="section-98">8. ML and generative AI service design</h2>
+<p>A predictive model maps inputs to scores or estimates. A generative model produces structured or unstructured outputs. An agent adds action selection and tool execution around a model. Do not turn a deterministic lookup or calculation into an expensive agent loop without a measured reason.</p>
+<p>Training pipelines need data versions, split definitions, preprocessing, configuration, metrics, and model artifacts. Serving needs validated input, the matching preprocessing, stable output contracts, monitoring, and rollback. Training-serving skew means the deployed transformation differs from the training transformation.</p>
+<p>For RAG, separate corpus preparation, retrieval, reranking, context assembly, generation, and citation checking. For fine-tuning, define a held-out task distribution and evaluate regressions. For agents, evaluate task completion and unauthorized actions, not just fluent responses.</p>
+<p>Use a provider adapter so business logic does not depend on one SDK response shape. Record model identity and generation settings. A retry can produce different text; nondeterminism is part of the interface. Validate structured output semantically even when the JSON syntax is guaranteed.</p>
+<h2 id="section-113">9. Queues, streaming, cancellation, and backpressure</h2>
+<p>Long work should not require an unbounded browser request. A job API can accept work with 202, return a job ID, and expose status. Workers claim jobs and update states such as queued, running, succeeded, failed, or cancelled. Job IDs are not authorization tokens.</p>
+<p>Server-sent events are useful for one-way server-to-browser updates. WebSockets support bidirectional messaging with different connection-management needs. Streaming requires event IDs, reconnect semantics, and clear terminal states. Showing partial tokens does not mean the entire operation succeeded.</p>
+<p>Backpressure prevents a faster producer from overwhelming a slower consumer. Bound queue length, worker concurrency, per-tenant demand, and memory. Cancelling the UI's fetch does not necessarily stop a background job. Define cancellation at each layer and avoid launching new side effects once cancellation is accepted.</p>
+<p><strong>Exercise:</strong> A reconnect receives the last event twice. What should the UI do? <strong>Answer:</strong> Deduplicate or apply events idempotently using a stable event identity, consistent with the stream contract.</p>
+<h2 id="section-128">10. Caching, retries, circuit breakers, and rate limits</h2>
+<p>A cache saves repeated work but creates freshness and isolation questions. Define key, value, TTL, invalidation, and failure policy. Include tenant/permission context where outputs depend on it. A cache hit for another user can be a disclosure, not a performance success.</p>
+<p>Retries help transient failures when repeating is safe. Use bounded exponential backoff with jitter, honor applicable retry hints, and enforce an overall deadline. Retry storms can overload recovering services. A circuit breaker opens after selected failures and later probes recovery. A bulkhead caps resource sharing so one dependency cannot consume the whole service.</p>
+<p>Rate limits control arrival over time. A token bucket refills capacity at a rate and allows a bounded burst. A concurrency limit bounds simultaneous work. These solve different problems. Limiting to ten requests per second does not prevent thousands of very long requests accumulating.</p>
+<h2 id="section-140">11. Observability and evaluation</h2>
+<p>Logs record events, metrics aggregate measurements, and traces connect steps within a request. Use request/job IDs and structured fields. Protect sensitive inputs and outputs; indiscriminate logging can create a second private-data store.</p>
+<p>Report task success, correctness, citation support, invalid tool calls, permission failures, retries, p50/p95 latency, and cost per successful task. A low cost per token can be misleading if the model needs many retries or causes more support work.</p>
+<p>Evaluation datasets should include ordinary cases, ambiguous questions, unanswerable cases, stale documents, conflicting evidence, malformed inputs, and dependency failures. Keep a final held-out set and avoid repeatedly tuning prompts directly to it. Slice by relevant groups and data conditions rather than relying only on one average.</p>
+<h2 id="section-152">12. Deployment, containers, and CI/CD</h2>
+<p>A container packages an application and its dependencies in an isolated process environment using operating-system mechanisms. It is not automatically a strong sandbox for arbitrary hostile code. Images should be reproducible, minimal enough for purpose, and scanned under your process. Avoid baking secrets into image layers.</p>
+<p>CI runs checks on changes. CD prepares or deploys validated artifacts under a release policy. Keep unit tests fast, integration tests representative, and end-to-end tests focused on critical journeys. Database migrations need backward/forward compatibility planning across rolling versions.</p>
+<p>Blue/green deployment switches between environments. Canary deployment shifts a fraction of traffic and observes outcomes. Rollback must account for schema and data changes; restoring an old binary does not undo every new write. Feature flags decouple selected behavior activation from code deployment but add configuration combinations to test.</p>
+<h2 id="section-164">13. End-to-end capstone specification</h2>
+<p>Build the learning portal with these slices, completing one user journey at a time.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Slice</th>
+<th>React</th>
+<th>Java</th>
+<th>Python</th>
+<th>Acceptance condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Topics</td>
+<td>Form and list</td>
+<td>CRUD with ownership</td>
+<td>Not needed</td>
+<td>One user cannot change another's topic</td>
+</tr>
+<tr>
+<td>Explanation</td>
+<td>Question and result view</td>
+<td>Authenticate and route</td>
+<td>Retrieve allowed notes, produce answer</td>
+<td>Evidence IDs match authorized notes</td>
+</tr>
+<tr>
+<td>Long work</td>
+<td>Job status and cancel</td>
+<td>Job ownership and lifecycle</td>
+<td>Worker execution</td>
+<td>Cancellation stops new work</td>
+</tr>
+<tr>
+<td>Progress</td>
+<td>Completion control</td>
+<td>Idempotent update</td>
+<td>Not needed</td>
+<td>Retrying does not duplicate an event</td>
+</tr>
+<tr>
+<td>Evaluation</td>
+<td>Admin results view</td>
+<td>Authorized access</td>
+<td>Batch eval runner</td>
+<td>Regressions have reproducible examples</td>
+</tr>
+</tbody>
+</table></div>
+<p>The included independent labs teach the primitives. This specification is not claimed to be a completed production deployment. To build it, start with a deterministic Python explanation adapter and replace it with a model only after permission, error, and retry behavior is tested.</p>
+<p>For a timed design interview, spend the first minutes clarifying scale, latency, freshness, users, permissions, and failure costs. Give a small viable architecture, then explain how measured constraints would justify queues, replicas, caches, or service separation.</p>
+<h2 id="section-284">14. Exam answers and coverage</h2>
+<p><strong>Why two backend languages?</strong> Sometimes Java business infrastructure and Python model tooling justify it; otherwise the extra boundary may not be worthwhile.</p>
+<p><strong>Can a distributed system promise exactly once just by using a queue?</strong> Not in a general end-to-end sense. Define delivery and effect semantics, durable identity, and transactional boundaries.</p>
+<p><strong>Where should authorization live?</strong> At trusted service boundaries and object-level operations, including retrieval filters and mutations.</p>
+<p><strong>Why distinguish cache TTL from correctness?</strong> A recent cached result can still be wrong for the current user's permissions or changed business state.</p>
+<p><strong>What is a modular monolith?</strong> One deployment with explicit internal module boundaries; it need not be an unstructured codebase.</p>
+<p><strong>How do you evaluate an AI system?</strong> Test the whole user task and individual stages under real constraints, including unsupported answers, authority violations, failures, and cost.</p>
+<p>Detailed coverage: request paths, contracts, SQL, transactions, idempotency, identity, retrieval permissions, model-service separation, streaming, queues, resilience, observability, deployment, and capstone design. Advanced introductions: consensus, multi-region databases, Kubernetes internals, hardware scheduling, and formally verified distributed protocols. No finite notebook can exhaust all distributed-system designs.</p>
+<p>Advanced continuation: <a href="14-fullstack-workshop.html">14-fullstack-workshop</a>. The advanced workshop and accompanying projects extend the introductory scope described above.</p>
+</main></body></html>

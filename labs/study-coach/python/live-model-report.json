@@ -1,0 +1,60 @@
+{
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "external_api_spend": 0,
+  "spend_note": "Local inference; hardware/electricity cost is not measured.",
+  "cases": [
+    {
+      "question": "What is a checkpoint?",
+      "answer": "A checkpoint saves workflow state so a process can resume after a restart. However, external side effects still require idempotency keys [checkpoint].",
+      "usage": {
+        "done": true,
+        "sources": [
+          "checkpoint"
+        ],
+        "mode": "ollama-generated",
+        "generated_tokens": 30,
+        "prompt_tokens": 110,
+        "citation_gate": true
+      }
+    },
+    {
+      "question": "Explain a transaction.",
+      "answer": "A transaction in a database context ensures that related changes are committed together or rolled back as a single unit of work. This means all changes within a transaction are treated as a single operation, maintaining data integrity. If any part of the transaction fails, the entire transaction is rolled back, leaving the database in its original state. [transaction]",
+      "usage": {
+        "done": true,
+        "sources": [
+          "transaction"
+        ],
+        "mode": "ollama-generated",
+        "generated_tokens": 68,
+        "prompt_tokens": 97,
+        "citation_gate": true
+      }
+    }
+  ],
+  "tool_call": {
+    "answer": "A checkpoint saves workflow state for resuming after interruption. It does not make external side effects idempotent.",
+    "budget": {
+      "model_calls": 2,
+      "tool_calls": 1,
+      "generated_tokens": 43,
+      "prompt_tokens": 294,
+      "max_calls": 2,
+      "max_generated": 256
+    },
+    "tool_used": true,
+    "tool_result": {
+      "term": "checkpoint",
+      "definition": "A checkpoint saves workflow state for resuming after interruption. It does not make external side effects idempotent."
+    }
+  },
+  "passed": [
+    "actual model tool call",
+    "bounded two-call harness",
+    "actual streamed generated output",
+    "citation-ID gate",
+    "unknown tool and forged argument rejection"
+  ],
+  "seconds": 212.64,
+  "quality_limit": "Two development questions and mechanical gates; not a broad factuality benchmark. Read the actual answers for semantic review."
+}

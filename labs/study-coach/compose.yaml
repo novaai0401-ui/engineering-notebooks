@@ -1,0 +1,19 @@
+services:
+  ai:
+    build: ./python
+    environment:
+      COACH_SERVICE_TOKEN: ${COACH_SERVICE_TOKEN:?Set a random service token}
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:8091:8091"
+    environment:
+      COACH_PASSWORD: ${COACH_PASSWORD:?Set a long local classroom password}
+      COACH_SERVICE_TOKEN: ${COACH_SERVICE_TOKEN:?Set a random service token}
+      COACH_AI_URL: http://ai:8092/answer
+    volumes:
+      - coach-data:/data
+    depends_on:
+      - ai
+volumes:
+  coach-data:

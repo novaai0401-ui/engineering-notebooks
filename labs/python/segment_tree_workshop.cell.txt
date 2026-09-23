@@ -1,0 +1,21 @@
+# lab: segment_tree_workshop
+class SegTree:
+    def __init__(self,values):
+        self.n=len(values);self.t=[0]*self.n+list(values)
+        for i in range(self.n-1,0,-1):self.t[i]=self.t[2*i]+self.t[2*i+1]
+    def set(self,i,value):
+        if not 0<=i<self.n:raise IndexError(i)
+        i+=self.n;self.t[i]=value
+        while i>1:i//=2;self.t[i]=self.t[2*i]+self.t[2*i+1]
+    def sum(self,left,right):
+        if not 0<=left<=right<=self.n:raise IndexError('range')
+        left+=self.n;right+=self.n;answer=0
+        while left<right:
+            if left&1:answer+=self.t[left];left+=1
+            if right&1:right-=1;answer+=self.t[right]
+            left//=2;right//=2
+        return answer
+s=SegTree([2,1,4,3,5]);assert s.sum(1,4)==8
+s.set(2,10);assert s.sum(1,4)==14
+assert SegTree([]).sum(0,0)==0
+print('Segment tree preserves sum summaries after a point replacement.')

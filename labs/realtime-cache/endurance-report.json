@@ -1,0 +1,150 @@
+{
+  "passed": true,
+  "duration_seconds": 300.16,
+  "logical_writes": 1127,
+  "request_count": 3382,
+  "cycle_p95_ms": 156.0,
+  "resource_samples": [
+    {
+      "second": 16.8,
+      "rss_bytes": 66162688,
+      "handles": 357
+    },
+    {
+      "second": 27.1,
+      "rss_bytes": 66199552,
+      "handles": 357
+    },
+    {
+      "second": 37.1,
+      "rss_bytes": 66211840,
+      "handles": 357
+    },
+    {
+      "second": 47.4,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 57.7,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 69.7,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 80.4,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 90.8,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 101.4,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 111.6,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 121.7,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 131.9,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 142.0,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 152.1,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 162.2,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 172.5,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 182.7,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 192.9,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 203.0,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 213.2,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 223.3,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 233.5,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 243.7,
+      "rss_bytes": 66146304,
+      "handles": 357
+    },
+    {
+      "second": 253.8,
+      "rss_bytes": 66150400,
+      "handles": 357
+    },
+    {
+      "second": 263.9,
+      "rss_bytes": 66154496,
+      "handles": 357
+    },
+    {
+      "second": 274.0,
+      "rss_bytes": 66166784,
+      "handles": 357
+    },
+    {
+      "second": 284.2,
+      "rss_bytes": 66613248,
+      "handles": 357
+    },
+    {
+      "second": 294.2,
+      "rss_bytes": 66613248,
+      "handles": 356
+    }
+  ],
+  "limitations": "One client, five-minute local HTTP/cache/write soak. Resource samples expose trends but do not prove absence of leaks. Not multi-day endurance, Redis failover, WebSocket soak or production capacity."
+}

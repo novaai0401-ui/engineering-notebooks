@@ -1,0 +1,9 @@
+{
+  "observations": [
+    "First cutover attempt did not reach the application form within 30 seconds.",
+    "Second attempt reached the Spring OAuth login failure page on port 8096 with Invalid credentials, even with a 90-second wait.",
+    "A later isolated run with diagnostic logging completed fresh login on both instances using the rotated secret."
+  ],
+  "root_cause": "Not established; do not attribute the earlier failures to timeout or resource contention without further evidence.",
+  "consequence": "The successful local execution is valid evidence for that run, but intermittent cutover reliability is still an open investigation. Earlier failures are not erased."
+}

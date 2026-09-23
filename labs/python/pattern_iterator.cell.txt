@@ -1,0 +1,9 @@
+# lab: pattern_iterator
+class LessonShelf:
+    def __init__(self,lessons):self._lessons=tuple(lessons)
+    def __iter__(self):
+        for lesson in self._lessons:yield lesson
+shelf=LessonShelf(['python','java']);a=iter(shelf);b=iter(shelf)
+assert next(a)=='python' and next(a)=='java' and next(b)=='python'
+assert list(shelf)==['python','java']
+print('Traversal state belongs to each iterator, not the collection')

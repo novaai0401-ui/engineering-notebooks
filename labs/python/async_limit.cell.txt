@@ -1,0 +1,14 @@
+# lab: async_limit
+import asyncio
+async def double_later(value, limit):
+    async with limit:
+        await asyncio.sleep(0)
+        return value*2
+
+async def run_batch():
+    limit = asyncio.Semaphore(2)
+    return await asyncio.gather(*(double_later(v, limit) for v in range(4)))
+
+values = await run_batch()
+assert values == [0,2,4,6]
+print(values)

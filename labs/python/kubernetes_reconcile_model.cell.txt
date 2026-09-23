@@ -1,0 +1,7 @@
+# lab: kubernetes_reconcile_model
+def reconcile(desired,ready,pending):
+    return max(0,desired-ready-pending)
+assert reconcile(3,1,1)==1
+assert reconcile(3,2,1)==0
+assert reconcile(3,3,0)==0
+print('Count pending work too; otherwise repeated reconciliation overcreates replacements.')

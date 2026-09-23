@@ -1,0 +1,16 @@
+# lab: typed_predictor_boundary
+from typing import Protocol, Sequence
+class Predictor(Protocol):
+    def predict(self, rows: Sequence[float]) -> list[float]: ...
+class DoublePredictor:
+    def predict(self, rows: Sequence[float]) -> list[float]:
+        return [2*x for x in rows]
+def mean_prediction(model: Predictor, rows: Sequence[float]) -> float:
+    if not rows:
+        raise ValueError('empty data')
+    predictions = model.predict(rows)
+    if len(predictions) != len(rows):
+        raise ValueError('one prediction required per row')
+    return sum(predictions)/len(predictions)
+assert mean_prediction(DoublePredictor(), [1, 2, 3]) == 4
+print('Domain code depends on a prediction contract')

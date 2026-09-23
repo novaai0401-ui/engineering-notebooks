@@ -1,0 +1,23 @@
+# lab: builder_pattern
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class ReportRequest:
+    topic: str
+    limit: int
+
+class ReportBuilder:
+    def __init__(self):
+        self._topic = ""
+        self._limit = 3
+    def topic(self, value):
+        self._topic = value.strip(); return self
+    def limit(self, value):
+        self._limit = value; return self
+    def build(self):
+        if not self._topic or not 1 <= self._limit <= 10:
+            raise ValueError("invalid report request")
+        return ReportRequest(self._topic, self._limit)
+
+request = ReportBuilder().topic("agents").limit(2).build()
+assert request == ReportRequest("agents",2)
+print(request)

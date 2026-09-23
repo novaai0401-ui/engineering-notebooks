@@ -1,0 +1,9 @@
+# lab: broadcasting_bug
+import numpy as np
+prediction = np.array([[1.], [2.], [3.]])
+target = np.array([1., 2., 3.])
+wrong = prediction-target
+assert wrong.shape == (3, 3)
+correct = prediction.ravel()-target
+assert correct.shape == (3,) and np.all(correct == 0)
+print('Shape validation catches a silent broadcasting error')

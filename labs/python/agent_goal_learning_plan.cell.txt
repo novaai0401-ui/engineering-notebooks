@@ -1,0 +1,42 @@
+# lab: agent_goal_learning_plan
+from collections import deque
+
+def goal_agent(graph, start, goal):
+    queue = deque([(start, [start])])
+    seen = {start}
+    while queue:
+        place, route = queue.popleft()
+        if place == goal:
+            return route
+        for neighbor in graph.get(place, []):
+            if neighbor not in seen:
+                seen.add(neighbor)
+                queue.append((neighbor, route + [neighbor]))
+    return None
+
+def learn_reward(rewards):
+    mean = 0.0
+    for count, reward in enumerate(rewards, 1):
+        mean += (reward - mean) / count
+    return mean
+
+def plan_and_execute(topic):
+    plan = ["define", "example", "check"]
+    handlers = {"define": lambda: f"Define {topic}",
+                "example": lambda: f"Show a small {topic} example",
+                "check": lambda: "Ask the learner to explain it"}
+    return [handlers[step]() for step in plan]
+
+def revise_until_clear(draft, max_rounds=2):
+    for _ in range(max_rounds):
+        if "Example:" in draft:
+            return draft
+        draft += " Example: two plus three equals five."
+    raise RuntimeError("review budget exhausted")
+
+assert goal_agent({"home":["road"], "road":["library"]},
+                  "home", "library") == ["home","road","library"]
+assert learn_reward([2,4,6]) == 4.0
+assert len(plan_and_execute("gradients")) == 3
+assert "Example:" in revise_until_clear("Explain addition.")
+print("Goal search, estimate learning, plan execution, and revision verified")

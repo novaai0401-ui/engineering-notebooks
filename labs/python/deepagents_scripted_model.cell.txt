@@ -1,0 +1,8 @@
+# lab: deepagents_scripted_model
+from deepagents import create_deep_agent
+deep_tutor = create_deep_agent(
+    model=ScriptedStockModel(), tools=[stock_count],
+    system_prompt="Use the demonstration stock tool and report its value.")
+deep_result = deep_tutor.invoke({"messages":[{"role":"user","content":"Pencil stock?"}]})
+assert deep_result["messages"][-1].content == "Stock result: 12"
+print("Deep Agents harness completed a scripted tool round trip")

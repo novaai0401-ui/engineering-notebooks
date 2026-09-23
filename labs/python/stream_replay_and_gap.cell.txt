@@ -1,0 +1,13 @@
+# lab: stream_replay_and_gap
+events=[(n,{'count':n}) for n in range(8,13)]
+def replay(after):
+    if after<events[0][0]-1:raise ValueError('Snapshot required')
+    return [(n,payload) for n,payload in events if n>after]
+assert [n for n,_ in replay(10)]==[11,12]
+try:replay(3)
+except ValueError:pass
+else:raise AssertionError('History gap hidden')
+state={}
+for event_id,payload in replay(10)+replay(10):state[event_id]=payload
+assert len(state)==2
+print('Replay is duplicate-safe and refuses a silently incomplete history.')

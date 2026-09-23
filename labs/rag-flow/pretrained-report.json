@@ -1,0 +1,172 @@
+{
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "backend": "Actual pretrained SentenceTransformer, CPU, local cached weights",
+  "fixture_sha256": "635b660e03972a36d1a6bc0ac0079cbeddfd40215ce5c6aa21dfa5fe10540b40",
+  "seconds": 19.36,
+  "cases": [
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "billing",
+      "returned": [
+        "billing",
+        "logout",
+        "approval"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "backup",
+      "returned": [
+        "backup",
+        "transaction",
+        "trace"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "cache",
+      "returned": [
+        "cache",
+        "trace",
+        "stream"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "stream",
+      "returned": [
+        "stream",
+        "trace",
+        "socket"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "socket",
+      "returned": [
+        "socket",
+        "stream",
+        "trace"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "kafka",
+      "returned": [
+        "stream",
+        "socket",
+        "kafka"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "transaction",
+      "returned": [
+        "transaction",
+        "trace",
+        "kafka"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "secret",
+      "returned": [
+        "secret",
+        "logout",
+        "cache"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "logout",
+      "returned": [
+        "logout",
+        "stream",
+        "trace"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "trace",
+      "returned": [
+        "trace",
+        "logout",
+        "cache"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "approval",
+      "returned": [
+        "approval",
+        "logout",
+        "billing"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "paraphrase_recall_at_3",
+      "expected": "retrieval",
+      "returned": [
+        "retrieval",
+        "approval",
+        "secret"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "adversarial_acl",
+      "returned": [
+        "secret",
+        "retrieval",
+        "logout"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "adversarial_acl",
+      "returned": [
+        "retrieval",
+        "approval",
+        "secret"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "adversarial_acl",
+      "returned": [
+        "billing",
+        "retrieval",
+        "approval"
+      ],
+      "passed": true
+    },
+    {
+      "kind": "adversarial_acl",
+      "returned": [
+        "retrieval",
+        "approval",
+        "secret"
+      ],
+      "passed": true
+    }
+  ],
+  "passed": 16,
+  "total": 16,
+  "unsupported_query_neighbours": [
+    "kafka",
+    "backup",
+    "retrieval"
+  ],
+  "limitations": "Fresh authored holdout relative to the earlier corpus, not externally curated or statistically sufficient. No generated-answer factuality score. ACL is enforced in application code, not by the model. Top-k does not establish answerability. Model weights are not bundled; first-time setup requires obtaining the named model."
+}

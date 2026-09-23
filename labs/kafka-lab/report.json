@@ -1,0 +1,10 @@
+{
+  "version": "4.1.2",
+  "passed": [
+    "Committed two ordered records and aborted one transaction.",
+    "Broker process restarted using retained KRaft/log state",
+    "Read-committed excludes aborted output; explicit group offset resumes without replay.",
+    "Two consumers own distinct partitions in one group."
+  ],
+  "limitations": "One local plaintext KRaft node on Windows; no replication, network-partition or SASL/TLS certification; Kafka transactions do not include an external database."
+}

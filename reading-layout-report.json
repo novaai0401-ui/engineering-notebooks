@@ -1,0 +1,354 @@
+{
+  "checks": [
+    {
+      "page": "01-agent-engineering.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "02-python-for-ai.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "03-java-spring-boot.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "04-react-and-frontend.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "05-fullstack-ai-architecture.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "06-algorithms-and-design-patterns.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "07-durable-agents.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "08-remote-mcp.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "09-python-ai-depth.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "10-java-spring-depth.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "11-react-depth.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "12-algorithms-depth.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "13-patterns-workshop.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "14-fullstack-workshop.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "15-interview-practice.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "16-live-model-engineering.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "17-identity-and-deployment.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "18-distributed-systems-lab.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "19-observability-and-browser-quality.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "20-specialist-algorithms-and-math.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "21-assessed-interview-route.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "22-kafka-event-engineering.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "23-docker-and-release-engineering.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "24-kubernetes-from-pods-to-recovery.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "25-cache-management-and-consistency.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "26-websockets-sse-and-realtime-delivery.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "27-reliability-evaluation-and-operations.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "28-fullstack-capstone-and-assessment.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "29-databases-for-fullstack-and-ai.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "30-rag-patterns-and-user-defined-flows.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "COMPLETION-AUDIT.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "index.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "START-HERE.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "STUDY-ON-ANY-DEVICE.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "VALIDATION.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "01-agent-engineering.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "02-python-for-ai.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "03-java-spring-boot.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "04-react-and-frontend.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "05-fullstack-ai-architecture.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "06-algorithms-and-design-patterns.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "07-durable-agents.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "08-remote-mcp.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "09-python-ai-depth.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "10-java-spring-depth.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "11-react-depth.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "12-algorithms-depth.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "13-patterns-workshop.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "14-fullstack-workshop.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "15-interview-practice.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "16-live-model-engineering.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "17-identity-and-deployment.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "18-distributed-systems-lab.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "19-observability-and-browser-quality.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "20-specialist-algorithms-and-math.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "21-assessed-interview-route.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "22-kafka-event-engineering.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "23-docker-and-release-engineering.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "24-kubernetes-from-pods-to-recovery.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "25-cache-management-and-consistency.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "26-websockets-sse-and-realtime-delivery.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "27-reliability-evaluation-and-operations.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "28-fullstack-capstone-and-assessment.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "29-databases-for-fullstack-and-ai.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "30-rag-patterns-and-user-defined-flows.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "COMPLETION-AUDIT.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "index.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "START-HERE.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "STUDY-ON-ANY-DEVICE.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "VALIDATION.html",
+      "width": 390,
+      "passed": true
+    }
+  ]
+}

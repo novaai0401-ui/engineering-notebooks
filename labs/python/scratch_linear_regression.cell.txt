@@ -1,0 +1,11 @@
+# lab: scratch_linear_regression
+import numpy as np
+X=np.arange(6,dtype=float).reshape(-1,1)/5
+y=3*X[:,0]+2
+w=np.zeros(1); b=0.
+for _ in range(3000):
+    error=X@w+b-y
+    w-=0.1*(2*X.T@error/len(y))
+    b-=0.1*2*error.mean()
+assert np.allclose(w,[3],atol=1e-5) and abs(b-2)<1e-5
+print('Recovered slope and intercept:',w.round(3),round(b,3))

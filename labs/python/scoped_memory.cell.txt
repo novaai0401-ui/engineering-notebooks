@@ -1,0 +1,18 @@
+# lab: scoped_memory
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class Memory:
+    owner: str
+    text: str
+    expires: int
+    verified: bool
+
+def recall(records, owner, now):
+    return [m.text for m in records if m.owner == owner and m.expires > now and m.verified]
+
+memories = [Memory('alice', 'prefers small examples', 20, True),
+            Memory('bob', 'private plan', 20, True),
+            Memory('alice', 'old preference', 9, True),
+            Memory('alice', 'unverified claim', 20, False)]
+assert recall(memories, 'alice', 10) == ['prefers small examples']
+print('Owner, expiry and verification filters applied before recall')

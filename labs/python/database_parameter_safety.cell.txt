@@ -1,0 +1,9 @@
+# lab: database_parameter_safety
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('CREATE TABLE note(owner TEXT,body TEXT)')
+db.execute('INSERT INTO note VALUES(?,?)',('alice','private'))
+attack="alice' OR 1=1 --"
+assert db.execute('SELECT body FROM note WHERE owner=?',(attack,)).fetchall()==[]
+assert db.execute('SELECT body FROM note WHERE owner=?',('alice',)).fetchall()==[('private',)]
+db.close();print('Values remain values rather than becoming SQL instructions.')

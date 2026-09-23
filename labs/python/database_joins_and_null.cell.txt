@@ -1,0 +1,16 @@
+# lab: database_joins_and_null
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('''
+CREATE TABLE customer(id INTEGER PRIMARY KEY,name TEXT);
+CREATE TABLE orders(id INTEGER PRIMARY KEY,customer_id INTEGER,total INTEGER);
+INSERT INTO customer VALUES(1,'Alice'),(2,'Bob'),(3,'Chen');
+INSERT INTO orders VALUES(10,1,500),(11,1,700),(12,2,300);
+''')
+rows=db.execute('''SELECT c.name,COUNT(o.id),COALESCE(SUM(o.total),0)
+FROM customer c LEFT JOIN orders o ON o.customer_id=c.id
+GROUP BY c.id,c.name ORDER BY c.id''').fetchall()
+assert rows==[('Alice',2,1200),('Bob',1,300),('Chen',0,0)]
+assert db.execute('SELECT NULL = NULL, NULL IS NULL').fetchone()==(None,1)
+db.close()
+print(rows)

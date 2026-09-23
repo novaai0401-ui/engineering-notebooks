@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "redis_version": "8.0.4",
+  "promoted_port": 16380,
+  "passed": [
+    "Authenticated three-server Redis replication and three-Sentinel quorum",
+    "Pre-failure record acknowledged by both replicas",
+    "Killed actual primary; Sentinel promoted a replica and client rediscovered it",
+    "Existing data retained and new writes/TTL expiration worked after failover",
+    "Old primary restarted as replica and caught up"
+  ],
+  "limitations": "Six processes on one Linux VM; replication remains asynchronous and WAIT is not a general zero-data-loss guarantee. No independent-host partitions, TLS, disk loss or cloud test."
+}

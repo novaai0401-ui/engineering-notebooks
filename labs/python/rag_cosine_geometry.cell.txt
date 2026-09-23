@@ -1,0 +1,10 @@
+# lab: rag_cosine_geometry
+from math import sqrt
+def cosine(a,b):
+    if len(a)!=len(b):raise ValueError('Incompatible dimensions')
+    norm=sqrt(sum(x*x for x in a)*sum(x*x for x in b))
+    return sum(x*y for x,y in zip(a,b))/norm if norm else 0.
+assert cosine((1,0),(2,0))==1
+assert cosine((1,0),(0,1))==0
+assert cosine((1,0),(-1,0))==-1
+print('Same direction: 1; perpendicular: 0; opposite: -1. These are geometry, not truth probabilities.')

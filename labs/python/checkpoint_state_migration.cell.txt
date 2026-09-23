@@ -1,0 +1,22 @@
+# lab: checkpoint_state_migration
+from copy import deepcopy
+def migrate_state(saved):
+    state = deepcopy(saved)
+    version = state.get('schema_version', 1)
+    if version == 1:
+        state['messages'] = [{'role': 'user', 'content': state.pop('question')}]
+        state['schema_version'] = 2
+    elif version != 2:
+        raise ValueError('unsupported state version')
+    return state
+
+old = {'question': 'Why retry?', 'schema_version': 1}
+new = migrate_state(old)
+assert new['messages'][0]['content'] == old['question']
+assert migrate_state(new) == new and 'question' in old
+try:
+    migrate_state({'schema_version': 99})
+except ValueError:
+    print('Migration is non-mutating, repeatable, and rejects unknown versions')
+else:
+    raise AssertionError('future state must not be guessed')

@@ -1,0 +1,13 @@
+# lab: pattern_mediator
+class TutorParticipant:
+    def answer(self,question):return 'Example for '+question
+class LearnerParticipant:
+    def __init__(self,mediator):self.mediator=mediator
+    def ask(self,question):return self.mediator.ask(question)
+class ClassroomMediator:
+    def __init__(self,tutor):self.tutor=tutor;self.history=[]
+    def ask(self,question):
+        answer=self.tutor.answer(question);self.history.append((question,answer));return answer
+mediator=ClassroomMediator(TutorParticipant());learner=LearnerParticipant(mediator)
+assert learner.ask('BFS')=='Example for BFS' and len(mediator.history)==1
+print('The learner delegates collaboration to a mediator')

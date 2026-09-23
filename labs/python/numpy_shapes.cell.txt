@@ -1,0 +1,10 @@
+# lab: numpy_shapes
+import numpy as np
+X = np.array([[1.,2.],[3.,4.],[5.,6.]])
+w = np.array([2.,-1.])
+prediction = X @ w
+assert prediction.shape == (3,)
+assert np.allclose(prediction, [0.,2.,4.])
+centered = X - X.mean(axis=0)
+assert np.allclose(centered.mean(axis=0), [0.,0.])
+print(prediction.tolist())

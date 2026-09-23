@@ -1,0 +1,14 @@
+# lab: pattern_observer_complete
+class Scores:
+    def __init__(self):self.listeners=[]
+    def subscribe(self,listener):
+        self.listeners.append(listener)
+        def unsubscribe():
+            if listener in self.listeners:self.listeners.remove(listener)
+        return unsubscribe
+    def publish(self,score):
+        for listener in tuple(self.listeners):listener(score)
+subject=Scores();seen=[];stop=subject.subscribe(seen.append)
+subject.publish(7);stop();stop();subject.publish(9)
+assert seen==[7]
+print('Subscribers receive changes and can unsubscribe idempotently')

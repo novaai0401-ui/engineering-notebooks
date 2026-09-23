@@ -1,0 +1,15 @@
+# lab: retry_delay_budget
+import random
+def retry_delays(attempts, base, cap, remaining, seed=7):
+    rng = random.Random(seed)
+    delays = []
+    for attempt in range(attempts):
+        delay = rng.uniform(0, min(cap, base*(2**attempt)))
+        if delay > remaining:
+            break
+        delays.append(delay)
+        remaining -= delay
+    return delays
+delays = retry_delays(5, 0.1, 1.0, 0.5)
+assert sum(delays) <= 0.5 and len(delays) <= 5
+print('Backoff stays within the waiting budget:', [round(x, 3) for x in delays])

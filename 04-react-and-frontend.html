@@ -1,0 +1,177 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 4 — React and Frontend Engineering</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. The browser is a document machine</a></li><li><a href="#section-21">2. JavaScript essentials for React</a></li><li><a href="#section-34">3. Closures, promises, and the event loop</a></li><li><a href="#section-44">4. React: describe what the screen should be</a></li><li><a href="#section-56">5. State is a snapshot, not a mutable notebook</a></li><li><a href="#section-71">6. Reducers make state transitions visible</a><details><summary>Examples and subtopics</summary><ul><li><a href="#section-77">Lab: a complete local study list</a></li></ul></details></li><li><a href="#section-90">7. Effects synchronize with outside systems</a><details><summary>Examples and subtopics</summary><ul><li><a href="#section-96">Integration recipe: handle a changing query</a></li></ul></details></li><li><a href="#section-106">8. Hooks, context, refs, and component design</a></li><li><a href="#section-121">9. TypeScript and boundary contracts</a></li><li><a href="#section-131">10. Routing, rendering modes, and data ownership</a></li><li><a href="#section-143">11. Forms, accessibility, and useful failure states</a></li><li><a href="#section-155">12. Performance and testing</a></li><li><a href="#section-167">13. Frontend architecture and capstone</a></li><li><a href="#section-176">14. Interview practice</a></li></ul></nav><main id="content"><p class="downloads"><a href="04-react-and-frontend.ipynb">Jupyter notebook</a><a href="04-react-and-frontend.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 4 — React and Frontend Engineering</h1>
+<p>Begin with the browser, then learn JavaScript, React state, data fetching, design, accessibility, and tests. The explanations are self-contained. JavaScript labs use Node; the delivered React project contains dependencies and tests. React is a UI library, not a complete authentication, database, or backend system.</p>
+<h2 id="section-6">1. The browser is a document machine</h2>
+<p>HTML describes meaning and structure. CSS describes presentation and layout. JavaScript describes behavior. The DOM is the browser's in-memory document tree. An HTTP request asks a server for a resource; a response contains status, headers, and usually a body.</p>
+<p>A button should be a button rather than a clickable paragraph. A form label should identify its input. Semantic elements supply behavior to keyboard users and assistive technology. Visual appearance alone does not determine usability.</p>
+<p>CSS selectors choose elements. The cascade, specificity, and source order determine applicable rules. The box model includes content, padding, border, and margin. Flexbox suits one-dimensional alignment; Grid suits two-dimensional layouts. Use responsive constraints instead of assuming every reader has your screen width.</p>
+<p><strong>Practice:</strong> Does styling a div to look like a button provide keyboard activation automatically? <strong>Answer:</strong> No. Prefer the real button element and preserve focus indication.</p>
+<h2 id="section-21">2. JavaScript essentials for React</h2>
+<p><code>const</code> prevents rebinding a variable; it does not freeze an object. <code>let</code> allows rebinding. Arrays hold ordered values. Objects hold named properties. Destructuring extracts values. Spread makes a shallow copy or expands elements. Arrow functions are concise functions with lexical <code>this</code> behavior.</p>
+<pre><code class="language-javascript">// lab: immutable_update
+import assert from 'node:assert/strict';
+const oldItems = [{id:1, done:false}, {id:2, done:false}];
+const newItems = oldItems.map(item =&gt;
+  item.id === 2 ? {...item, done:true} : item);
+assert.equal(oldItems[1].done, false);
+assert.equal(newItems[1].done, true);
+assert.equal(newItems[0], oldItems[0]);
+console.log('Changed item copied; original state preserved');
+</code></pre>
+<p><code>map</code> creates a new array. The conditional replaces only the matching object. Spread copies that object's properties and <code>done:true</code> overrides one. Unchanged items retain their references. This supports predictable state updates without unnecessary deep copying.</p>
+<p><code>===</code> compares without coercing types. <code>null</code> is an explicit empty value; <code>undefined</code> often represents absence. Nullish coalescing <code>??</code> falls back for null or undefined, while <code>||</code> also falls back for other falsy values such as zero. Use the operator matching your intended meaning.</p>
+<h2 id="section-34">3. Closures, promises, and the event loop</h2>
+<p>A closure retains access to variables from an enclosing scope. A promise represents eventual completion or failure. <code>async</code> functions return promises. <code>await</code> pauses that function's continuation, not the whole JavaScript runtime. A long synchronous computation can still block UI responsiveness.</p>
+<pre><code class="language-javascript">// lab: promises
+import assert from 'node:assert/strict';
+const double = async value =&gt; value * 2;
+const values = await Promise.all([double(2), double(3)]);
+assert.deepEqual(values, [4,6]);
+const outcomes = await Promise.allSettled([
+  Promise.resolve('ok'), Promise.reject(new Error('unavailable'))
+]);
+assert.equal(outcomes[1].status, 'rejected');
+console.log('Results and partial failures are explicit');
+</code></pre>
+<p><code>Promise.all</code> rejects if an input rejects but does not automatically cancel underlying work. <code>allSettled</code> collects each outcome. Neither creates unlimited safe concurrency; cap requests when needed. Fetch resolves for many HTTP error statuses, so inspect <code>response.ok</code> rather than treating every resolved fetch as business success.</p>
+<h2 id="section-44">4. React: describe what the screen should be</h2>
+<p>A component is commonly a function that produces a UI description from props and state. JSX is syntax for those descriptions, transformed by tooling. Props are inputs supplied by a parent. State is remembered information owned by a component or shared state layer. Re-rendering computes a new description; committing applies necessary changes. <a href="https://react.dev/learn">Official React introduction</a>.</p>
+<p>Imagine a scoreboard: its display is a function of the score. You update the score, then React updates the view. Do not manually edit the score text and also expect state to remain the authority.</p>
+<p>Rendering should be pure: the same inputs should not secretly send a payment or mutate shared data. Components can render more than you expect, including development checks. Put user-triggered work in event handlers and external synchronization in appropriate effects.</p>
+<h2 id="section-56">5. State is a snapshot, not a mutable notebook</h2>
+<p>An event handler closes over values from a particular render. Calling a setter schedules an update; it does not rewrite the handler's local variable. When the next value depends on the previous one, a functional update expresses that dependency: <code>setCount(previous =&gt; previous + 1)</code>.</p>
+<p>Never mutate a state array with <code>push</code> and expect all update logic to remain correct. Create a new array and copy changed objects. Stable keys identify list items across updates; array position can be the wrong identity when items move or are removed. <a href="https://react.dev/learn/updating-arrays-in-state">Array update guidance</a>.</p>
+<p>Derived values, such as completed-count from a task list, usually need not be separately stored. Duplicated state can disagree. Keep one authoritative representation and calculate inexpensive derived values during rendering.</p>
+<p><strong>Practice:</strong> Why can three calls to <code>setCount(count + 1)</code> in one handler behave differently from three functional updates? <strong>Answer:</strong> The first calls use the same captured snapshot; functional updates compose through queued previous values.</p>
+<h2 id="section-71">6. Reducers make state transitions visible</h2>
+<p>A reducer receives current state and an action and returns next state. Think of an action as a small labeled instruction: add item, toggle item, reset. It should not secretly perform network calls. Pure reducers are easy to test. React's <code>useReducer</code> connects that function to component updates. <a href="https://react.dev/reference/react/useReducer">API reference</a>.</p>
+<h3 id="section-77">Lab: a complete local study list</h3>
+<p>The delivered project uses the following component. The source is included in the notebook; the JavaScript build and DOM interaction checks are recorded separately from standalone Node labs.</p>
+<pre><code class="language-jsx">// lab: StudyApp
+import React, {useReducer, useState} from 'react';
+
+export function reducer(state, action) {
+  switch (action.type) {
+    case 'add': {
+      const title = action.title.trim();
+      if (!title) return state;
+      return [...state, {id:action.id, title, done:false}];
+    }
+    case 'toggle':
+      return state.map(item =&gt; item.id === action.id
+        ? {...item, done:!item.done} : item);
+    default: return state;
+  }
+}
+
+export default function StudyApp() {
+  const [items, dispatch] = useReducer(reducer, []);
+  const [title, setTitle] = useState('');
+  const completed = items.filter(item =&gt; item.done).length;
+  function submit(event) {
+    event.preventDefault();
+    if (!title.trim()) return;
+    dispatch({type:'add', id:crypto.randomUUID(), title});
+    setTitle('');
+  }
+  return &lt;main&gt;
+    &lt;h1&gt;My study practice&lt;/h1&gt;
+    &lt;form onSubmit={submit}&gt;
+      &lt;label htmlFor=&quot;topic&quot;&gt;Topic to practice&lt;/label&gt;
+      &lt;input id=&quot;topic&quot; value={title}
+        onChange={event =&gt; setTitle(event.target.value)} /&gt;
+      &lt;button type=&quot;submit&quot; disabled={!title.trim()}&gt;Add topic&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;p role=&quot;status&quot;&gt;{completed} of {items.length} completed&lt;/p&gt;
+    &lt;ul&gt;{items.map(item =&gt; &lt;li key={item.id}&gt;
+      &lt;label&gt;&lt;input type=&quot;checkbox&quot; checked={item.done}
+        onChange={() =&gt; dispatch({type:'toggle', id:item.id})} /&gt;
+        {item.title}&lt;/label&gt;
+    &lt;/li&gt;)}&lt;/ul&gt;
+  &lt;/main&gt;;
+}
+</code></pre>
+<p>The imports name React and the two hooks. <code>reducer</code> is a normal function. The add case trims text and appends a new item; toggle copies only the affected item. The component stores items and the controlled input's text. Completed count is derived rather than duplicated.</p>
+<p>Submitting prevents the browser's default form navigation, creates a stable identity at action time, and dispatches an action. The input's value follows state and its event handler updates state. A label names the field; the button has a clear role; checkboxes provide native keyboard behavior. The status paragraph reports progress. This local app intentionally does not persist across refresh or claim backend authorization.</p>
+<h2 id="section-90">7. Effects synchronize with outside systems</h2>
+<p>Effects are for synchronizing with things outside rendering, such as subscriptions or a network connection. Dependencies describe reactive values used by the effect; suppressing dependency checks to force a desired schedule can capture stale values. Cleanup disconnects or invalidates the previous synchronization. <a href="https://react.dev/learn/synchronizing-with-effects">Effect guidance</a>.</p>
+<h3 id="section-96">Integration recipe: handle a changing query</h3>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  const controller = new AbortController();
+  let active = true;
+  setStatus('loading');
+  fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+    signal: controller.signal
+  }).then(response =&gt; {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }).then(data =&gt; {
+    if (active) { setResults(data.items); setStatus('ready'); }
+  }).catch(error =&gt; {
+    if (active &amp;&amp; error.name !== 'AbortError') setStatus('error');
+  });
+  return () =&gt; { active = false; controller.abort(); };
+}, [query]);
+</code></pre>
+<p>This fragment assumes surrounding state and a defined search endpoint; it is not a standalone component. Abort requests cancellation. The active flag also prevents obsolete results from updating this component. Query encoding preserves URL structure. A production response needs runtime schema validation and a user-facing error policy. Framework data-loading facilities may handle caching and races more systematically.</p>
+<p>Development Strict Mode can exercise extra setup/cleanup behavior to reveal bugs. Do not “fix” duplicate development observations by hiding missing cleanup. <a href="https://react.dev/reference/react/useEffect">useEffect reference</a>.</p>
+<h2 id="section-106">8. Hooks, context, refs, and component design</h2>
+<p>Hooks must follow their documented call rules so React can associate state with the right component execution. Custom hooks package reusable stateful logic; they do not share one global state merely because two components call the same hook.</p>
+<p>Context passes a value through a subtree without manually forwarding every prop. It is useful for themes or bounded shared concerns, but every rapidly changing value does not belong in one giant provider. State ownership should follow who reads and updates it.</p>
+<p>A ref remembers a mutable value without triggering a render when changed. Use it for appropriate imperative handles or values that should not drive the visible UI. <code>useMemo</code> caches a computed value and <code>useCallback</code> a function identity under dependency rules; they are performance tools, not correctness guarantees. Measure before adding them everywhere.</p>
+<p>Prefer small components with clear props and composition. A presentational component can receive data and callbacks while a boundary component coordinates fetching. Avoid a rigid rule that every component must be split in two; use boundaries that clarify responsibilities.</p>
+<h2 id="section-121">9. TypeScript and boundary contracts</h2>
+<p>TypeScript checks types during development; the resulting JavaScript still receives real runtime data. A type assertion does not validate a server response. Parse and validate at the boundary.</p>
+<pre><code class="language-typescript">type LoadState&lt;T&gt; =
+  | {status:'loading'}
+  | {status:'ready'; data:T}
+  | {status:'error'; message:string};
+
+function label(state: LoadState&lt;string[]&gt;): string {
+  if (state.status === 'ready') return `${state.data.length} items`;
+  if (state.status === 'error') return state.message;
+  return 'Loading';
+}
+</code></pre>
+<p>The status field discriminates the allowed shape. Loading cannot accidentally carry a required success payload. This reduces impossible state combinations. Generics let the same state structure describe different payload types. Compile-time narrowing helps code clarity; server identity, permissions, and semantic validity still need checks.</p>
+<h2 id="section-131">10. Routing, rendering modes, and data ownership</h2>
+<p>A router maps locations to UI. Put shareable navigation state in the URL when appropriate, such as search filters and selected resource IDs. Local transient input need not become a URL parameter. Protect routes for user experience, but enforce authority on the server regardless of hidden links.</p>
+<p>Client-side rendering builds much UI in the browser. Server-side rendering sends rendered markup; hydration connects client behavior to compatible server output. Static generation prepares markup ahead of time. Server Components and streaming depend on the chosen supporting framework and boundary rules; they are not simply a flag that makes every component run everywhere.</p>
+<p>Avoid sending secrets in client bundles. Any code or credential delivered to the browser should be considered accessible to its user. SSR does not automatically fix authorization or malicious HTML. Escape data appropriately and avoid inserting untrusted HTML without a justified sanitization design.</p>
+<h2 id="section-143">11. Forms, accessibility, and useful failure states</h2>
+<p>Every data-dependent view needs loading, empty, error, and success states. A blank panel gives no useful explanation. Keep previous data only when its staleness is clear. Disable duplicate submissions while also making the server robust to retries; a disabled button is not an idempotency mechanism.</p>
+<p>Forms need labels, clear errors, appropriate input types, and focus behavior. Keyboard navigation, visible focus, contrast, and screen-reader names matter. Announce important asynchronous status changes without repeatedly interrupting the user. Tables need meaningful headers; icons need text alternatives when they convey meaning.</p>
+<p>For AI chat, distinguish generated text from verified tool results. Show citations, tool progress, and recoverable errors without exposing secrets or unnecessary implementation details. Streaming partial output is not final success.</p>
+<h2 id="section-155">12. Performance and testing</h2>
+<p>Measure bundle size, render cost, network waterfalls, and user-perceived latency. Code splitting can defer unused modules. Virtualizing long lists reduces rendered elements but requires careful focus and accessibility behavior. Debouncing waits for a pause before work; throttling limits frequency. Cancel or ignore obsolete requests rather than letting old responses overwrite new input.</p>
+<p>Unit-test pure reducers and utilities. Component tests interact through labels, roles, and visible behavior. Integration tests exercise API contracts. Browser tests cover real navigation and crucial journeys. Snapshot tests alone cannot demonstrate keyboard operability or correct network races.</p>
+<p>The delivered project checks adding and completing a topic in a DOM test environment and produces a bundled static page. A DOM simulation does not replace cross-browser testing, screen-reader review, or a complete accessibility audit.</p>
+<h2 id="section-167">13. Frontend architecture and capstone</h2>
+<p>Organize by feature when it keeps related UI, validation, API calls, and tests together. Use a small shared design system for repeatable controls. Keep domain contracts separate from provider-specific transport details. Avoid a global mutable object that every component can change.</p>
+<p>Capstone: a study dashboard with topics, completion status, search, and an AI explanation panel. The React layer owns display and input state. Java owns users and persisted study records. Python owns model inference or retrieval. The frontend receives a documented result structure and handles errors explicitly. Notebook 5 explains the full request path.</p>
+<h2 id="section-176">14. Interview practice</h2>
+<p><strong>Props versus state?</strong> Props are inputs supplied by a parent; state is remembered information owned by a component or state layer.</p>
+<p><strong>Why stable keys?</strong> They help match item identity across list changes; incorrect keys can attach local state to the wrong item.</p>
+<p><strong>Why no direct mutation?</strong> It undermines predictable change tracking and can alter prior snapshots shared by other code.</p>
+<p><strong>Effect versus event?</strong> An event handles a particular interaction; an effect synchronizes after rendering with an external system.</p>
+<p><strong>Does TypeScript validate an API payload?</strong> No, runtime checks are still needed.</p>
+<p><strong>Does Promise.all cancel work on failure?</strong> Not automatically; define cancellation separately.</p>
+<p><strong>Why avoid derived duplicate state?</strong> Multiple representations can become inconsistent.</p>
+<p><strong>Coverage:</strong> Detailed foundations cover browser structure, JavaScript, state, reducers, effects, component design, TypeScript concepts, accessibility, rendering choices, performance, and tests. Advanced framework-specific routing internals, compiler implementation, every third-party state library, and all CSS specifications are outside a finite introductory workbook.</p>
+<p>Advanced continuation: <a href="11-react-depth.html">11-react-depth</a>. The advanced workshop and accompanying projects extend the introductory scope described above.</p>
+</main></body></html>

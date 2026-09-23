@@ -1,0 +1,28 @@
+# lab: scratch_decision_tree
+def gini(labels):
+    if not len(labels): return 0.
+    counts=np.unique(labels,return_counts=True)[1]/len(labels)
+    return 1-float(np.sum(counts**2))
+def fit_tree(X,y,depth=3):
+    values,counts=np.unique(y,return_counts=True)
+    leaf=int(values[counts.argmax()])
+    if depth==0 or len(values)==1:return leaf
+    best=None
+    for column in range(X.shape[1]):
+        unique=np.unique(X[:,column])
+        for threshold in (unique[:-1]+unique[1:])/2:
+            left=X[:,column]<=threshold
+            score=(left.sum()*gini(y[left])+(~left).sum()*gini(y[~left]))/len(y)
+            if best is None or score<best[0]:best=(score,column,float(threshold),left)
+    if best is None:return leaf
+    _,column,threshold,left=best
+    return (column,threshold,fit_tree(X[left],y[left],depth-1),fit_tree(X[~left],y[~left],depth-1))
+def tree_predict(tree,row):
+    if isinstance(tree,int):return tree
+    column,threshold,left,right=tree
+    return tree_predict(left if row[column]<=threshold else right,row)
+X=np.array([[0.,0.],[0.,1.],[1.,0.],[1.,1.]])
+y=np.array([0,1,1,0])
+tree=fit_tree(X,y)
+assert [tree_predict(tree,row) for row in X]==y.tolist()
+print('Recursive splits represent XOR; one linear boundary cannot')

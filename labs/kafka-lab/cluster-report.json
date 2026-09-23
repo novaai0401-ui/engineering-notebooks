@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "Three real KRaft/broker processes with replication factor 3 and minimum ISR 2",
+    "Killed actual partition leader; remaining quorum accepted acks=all writes",
+    "All 20 acknowledged records retained in order before and after restart",
+    "Restarted broker caught up to ISR 3"
+  ],
+  "killed_leader": 1,
+  "replacement_leader": 2,
+  "limitations": "Three processes on one Windows host, plaintext loopback. Not independent machines, network partition, rolling upgrades, disk loss, TLS/SASL or cloud certification."
+}

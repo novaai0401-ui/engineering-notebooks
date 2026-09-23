@@ -1,0 +1,8 @@
+{
+  "passed": [
+    "Extracted ZIP passed offline RAG and generation-recovery tests with Python site-packages disabled",
+    "Extracted database and RAG notebook cells executed with standard-library-only Python",
+    "Extracted study server passed real loopback HTTP and path-boundary tests"
+  ],
+  "limitations": "Executed on Windows Python 3.11 with -S; not a physical macOS/Linux/phone test and not all optional service dependencies."
+}

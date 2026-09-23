@@ -1,0 +1,20 @@
+# lab: strategy_state
+def rank(items, score):
+    return sorted(items, key=score, reverse=True)
+assert rank(["a","bbbb","cc"], len) == ["bbbb","cc","a"]
+
+allowed = {"draft":{"submit":"review"},
+           "review":{"approve":"done", "reject":"draft"},
+           "done":{}}
+def transition(state, event):
+    if event not in allowed[state]:
+        raise ValueError("illegal transition")
+    return allowed[state][event]
+assert transition("review","approve") == "done"
+try:
+    transition("done","submit")
+except ValueError:
+    pass
+else:
+    raise AssertionError("illegal transition allowed")
+print("Strategy selected behavior; state table protected transitions")

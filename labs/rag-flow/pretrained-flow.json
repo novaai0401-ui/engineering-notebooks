@@ -1,0 +1,1 @@
+{"mode":"hybrid","embedding":"pretrained","top_k":3,"max_steps":3,"context_chars":1800,"generator":"extractive"}

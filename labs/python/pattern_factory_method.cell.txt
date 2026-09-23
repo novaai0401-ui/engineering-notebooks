@@ -1,0 +1,12 @@
+# lab: pattern_factory_method
+from abc import ABC, abstractmethod
+class Delivery(ABC):
+    @abstractmethod
+    def transport(self): ...
+    def deliver(self,parcel):return self.transport().carry(parcel)
+class Bicycle:
+    def carry(self,parcel):return f'bike:{parcel}'
+class LocalDelivery(Delivery):
+    def transport(self):return Bicycle()
+assert LocalDelivery().deliver('book')=='bike:book'
+print('Creator workflow uses the subclass-created product')

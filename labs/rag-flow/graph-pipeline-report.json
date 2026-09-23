@@ -1,0 +1,56 @@
+{
+  "passed": [
+    "Actual local model extracted the three expected relationships from text",
+    "Reopened SQLite graph retains two-hop path and source hashes",
+    "Permission filtering precedes Louvain communities, summaries and local traversal",
+    "Invalid support rejected atomically; permission change removes private derived summaries",
+    "Document deletion cascades edges; changed source replaces old relationships"
+  ],
+  "limitations": "Small custom graph-RAG pipeline, not Microsoft GraphRAG. Actual model extraction; normalized exact-name resolution and extractive community summaries. Quote presence is provenance, not proof of relationship entailment. Three authored facts are reviewed by explicit expectations, not a broad extraction benchmark.",
+  "extracted_edges": [
+    {
+      "doc_id": "g1",
+      "source": "Atlas",
+      "relation": "maintained_by",
+      "target": "Search",
+      "quote": "Atlas is maintained by Search."
+    },
+    {
+      "doc_id": "g2",
+      "source": "Search",
+      "relation": "led_by",
+      "target": "Noor",
+      "quote": "Search is led by Noor."
+    },
+    {
+      "doc_id": "g3",
+      "source": "Vault",
+      "relation": "led_by",
+      "target": "Sera",
+      "quote": "Vault is led by Sera."
+    }
+  ],
+  "model_timings": {
+    "eval_count": 153,
+    "eval_duration": 58193398000,
+    "prompt_eval_count": 131,
+    "prompt_eval_duration": 20552688000,
+    "done_reason": "stop"
+  },
+  "communities_for_bob": [
+    {
+      "entities": [
+        "atlas",
+        "noor",
+        "search"
+      ],
+      "summary": "[g1] Atlas is maintained by Search. [g2] Search is led by Noor.",
+      "source_ids": [
+        "g1",
+        "g2"
+      ]
+    }
+  ],
+  "status": "passed",
+  "seconds": 104.16
+}

@@ -1,0 +1,11 @@
+# lab: pattern_decorator_complete
+class TextReader:
+    def read(self):return 'agents'
+class UpperReader:
+    def __init__(self,inner):self.inner=inner
+    def read(self):return self.inner.read().upper()
+class BracketReader:
+    def __init__(self,inner):self.inner=inner
+    def read(self):return '['+self.inner.read()+']'
+assert BracketReader(UpperReader(TextReader())).read()=='[AGENTS]'
+print('Wrappers add behavior while retaining the reader contract')

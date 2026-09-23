@@ -1,0 +1,10 @@
+# lab: consumer_inbox
+ledger=[];inbox=set()
+def apply(event):
+    if event['id'] in inbox:return False
+    # These two writes must be ONE transaction in a real database.
+    ledger.append(event['amount']);inbox.add(event['id']);return True
+e={'id':'payment-7','amount':250}
+assert apply(e) and not apply(e);assert sum(ledger)==250
+next_offset=12+1;assert next_offset==13
+print('One business effect despite redelivery; commit the next offset after durable processing.')

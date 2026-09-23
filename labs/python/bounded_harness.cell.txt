@@ -1,0 +1,29 @@
+# lab: bounded_harness
+def add(a: int, b: int) -> int:
+    if type(a) is not int or type(b) is not int:
+        raise ValueError("integer arguments required")
+    return a + b
+
+def run_scripted_agent(decisions, allowed_tools, max_steps=3):
+    observations = []
+    for step, decision in enumerate(decisions, start=1):
+        if step > max_steps:
+            raise RuntimeError("step budget exceeded")
+        if decision["kind"] == "finish":
+            return {"answer": decision["answer"], "observations": observations}
+        if decision["kind"] != "tool":
+            raise ValueError("unknown decision kind")
+        name = decision["name"]
+        if name not in allowed_tools:
+            raise PermissionError("tool not allowed")
+        result = allowed_tools[name](**decision["arguments"])
+        observations.append({"tool": name, "result": result})
+    raise RuntimeError("agent did not finish")
+
+decisions = [
+    {"kind":"tool", "name":"add", "arguments":{"a":2,"b":3}},
+    {"kind":"finish", "answer":"The sum is 5."},
+]
+result = run_scripted_agent(decisions, {"add":add})
+assert result["observations"][0]["result"] == 5
+print(result["answer"])

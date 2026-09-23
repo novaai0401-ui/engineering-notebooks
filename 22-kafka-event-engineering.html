@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>22 — Kafka: a shared notebook that many teams can read</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-3">1. The classroom story</a></li><li><a href="#section-15">2. A key chooses an ordering lane</a></li><li><a href="#section-25">3. Acknowledgment, replication and durability</a></li><li><a href="#section-37">4. KRaft and the control plane</a></li><li><a href="#section-49">5. Three meanings of duplicates</a></li><li><a href="#section-58">6. Offsets are the next bookmark</a></li><li><a href="#section-65">7. Kafka transactions and their boundary</a></li><li><a href="#section-77">8. Rebalances and slow consumers</a></li><li><a href="#section-86">9. Retries, poison events and dead letters</a></li><li><a href="#section-95">10. Schema evolution and event time</a></li><li><a href="#section-104">11. Outbox, CDC, Connect and Streams</a></li><li><a href="#section-113">12. Spring Boot and interview practice</a></li></ul></nav><main id="content"><p class="downloads"><a href="22-kafka-event-engineering.ipynb">Jupyter notebook</a><a href="22-kafka-event-engineering.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">22 — Kafka: a shared notebook that many teams can read</h1>
+<h2 id="section-3">1. The classroom story</h2>
+<p>Imagine a teacher writes every classroom event in a notebook: a child joined, a book was borrowed, a book was returned. The librarian reads these events to update inventory. The head teacher reads the same events to count attendance. Reading a page does not erase it. Each reader keeps a bookmark.</p>
+<p>Kafka is an event log with those properties. A producer appends records. A topic names a stream. Partitions divide that stream into ordered logs. A consumer reads records. An offset is a position inside one partition. A consumer group remembers its progress independently from other groups. Retention eventually removes old log data according to policy; Kafka is not automatically an everlasting archive.</p>
+<p>Use this model before memorizing settings. A traditional work queue emphasizes distributing jobs and acknowledging delivery. Kafka emphasizes retained streams, independent readers, partition ordering and replay. Both can process jobs, but their operational tradeoffs differ.</p>
+<h2 id="section-15">2. A key chooses an ordering lane</h2>
+<p>Suppose every event for order 7 uses key <code>order-7</code>. A consistent partitioner normally puts those events in the same partition. Their order is preserved in that partition under the producer and consumer configuration's guarantees. There is no global ordering across all partitions. Adding partitions can change key mapping; plan ordering-sensitive migrations explicitly.</p>
+<p>Two consumers in one group divide partitions. In the traditional assignment model a partition belongs to one active member in that group at a time. With two partitions and five consumers, some consumers have no partition work. A different group can independently read the same records.</p>
+<pre><code class="language-python"># lab: partition_ordering
+import hashlib
+def lane(key,count):return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8],'big')%count
+events=[('order-7','created'),('order-8','created'),('order-7','approved')]
+partitions=[[] for _ in range(3)]
+for key,value in events:partitions[lane(key,3)].append((key,value))
+assert [v for k,v in partitions[lane('order-7',3)] if k=='order-7']==['created','approved']
+print('Same-key order retained inside its lane. This teaching hash is not Kafka’s default partitioner.')
+</code></pre>
+<h2 id="section-25">3. Acknowledgment, replication and durability</h2>
+<p>Each partition has a leader and may have replicas. In-sync replicas are the followers considered sufficiently caught up. With <code>acks=all</code>, a producer waits for the required in-sync replication acknowledgment. <code>min.insync.replicas</code> constrains when writes may proceed. Replication factor three with minimum in-sync replicas two is a common teaching example: it can sacrifice write availability when too few replicas remain to preserve the intended durability policy.</p>
+<p><code>acks=all</code> on a one-node development broker is not three-node fault tolerance. Acknowledgment also does not eliminate every storage or infrastructure failure. Define whether you are protecting against a process crash, machine loss, disk corruption or an entire region disappearing.</p>
+<p>The supplied native exercise uses one local KRaft broker and plaintext loopback listeners. It tests real transactions, offsets, consumer assignment and restart persistence. It does not certify replication or production security. The pinned version is Kafka 4.1.2, a deliberately versioned teaching runtime rather than a claim to be the newest release.</p>
+<h2 id="section-37">4. KRaft and the control plane</h2>
+<p>Kafka's controllers maintain cluster metadata: brokers, partition leadership and configuration. KRaft manages that metadata through a replicated consensus log. The data brokers store event partitions. A small development process may act as both controller and broker. Production topology should account for the availability and capacity requirements of both roles.</p>
+<p>The native harness creates a private storage directory, formats it with a cluster ID, starts Kafka using Java, then kills and restarts its own broker process. Never reformat an existing cluster's storage to “fix” a startup problem. Formatting is initialization, not recovery.</p>
+<p>Run <code>mvn package</code> in <code>labs/kafka-lab</code>, then run <code>python labs/kafka-lab/run.py</code> from the library root with the documented Python environment. The harness uses ports 19092 and 19093 and refuses occupied ports. Build dependencies stay outside the ZIP.</p>
+<h2 id="section-49">5. Three meanings of duplicates</h2>
+<p>A producer can retry a request whose acknowledgment was lost. Kafka's idempotent producer protocol prevents certain duplicate appends caused by those retries. An application can also deliberately send the same business event twice in two distinct sends; producer idempotence does not identify those as the same business operation. Finally, a consumer can execute work and crash before committing its offset, causing redelivery.</p>
+<p>Use a stable business event ID and an inbox uniqueness constraint for the third case. Bind an HTTP idempotency key to the caller and request payload for the second. The first is addressed by appropriate producer configuration. These controls complement each other.</p>
+<h2 id="section-58">6. Offsets are the next bookmark</h2>
+<p>If a consumer has successfully processed offset 12, it normally commits 13: the next position to read. Commit before the business effect and a crash can lose that effect. Commit after the effect and a crash can repeat it. For a database effect, store the event ID and effect in one database transaction, then commit the Kafka offset. Redelivery finds the inbox record and becomes harmless.</p>
+<pre><code class="language-python"># lab: consumer_inbox
+ledger=[];inbox=set()
+def apply(event):
+    if event['id'] in inbox:return False
+    # These two writes must be ONE transaction in a real database.
+    ledger.append(event['amount']);inbox.add(event['id']);return True
+e={'id':'payment-7','amount':250}
+assert apply(e) and not apply(e);assert sum(ledger)==250
+next_offset=12+1;assert next_offset==13
+print('One business effect despite redelivery; commit the next offset after durable processing.')
+</code></pre>
+<h2 id="section-65">7. Kafka transactions and their boundary</h2>
+<p>A transactional producer can commit several Kafka writes atomically or abort them. A consumer using <code>read_committed</code> does not expose aborted transactional records. A consume-transform-produce application can include consumed offsets in the Kafka transaction. This supports exactly-once processing semantics within the configured Kafka boundary.</p>
+<p>It does not automatically include a PostgreSQL transaction, a payment provider or an email. Naming an external API call inside your transactional method does not make it part of Kafka's transaction. Explain this boundary in an interview before saying “exactly once.”</p>
+<p><code>KafkaExercise.java</code> commits <code>created</code>, aborts <code>aborted-payment</code>, then commits <code>approved</code> in one partition. After a broker restart, the reader must see only <code>created</code> and <code>approved</code>, in order. It explicitly commits its offset and verifies a new consumer resumes beyond those records. Another stage checks two consumers receive distinct partition assignments.</p>
+<h2 id="section-77">8. Rebalances and slow consumers</h2>
+<p>Group membership changes can reassign partitions. A handler must stop acting on partitions it no longer owns and avoid committing offsets for unfinished work. Processing longer than the allowed poll interval can make a healthy process appear failed to the group. Moving work into an executor is not sufficient unless you track completion and ownership per partition.</p>
+<p>Lag measures the distance between a consumer's position and the end of a partition. It is useful, but one large slow event and many small events can have very different time-to-catch-up at the same lag. Also measure age of the oldest unprocessed event, handler latency, rebalance rate and error rate.</p>
+<h2 id="section-86">9. Retries, poison events and dead letters</h2>
+<p>Classify failures. A temporary database outage can be retried with backoff. An event with an impossible schema will not improve after a thousand retries. A poison event can block an ordered partition if you insist on strict processing order. Sending it to a dead-letter topic restores progress but changes the completeness or ordering of downstream business processing.</p>
+<p>A dead-letter record should preserve original event ID, source topic/partition/offset, schema version, failure category and retry history. Avoid copying secrets unnecessarily. Replay is an operational change: repair the cause, retain the original business idempotency key, and monitor the result.</p>
+<h2 id="section-95">10. Schema evolution and event time</h2>
+<p>An event is a contract. Include event ID, event type, schema version, occurrence time, aggregate ID and payload. Add optional fields with defined defaults before removing or changing existing ones. A schema registry can enforce compatibility rules, but it cannot prove that a renamed amount field still means the same currency unit.</p>
+<p>Event time is when the business action occurred; processing time is when your system handled it. Windowed processing needs a policy for late events, clock errors and corrections. Watermarks and grace periods express a lateness policy; they do not stop a source from sending older data later.</p>
+<h2 id="section-104">11. Outbox, CDC, Connect and Streams</h2>
+<p>The database outbox solves the gap between a business commit and event publication. A relay or change-data-capture connector publishes committed outbox rows. CDC reads changes from a database's change stream or log; operate it with permissions, retention and recovery in mind. Kafka Connect runs connectors and their offset/configuration infrastructure. Kafka Streams is a Java library for stateful stream processing, including joins, windows and local state stores backed by changelog topics.</p>
+<p>Use simple producers and consumers first. Adopt these tools when their operational model fits the problem; a new component adds an upgrade, monitoring and failure responsibility.</p>
+<h2 id="section-113">12. Spring Boot and interview practice</h2>
+<p>In Spring applications, <code>KafkaTemplate</code> sends records and <code>@KafkaListener</code> methods receive them. Configure serializers, group ID, acknowledgment/error handling and transaction boundaries explicitly. Do not assume that <code>@Transactional</code> automatically combines every database and messaging operation into one atomic commit. An outbox usually makes the boundary easier to reason about.</p>
+<p>Interview: “We have 12 consumers and six partitions. Why are six idle?” Explain partition ownership and distinguish groups. Follow-up: adding partitions may alter key routing. Interview: “The email was sent twice although producer idempotence was enabled.” Explain consumer redelivery and the external-effect boundary. Timed design: preserve per-order processing while scaling across many orders; name your key, partition strategy, retry policy and migration plan.</p>
+<p>Reference provenance: <a href="https://kafka.apache.org/41/getting-started/quickstart/">Kafka 4.1 quickstart and linked configuration documentation</a>. The project and explanations here are self-contained; links document API provenance.</p>
+</main></body></html>

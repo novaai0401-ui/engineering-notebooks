@@ -1,0 +1,9 @@
+# lab: pattern_prototype
+from copy import deepcopy
+class ExerciseTemplate:
+    def __init__(self,title,hints):self.title=title;self.hints=hints
+    def clone(self):return deepcopy(self)
+original=ExerciseTemplate('BFS',['use a queue'])
+copy=original.clone();copy.hints.append('mark visited when enqueued')
+assert original.hints==['use a queue'] and len(copy.hints)==2
+print('Prototype clone does not share its mutable hint list')

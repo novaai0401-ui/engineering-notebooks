@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "passed": [
+    "Supplied Node/Maven multi-stage web image and Python image built; Compose services started",
+    "Authenticated Java-to-Python request, approval, idempotency and SSE answer completed inside containers",
+    "Web container restart retained completed job in the named database volume"
+  ],
+  "project": "notebooks-c1d91aa6",
+  "limitations": "Actual local WSL Docker build and Compose execution using the classroom Basic-auth profile and H2 volume. Not public cloud, production OIDC, multi-node database, image signing or vulnerability certification.",
+  "images": {
+    "web": "notebooks-c1d91aa6-web:latest",
+    "ai": "notebooks-c1d91aa6-ai:latest"
+  },
+  "image_ids": {
+    "web": "sha256:362497014ca153b53264ad17230243a283f5a3b2c390520df435e827261bdfcb",
+    "ai": "sha256:597181c9830a5ba885b0ad82a72a99376d796a54babbe656c3bdac7e393eb947"
+  },
+  "seconds": 1138.97
+}

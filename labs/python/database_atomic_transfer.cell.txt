@@ -1,0 +1,19 @@
+# lab: database_atomic_transfer
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.execute('CREATE TABLE account(id INTEGER PRIMARY KEY,balance INTEGER CHECK(balance>=0))')
+db.executemany('INSERT INTO account VALUES(?,?)',[(1,100),(2,50)]);db.commit()
+def transfer(amount,fail=False):
+    with db:
+        changed=db.execute('UPDATE account SET balance=balance-? WHERE id=1 AND balance>=?',(amount,amount)).rowcount
+        if changed!=1: raise ValueError('Insufficient funds')
+        if fail: raise RuntimeError('Connection failed before credit')
+        db.execute('UPDATE account SET balance=balance+? WHERE id=2',(amount,))
+try: transfer(30,True)
+except RuntimeError: pass
+assert db.execute('SELECT SUM(balance) FROM account').fetchone()[0]==150
+assert db.execute('SELECT balance FROM account WHERE id=1').fetchone()[0]==100
+transfer(30)
+assert db.execute('SELECT balance FROM account ORDER BY id').fetchall()==[(70,),(80,)]
+db.close()
+print('Rollback restored the debit; successful transfer preserved total money.')

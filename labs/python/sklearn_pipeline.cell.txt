@@ -1,0 +1,17 @@
+# lab: sklearn_pipeline
+import numpy as np
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+X = np.array([[i, i % 3] for i in range(-20, 21)], dtype=float)
+y = np.array([int(i >= 0) for i in range(-20, 21)])
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=7, stratify=y)
+model = make_pipeline(StandardScaler(), LogisticRegression(random_state=7))
+model.fit(X_train, y_train)
+probabilities = model.predict_proba(X_test)[:,1]
+assert probabilities.shape == y_test.shape
+assert np.all((probabilities >= 0) & (probabilities <= 1))
+print("Held-out predictions:", len(probabilities))

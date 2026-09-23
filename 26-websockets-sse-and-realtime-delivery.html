@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>26 — Real-time applications: messages that survive disconnection</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-3">1. Choose the conversation shape</a></li><li><a href="#section-88">2. SSE framing and the browser</a></li><li><a href="#section-98">3. Replay, gaps and duplicate delivery</a></li><li><a href="#section-108">4. WebSocket protocol and security</a></li><li><a href="#section-117">5. Heartbeats, backpressure and cancellation</a></li><li><a href="#section-126">6. Scaling across application instances</a></li><li><a href="#section-135">7. React and Spring integration</a></li><li><a href="#section-144">8. Run the included real project</a></li><li><a href="#section-156">9. Interview/debugging round</a></li><li><a href="#section-165">10. Two real application instances</a></li></ul></nav><main id="content"><p class="downloads"><a href="26-websockets-sse-and-realtime-delivery.ipynb">Jupyter notebook</a><a href="26-websockets-sse-and-realtime-delivery.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">26 — Real-time applications: messages that survive disconnection</h1>
+<h2 id="section-3">1. Choose the conversation shape</h2>
+<p>Polling is repeatedly asking “Is it ready?” SSE is a teacher continuously announcing updates to listening students. WebSocket is a telephone conversation in which both sides can speak. Choose by interaction needs, network constraints and recovery requirements rather than treating newer protocols as automatically better.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Direction</th>
+<th>Useful example</th>
+<th>Main design work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Polling</td>
+<td>Client request/server response</td>
+<td>Infrequent job status</td>
+<td>Interval, conditional requests, load</td>
+</tr>
+<tr>
+<td>Long polling</td>
+<td>Delayed HTTP response</td>
+<td>Compatibility fallback</td>
+<td>Timeouts, repeated requests</td>
+</tr>
+<tr>
+<td>SSE</td>
+<td>Server to client over HTTP</td>
+<td>AI tokens, progress, notifications</td>
+<td>Replay cursor, proxy buffering, reconnect</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>Bidirectional</td>
+<td>Collaborative interaction, chat</td>
+<td>Protocol, heartbeat, bounded queues, reconnect</td>
+</tr>
+</tbody>
+</table></div>
+<p>An open connection is not guaranteed delivery. Every method needs authentication, authorization, resource limits and a recovery policy.</p>
+<h2 id="section-88">2. SSE framing and the browser</h2>
+<p>An SSE response uses <code>text/event-stream</code>. Each event is separated by a blank line. <code>data:</code> carries payload, <code>event:</code> can name the event type and <code>id:</code> supplies a reconnect cursor. Comments can serve as heartbeat traffic. Native EventSource reconnects and can send Last-Event-ID; the server must implement meaningful replay. <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events">SSE guide</a>.</p>
+<pre><code class="language-text">id: 42
+event: progress
+data: {&quot;job&quot;:&quot;job-7&quot;,&quot;status&quot;:&quot;complete&quot;}
+
+</code></pre>
+<p>Native browser EventSource does not provide arbitrary request-header configuration like fetch. Same-origin cookies are one option; streaming fetch permits other request handling but needs a parser and reconnect implementation. Do not place long-lived bearer secrets in query strings. Browser cookies require a deliberate same-origin/cross-origin and CSRF policy for related mutations.</p>
+<h2 id="section-98">3. Replay, gaps and duplicate delivery</h2>
+<p>If the client received event 42 but lost its acknowledgement or disconnected before recording it, replay can repeat 42. Deduplicate by stable event ID or make state application idempotent. If the server retained only events 80 onward and the client asks after 42, silently starting at 80 hides missing state. Return a defined resynchronization signal and fetch an authorized snapshot.</p>
+<pre><code class="language-python"># lab: stream_replay_and_gap
+events=[(n,{'count':n}) for n in range(8,13)]
+def replay(after):
+    if after&lt;events[0][0]-1:raise ValueError('Snapshot required')
+    return [(n,payload) for n,payload in events if n&gt;after]
+assert [n for n,_ in replay(10)]==[11,12]
+try:replay(3)
+except ValueError:pass
+else:raise AssertionError('History gap hidden')
+state={}
+for event_id,payload in replay(10)+replay(10):state[event_id]=payload
+assert len(state)==2
+print('Replay is duplicate-safe and refuses a silently incomplete history.')
+</code></pre>
+<p>The snapshot and cursor must describe a consistent point. If you fetch a snapshot and then start listening after an unrelated current cursor, you can miss updates between them. Obtain a revision with the snapshot and replay after that revision, or implement an equivalent atomic handoff.</p>
+<h2 id="section-108">4. WebSocket protocol and security</h2>
+<p>After the handshake, define message types, version, maximum size, request ID, validation rules and error responses. A WebSocket handshake authenticated by cookies is still vulnerable to unwanted cross-site use unless the server validates allowed Origin and the identity/authorization model. Origin checking complements authentication; non-browser clients can choose their own Origin header.</p>
+<p>Revalidate session expiry and permissions during long connections or close them on revocation. Authorize each room/job subscription and mutation. Never trust a message's user_id as identity. Reject malformed messages without leaking server internals. Keep binary/text encoding and maximum decompressed sizes explicit. The browser WebSocket API does not automatically solve application backpressure. <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">WebSocket API</a>.</p>
+<h2 id="section-117">5. Heartbeats, backpressure and cancellation</h2>
+<p>A dead network path can leave a seemingly open connection. Heartbeats and deadlines detect it. Bound queued bytes per client; if a client cannot keep up, disconnect with a resync path or coalesce replaceable state. Never let one slow reader accumulate an unbounded list of model tokens.</p>
+<p>Cancelling the browser connection should stop unnecessary generation where supported, release server resources and preserve a truthful job state. Some upstream operations cannot be cancelled after acceptance; distinguish “stop displaying” from “the effect did not occur.” A retry needs the same logical operation ID if duplication would matter.</p>
+<h2 id="section-126">6. Scaling across application instances</h2>
+<p>A browser is connected to one server instance. That instance needs the events relevant to its clients. If all instances share one Kafka consumer group, each partition is owned by one consumer; every instance does not receive every event. Choose a fanout topology deliberately: route subscriptions to the owning instance, use a fanout tier, or use distinct consumption arrangements with an understood cost.</p>
+<p>Redis Pub/Sub can notify live instances but cannot replay after disconnection. Persist a durable cursor source when recovery matters. Load-balancer idle timeouts, proxy buffering, HTTP version, connection limits and rolling shutdown affect behavior. A sticky session is not durable event storage.</p>
+<h2 id="section-135">7. React and Spring integration</h2>
+<p>In React, create the connection in an effect and close it in cleanup. Abort pending fetches on teardown, avoid stale closures, deduplicate events and expose reconnecting/stale states accessibly. Keep rapidly arriving tokens from triggering excessive renders by batching display updates. Do not announce every token to a screen reader; announce meaningful status changes and provide the complete answer for reading.</p>
+<p>In Spring MVC, SseEmitter needs timeout/error/completion cleanup and a bounded execution strategy. WebFlux can represent streams with Flux, but backpressure only works where the complete chain honors it. STOMP adds a messaging protocol on WebSocket; destinations still need authorization, and broker relay configuration is not equivalent to durable application storage. Choose one coherent implementation before layering frameworks.</p>
+<h2 id="section-144">8. Run the included real project</h2>
+<p><code>labs/realtime-cache/app.py</code> is a separate FastAPI/SQLite project with a simple browser page. It supports cookie login, CSRF-protected HTTP writes, SSE replay, authenticated WebSocket publish/ping, logout-driven socket closure, owner-scoped ETags and idempotent writes. Start it using its README rather than importing it into the Study Coach application.</p>
+<p>The native test opens an actual WebSocket, rejects an unwanted Origin, publishes an event, logs out and checks closure. It checks SSE Last-Event-ID replay, a retention gap, concurrent writes and recovery after process restart. In-memory sessions intentionally disappear on restart; durable messages remain. This is a local single-process teaching project, not a multi-instance production certificate.</p>
+<p>Six additional browser journeys passed across Chromium, Firefox and WebKit at desktop and narrow widths, including keyboard use and axe checks. A further four-client recovery test killed the process during writes, reauthenticated after restart and retried stable keys: eighty acknowledged logical writes matched eighty durable events. The reports record actual scope and duration; a short forced outage does not prove long endurance.</p>
+<h2 id="section-156">9. Interview/debugging round</h2>
+<p>“AI responses arrive all at once instead of streaming.” Investigate server flushing, proxy buffering, content type, client parsing and upstream streaming. “After reconnect, messages repeat.” Examine stable IDs and idempotent application. “Some users never see events with two servers.” Examine consumer-group topology and subscription routing. “A logged-out user keeps receiving updates.” Examine long-connection revocation, not just the HTTP login endpoint.</p>
+<p>For each bug, write a reproducer, identify the invariant, patch the responsible layer and repeat under disconnect/restart. A happy-path animation is not a reliability test.</p>
+<h2 id="section-165">10. Two real application instances</h2>
+<p>The added test_multi_instance.py starts two separate FastAPI processes sharing a SQLite WAL journal. A write sent to instance A is observed by a WebSocket and an SSE connection on instance B. B also notices the new database revision instead of returning its earlier cached representation. This is polling-based fanout through a shared journal, not Redis pub/sub or a distributed streaming platform.</p>
+<p>The test exposed a design issue worth remembering: a lock inside A cannot stop B. If both read maximum sequence 4, both might try to write sequence 5. The write transaction now uses BEGIN IMMEDIATE before reading the sequence and idempotency record. SQLite reserves the writer slot; the next writer reads the committed result before deciding what to do. Database uniqueness constraints remain the final guard.</p>
+<p>Two simultaneous submissions of the same logical key returned one durable sequence, and eighty distinct cross-instance writes had eighty distinct sequences. The original single-instance protocol tests also passed after this change. Sessions remain separate and in memory. Independent hosts, shared authentication and larger fanout need a different deployment design; these limits do not invalidate the local concurrency lesson.</p>
+</main></body></html>

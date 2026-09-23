@@ -1,0 +1,22 @@
+# lab: topological_sort
+from collections import deque
+def topological(graph):
+    nodes=set(graph)|{v for neighbors in graph.values() for v in neighbors}
+    indegree={node:0 for node in nodes}
+    for neighbors in graph.values():
+        for v in neighbors:indegree[v]+=1
+    ready=deque(sorted(node for node in nodes if indegree[node]==0));order=[]
+    while ready:
+        node=ready.popleft();order.append(node)
+        for neighbor in graph.get(node,[]):
+            indegree[neighbor]-=1
+            if indegree[neighbor]==0:ready.append(neighbor)
+    if len(order)!=len(nodes):raise ValueError('cycle')
+    return order
+graph={'python':['agents'],'agents':['project'],'java':['project'],'project':[]}
+order=topological(graph);position={v:i for i,v in enumerate(order)}
+assert all(position[u]<position[v] for u,neighbors in graph.items() for v in neighbors)
+try:topological({'a':['b'],'b':['a']})
+except ValueError:pass
+else:raise AssertionError('cycle missed')
+print('Prerequisites precede dependents; cycles are rejected')

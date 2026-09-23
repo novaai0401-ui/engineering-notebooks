@@ -1,0 +1,19 @@
+# lab: adapter_decorator
+class LegacyModel:
+    def generate_text(self, prompt):
+        return {"text": prompt.upper()}
+
+class ModelAdapter:
+    def __init__(self, legacy): self.legacy = legacy
+    def complete(self, text): return self.legacy.generate_text(text)["text"]
+
+class CountingDecorator:
+    def __init__(self, wrapped): self.wrapped, self.calls = wrapped, 0
+    def complete(self, text):
+        self.calls += 1
+        return self.wrapped.complete(text)
+
+model = CountingDecorator(ModelAdapter(LegacyModel()))
+assert model.complete("learn") == "LEARN"
+assert model.calls == 1
+print("Adapter translated; decorator counted")

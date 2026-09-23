@@ -1,0 +1,21 @@
+# lab: maxflow_workshop
+from collections import deque
+def maxflow(capacity,source,sink):
+    n=len(capacity)
+    if source==sink:raise ValueError('distinct endpoints required')
+    residual=[row[:] for row in capacity];total=0
+    while True:
+        parent=[-1]*n;parent[source]=source;q=deque([source])
+        while q and parent[sink]<0:
+            u=q.popleft()
+            for v,c in enumerate(residual[u]):
+                if c>0 and parent[v]<0:parent[v]=u;q.append(v)
+        if parent[sink]<0:return total
+        amount=float('inf');v=sink
+        while v!=source:u=parent[v];amount=min(amount,residual[u][v]);v=u
+        v=sink
+        while v!=source:
+            u=parent[v];residual[u][v]-=amount;residual[v][u]+=amount;v=u
+        total+=amount
+assert maxflow([[0,3,2,0],[0,0,1,2],[0,0,0,3],[0,0,0,0]],0,3)==5
+print('Maximum flow is 5, matching the total capacity leaving the source.')

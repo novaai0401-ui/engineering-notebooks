@@ -1,0 +1,8 @@
+{
+  "before": "Nine of ten fresh browser logins passed; one showed Invalid credentials. The rotated client secret was accepted by the identity provider in an invalid-code probe.",
+  "evidence": "Concurrent anonymous requests and separate session generation appeared in the failing instance logs. Earlier runs lacked a precise callback error code.",
+  "hypothesis": "Saved anonymous API requests can create competing HTTP sessions during the OIDC authorization redirect.",
+  "change": "Disable saved-request caching in the OIDC chain, which always redirects successful login to the home page. Record callback error codes without logging tokens, credentials or full claims.",
+  "verification": "Java integration tests passed; post-change fresh logins passed. Consult identity-repeat-report.json for the latest per-case API-cookie probes and results.",
+  "confidence": "Supported mitigation, not conclusive historical root-cause attribution. Preserve the failed before-report. Full durable Spring offline-instance integration remains separate from the signed receiver-fixture test."
+}

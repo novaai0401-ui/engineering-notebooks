@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "passed": true,
+      "journey": "Keyboard login/logout, SSE and WebSocket delivery, axe scan and no horizontal overflow"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "passed": true,
+      "journey": "Keyboard login/logout, SSE and WebSocket delivery, axe scan and no horizontal overflow"
+    },
+    {
+      "engine": "firefox",
+      "width": 1280,
+      "passed": true,
+      "journey": "Keyboard login/logout, SSE and WebSocket delivery, axe scan and no horizontal overflow"
+    },
+    {
+      "engine": "firefox",
+      "width": 390,
+      "passed": true,
+      "journey": "Keyboard login/logout, SSE and WebSocket delivery, axe scan and no horizontal overflow"
+    },
+    {
+      "engine": "webkit",
+      "width": 1280,
+      "passed": true,
+      "journey": "Keyboard login/logout, SSE and WebSocket delivery, axe scan and no horizontal overflow"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "passed": true,
+      "journey": "Keyboard login/logout, SSE and WebSocket delivery, axe scan and no horizontal overflow"
+    }
+  ],
+  "limitations": "Automated desktop engine emulation, including narrow viewport; no physical Safari/iOS or manual screen-reader audit."
+}
