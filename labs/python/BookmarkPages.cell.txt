@@ -1,0 +1,13 @@
+# lab: BookmarkPages
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE rows(id INTEGER PRIMARY KEY, created INTEGER); CREATE INDEX ix_created_id ON rows(created,id);')
+db.executemany('INSERT INTO rows VALUES(?,?)',[(1,10),(2,10),(3,11),(4,11),(5,12)])
+cursor=(-1,-1); seen=[]
+while True:
+    page=db.execute('SELECT created,id FROM rows WHERE created>? OR (created=? AND id>?) ORDER BY created,id LIMIT 2',(cursor[0],cursor[0],cursor[1])).fetchall()
+    if not page: break
+    seen.extend(row[1] for row in page);cursor=page[-1]
+assert seen==[1,2,3,4,5]
+db.close()
+print('Bookmark includes a unique tie-breaker: every static-data row appears once.')

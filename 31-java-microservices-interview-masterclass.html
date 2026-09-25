@@ -1,0 +1,746 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 31 — Java, Spring Batch and microservices interview masterclass</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-6">1. Tell me about yourself and describe your experience</a></li><li><a href="#section-24">2. HashMap: numbered drawers with labelled cards</a></li><li><a href="#section-43">3. equals and hashCode: two parts of one address system</a></li><li><a href="#section-58">4. Abstract classes, main and exception cleanup</a></li><li><a href="#section-74">5. Java 8 functional interfaces and employee filtering</a></li><li><a href="#section-188">6. synchronized versus ReentrantLock</a></li><li><a href="#section-201">7. ConcurrentHashMap, synchronizedMap, races and deadlocks</a></li><li><a href="#section-216">8. SOLID through one payment example</a></li><li><a href="#section-301">9. Design patterns: choose a problem before a pattern</a></li><li><a href="#section-366">10. Constructor injection and the Spring transaction proxy</a></li><li><a href="#section-384">11. REST operations and idempotency in payment systems</a></li><li><a href="#section-478">12. Millions of records: pagination, lazy loading and exports</a></li><li><a href="#section-495">13. MySQL composite indexes: a sorted address book</a></li><li><a href="#section-514">14. Oracle EXPLAIN PLAN versus the executed cursor</a></li><li><a href="#section-530">15. API versioning, security and access/refresh tokens</a></li><li><a href="#section-548">16. Spring Batch: boxes of records and restart bookmarks</a></li><li><a href="#section-627">17. Microservice boundaries and data ownership</a></li><li><a href="#section-755">18. Saga, outbox and idempotent consumer: connect the dots</a></li><li><a href="#section-774">19. Resilience patterns and failure budgets</a></li><li><a href="#section-888">20. Kubernetes secrets and cloud interview answers</a></li><li><a href="#section-903">21. JUnit, Mockito and automation testing</a></li><li><a href="#section-925">22. Sprint Retrospective and a graded interview round</a></li><li><a href="#section-1056">23. Question coverage and next study links</a></li></ul></nav><main id="content"><p class="downloads"><a href="31-java-microservices-interview-masterclass.ipynb">Jupyter notebook</a><a href="31-java-microservices-interview-masterclass.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 31 — Java, Spring Batch and microservices interview masterclass</h1>
+<p>This notebook answers every question in your supplied interview list. Start with the story, explain the mechanism, run the example, then attempt the follow-up without looking. The examples describe a payment-and-settlement learning system; they are not claims about your employment history. Java notebook cells need JDK 21 or later and Python. The separate Maven workshop exercises actual Spring transactions, Spring Batch, JUnit and Mockito.</p>
+<h2 id="section-6">1. Tell me about yourself and describe your experience</h2>
+<p>Think of an introduction as the label on a toolbox: tell the interviewer what problems you can solve, then show one useful tool. Aim for 60–90 seconds: current background, relevant skills, one concrete project, your contribution, one measured outcome, and why this role fits.</p>
+<p>Template: “I am [your actual role/background]. I focus on [two relevant skills]. In [real project or explicitly named learning lab], I implemented [specific feature]. A difficult issue was [failure]; I diagnosed it using [evidence] and changed [implementation]. We verified [actual result]. I am now looking for [relevant responsibility].” Replace every bracket with something you can defend. Say “local learning project” when that is what you did.</p>
+<p>For “Which databases have you worked on?”, separate production work, personal projects and theoretical knowledge. Example structure: “I used [engine/version] for [workload], wrote [queries/migrations], investigated [plan/locking issue], and verified [result]. I have studied Oracle plan analysis but have not operated Oracle in production.” Do not say you ran MySQL or Oracle because you ran the SQLite exercise below.</p>
+<p>For “Have you implemented multithreading?”, describe the task split, shared state, synchronization, executor lifecycle, backpressure, cancellation and failure handling. For cloud experience, name only services you actually used and explain identity, networking, state, monitoring and costs. The library's local K3s deployment is Kubernetes experience in a local lab, not AWS/Azure/GCP production experience.</p>
+<p>Follow-up drill: explain one failure you personally reproduced. If your story has no inputs, measurements or tradeoff, make it more concrete before memorizing it.</p>
+<h2 id="section-24">2. HashMap: numbered drawers with labelled cards</h2>
+<p>Imagine drawers containing customer cards. A hash chooses a drawer; equals identifies the correct card inside it. A collision means different keys choose the same drawer, not that one customer automatically overwrites another.</p>
+<p>HashMap stores an array of buckets. In OpenJDK 21, buckets contain linked nodes or, for sufficiently crowded eligible buckets, red-black tree nodes. The implementation spreads the hash and uses the table size to select a bucket. For insertion it checks existing keys: an equal key replaces its value; an unequal colliding key gets a separate entry. Growth redistributes entries. Treeification constants and the minimum-capacity gate are implementation details, not the Map interface contract. Avoid the misleading claim “the eighth collision always creates a tree.” Tree bins also do not guarantee logarithmic lookup for every pathological non-orderable equal-hash key set. <a href="https://raw.githubusercontent.com/openjdk/jdk21u/master/src/java.base/share/classes/java/util/HashMap.java">OpenJDK implementation</a>.</p>
+<p>Expected get/put cost is constant with suitable hash distribution; resizing and poor distribution affect actual cost. Default load factor is 0.75. HashMap allows a null key and null values, does not promise ordering, and is not thread-safe. A fail-fast iterator is a bug detector, not synchronization. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html">Java HashMap contract</a>.</p>
+<p><strong>Interview answer:</strong> “An array of buckets locates candidate entries by hash; equality selects the key. Modern OpenJDK can use tree bins for crowded buckets. Colliding but unequal keys coexist.”</p>
+<pre><code class="language-java">// lab: CollisionCards
+import java.util.*;
+public class CollisionCards {
+  record Key(int id) { @Override public int hashCode() { return 7; } }
+  public static void main(String[] args) {
+    Map&lt;Key,String&gt; cards = new HashMap&lt;&gt;();
+    cards.put(new Key(1), &quot;Alice&quot;);
+    cards.put(new Key(2), &quot;Bob&quot;);
+    assert cards.size() == 2;
+    assert cards.get(new Key(1)).equals(&quot;Alice&quot;);
+    cards.put(new Key(1), &quot;Alicia&quot;);
+    assert cards.size() == 2;
+    assert cards.get(new Key(1)).equals(&quot;Alicia&quot;);
+    System.out.println(&quot;Unequal colliding keys coexist; equal keys replace values.&quot;);
+  }
+}
+</code></pre>
+<p>Predict the size before running: two. The record supplies equality based on id; the deliberately constant hash slows lookup but does not break the equality contract. An interview follow-up may ask why HashMap is a poor choice when sorted keys or concurrent mutation are required: use a suitable ordered or concurrent map, not a promise the original map never made.</p>
+<h2 id="section-43">3. equals and hashCode: two parts of one address system</h2>
+<p>equals describes logical equality. hashCode helps hash-based collections find candidates. Equal objects must have equal hash codes; equal hash codes do not prove equality. Equality should be reflexive, symmetric, transitive, consistent and false for null. Override both methods from the same stable fields, or use a suitable immutable record.</p>
+<p>If you override equals but inherit Object.hashCode, two logically equal instances may land in different buckets. HashMap lookup can fail or contain apparently duplicate logical keys. It is not guaranteed to fail on every run: accidental equal hashes may mask the defect. A test that happens to pass is not proof of a valid contract.</p>
+<p>Mutable keys are another trap. Put a key into a map, change the field used for its hash, then look it up: the key's new address differs from its stored bucket. Prefer immutable identifiers, such as an account ID, over a mutable account balance. Do not use approximate floating-point comparison as equality for hash keys without a consistent canonical representation.</p>
+<p>Exercise: two employees share a name but have different employee IDs. Should equals compare names? Usually not: a display label is not identity. State the domain rule before generating methods in the IDE. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html">Object equality/hash contract</a>.</p>
+<h2 id="section-58">4. Abstract classes, main and exception cleanup</h2>
+<p>An abstract class is a partly built machine. It can hold fields, constructors and implemented methods, and can require subclasses to implement abstract methods. You cannot instantiate it directly. It can have a static main method: launching that method does not require constructing the abstract class.</p>
+<p>finally is not compulsory. A regular try needs a catch or finally; try-with-resources can appear without either. finally normally executes as control leaves the try/catch, including return or throw, but not after every possible JVM/process termination. Do not return from finally: it can hide an earlier result or exception.</p>
+<p>Try-with-resources closes AutoCloseable resources in reverse declaration order. If the body and close both fail, the body's exception remains primary and the close failure is suppressed. This is useful for files, database connections and streams. It does not automatically make business work transactional. <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">Java resource handling</a>.</p>
+<pre><code class="language-java">// lab: CleanupStory
+public abstract class CleanupStory {
+  abstract String describe();
+  static class Resource implements AutoCloseable {
+    public void close() { throw new IllegalStateException(&quot;close failure&quot;); }
+  }
+  public static void main(String[] args) {
+    try (var resource = new Resource()) {
+      throw new IllegalArgumentException(&quot;body failure&quot;);
+    } catch (IllegalArgumentException error) {
+      assert error.getMessage().equals(&quot;body failure&quot;);
+      assert error.getSuppressed().length == 1;
+      System.out.println(&quot;Abstract main ran; body failure retained; close failure suppressed.&quot;);
+    }
+  }
+}
+</code></pre>
+<p>Follow-up: “Why not catch Exception and return null everywhere?” Because callers cannot distinguish missing data from failed work; observability and recovery become unreliable. Catch where you can recover or translate meaningfully, and preserve the cause.</p>
+<h2 id="section-74">5. Java 8 functional interfaces and employee filtering</h2>
+<p>A functional interface describes one job that a lambda can perform. It has one abstract method contract; compatible inherited methods can represent that same contract. Public Object methods do not count. Default and static methods do not add abstract jobs. @FunctionalInterface asks the compiler to enforce the rule, but the annotation is not required. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/FunctionalInterface.html">FunctionalInterface documentation</a>.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Small story</th>
+<th>Signature shape</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Predicate&lt;T&gt;</td>
+<td>Gatekeeper says yes/no</td>
+<td>T → boolean</td>
+<td>Employee older than 40</td>
+</tr>
+<tr>
+<td>Function&lt;T,R&gt;</td>
+<td>Converter</td>
+<td>T → R</td>
+<td>Employee → name</td>
+</tr>
+<tr>
+<td>Consumer&lt;T&gt;</td>
+<td>Uses an item</td>
+<td>T → void</td>
+<td>Write a record</td>
+</tr>
+<tr>
+<td>Supplier&lt;T&gt;</td>
+<td>Factory</td>
+<td>() → T</td>
+<td>Create a request ID</td>
+</tr>
+<tr>
+<td>UnaryOperator&lt;T&gt;</td>
+<td>Same-type transformation</td>
+<td>T → T</td>
+<td>Normalize a string</td>
+</tr>
+<tr>
+<td>BinaryOperator&lt;T&gt;</td>
+<td>Combine two same-type inputs</td>
+<td>(T,T) → T</td>
+<td>Combine totals</td>
+</tr>
+</tbody>
+</table></div>
+<pre><code class="language-java">// lab: EmployeePredicates
+import java.util.*;
+import java.util.function.*;
+public class EmployeePredicates {
+  record Employee(String name, int age) {}
+  interface Named { String name(); } // Functional even without the annotation.
+  public static void main(String[] args) {
+    var people = List.of(new Employee(&quot;Asha&quot;,40), new Employee(&quot;Ravi&quot;,41));
+    Predicate&lt;Employee&gt; olderThan40 = employee -&gt; employee.age() &gt; 40;
+    var names = people.stream().filter(olderThan40).map(Employee::name).toList();
+    assert names.equals(List.of(&quot;Ravi&quot;));
+    Named label = () -&gt; &quot;approved&quot;;
+    assert label.name().equals(&quot;approved&quot;);
+    System.out.println(names);
+  }
+}
+</code></pre>
+<p>The requested operation uses Predicate, not Consumer. Streams describe a pipeline; they are not automatically faster than loops. Intermediate operations are lazy until a terminal operation runs. Avoid side effects in parallel pipelines, and do not assume parallelStream gives the right thread-pool isolation for blocking service calls.</p>
+<h2 id="section-188">6. synchronized versus ReentrantLock</h2>
+<p>A lock is a bathroom key: one owner enters a critical section at a time. synchronized acquires the monitor associated with an object or class and releases it when the block exits, including exceptional exit. It is reentrant: the owning thread can enter again.</p>
+<p>ReentrantLock makes ownership explicit. Choose it when you need timed tryLock, interruptible acquisition or multiple Condition queues. Always release after successful acquisition in finally. Fair mode can reduce barging but may reduce throughput and does not guarantee fair CPU scheduling; untimed tryLock has its own fairness caveat. Do not choose it because of an unconditional “faster” claim. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/locks/ReentrantLock.html">ReentrantLock contract</a>.</p>
+<pre><code class="language-java">// lab: SafeCounter
+import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
+public class SafeCounter {
+  static class Counter {
+    private final ReentrantLock lock = new ReentrantLock();
+    private int value;
+    void increment() {
+      lock.lock();
+      try { value++; } finally { lock.unlock(); }
+    }
+    int value() {
+      lock.lock();
+      try { return value; } finally { lock.unlock(); }
+    }
+  }
+  public static void main(String[] args) throws Exception {
+    var counter = new Counter();
+    var pool = Executors.newFixedThreadPool(4);
+    try {
+      var futures = new java.util.ArrayList&lt;Future&lt;?&gt;&gt;();
+      for (int i=0;i&lt;4;i++) futures.add(pool.submit(() -&gt; {
+        for (int j=0;j&lt;1000;j++) counter.increment();
+      }));
+      for (var future : futures) future.get();
+      assert counter.value() == 4000;
+      System.out.println(&quot;4000 increments retained; task failures propagate through Future.get.&quot;);
+    } finally { pool.shutdownNow(); }
+  }
+}
+</code></pre>
+<p>In a payment API, do not hold a JVM lock during a slow bank call. It increases contention and does not coordinate other application instances. Use a durable transaction/idempotency protocol for cross-instance correctness. A local counter test proves local synchronization, not distributed serialization.</p>
+<h2 id="section-201">7. ConcurrentHashMap, synchronizedMap, races and deadlocks</h2>
+<p>Collections.synchronizedMap wraps operations with a common monitor. Iteration must synchronize on the returned map, and multi-call read-modify-write logic needs one shared critical section. Modern ConcurrentHashMap supports concurrent access without a single whole-map lock for ordinary operations; retrievals generally do not block. It rejects null keys/values and has weakly consistent iteration. Use atomic operations such as compute, merge or putIfAbsent for single-key compound updates. It is not a multi-key transaction manager. Do not describe modern ConcurrentHashMap as necessarily using the old fixed-segment architecture. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ConcurrentHashMap.html">ConcurrentHashMap contract</a>.</p>
+<p>Race example: two threads read a stock count of one, both approve a purchase and both write zero. The final number looks plausible, but two items were sold. A thread-safe map does not make <code>get</code> followed by <code>put</code> atomic. In a database, an update like <code>UPDATE stock SET available=available-1 WHERE id=? AND available&gt;0</code>, plus checking affected rows inside the right transaction, can enforce the invariant.</p>
+<p>Deadlock example: transfer A→B locks account A then waits for B; transfer B→A locks B then waits for A. Neither can advance. Acquire account locks in a stable ID order, reduce lock duration, inspect thread dumps or database deadlock reports, and retry a rolled-back database transaction only under a bounded policy. A timeout limits waiting; it does not repair inconsistent partial work.</p>
+<p>A race is incorrect behavior caused by ordering; a deadlock is a cycle of waiting. They are different failure modes. volatile gives visibility and ordering for a variable but does not make <code>balance++</code> atomic. CompletableFuture introduces asynchronous composition, not automatic cancellation of every underlying task. Bound executors/queues and measure saturation.</p>
+<h2 id="section-216">8. SOLID through one payment example</h2>
+<p>Imagine a school office. A cashier calculates fees, a ledger records them and a messenger sends receipts. Giving every duty to one person makes every policy change disturb everything else.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>Concrete design</th>
+<th>What would violate it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single Responsibility</td>
+<td>FeePolicy calculates; Ledger persists; ReceiptSender delivers</td>
+<td>One class changes for fee rules, SQL schema and email layout</td>
+</tr>
+<tr>
+<td>Open/Closed</td>
+<td>Add a FeePolicy implementation behind a stable interface</td>
+<td>Edit a huge switch for every new fee scheme</td>
+</tr>
+<tr>
+<td>Liskov Substitution</td>
+<td>Every Ledger implementation honors documented save semantics</td>
+<td>A subtype silently drops accepted entries</td>
+</tr>
+<tr>
+<td>Interface Segregation</td>
+<td>ReadOnlyLedger exposes reads without mutation</td>
+<td>A report generator must depend on refund/delete operations</td>
+</tr>
+<tr>
+<td>Dependency Inversion</td>
+<td>PaymentService depends on Ledger and FeePolicy abstractions</td>
+<td>Business logic constructs a concrete JDBC connection directly</td>
+</tr>
+</tbody>
+</table></div>
+<p>SRP means one coherent reason to change, not “one method per class.” A useful refactoring starts with tests of existing behavior, extracts fee calculation, injects a ledger interface, and keeps transaction coordination explicit in the application service. Do not scatter one business invariant across five classes merely to increase class count.</p>
+<p>Composition means a service <strong>has</strong> a policy. Inheritance means a subtype <strong>is usable as</strong> the parent under its behavioral contract. Choose composition for independently changing behavior, such as fee policy plus notification channel. Use inheritance for a real substitutable hierarchy or a framework's intended extension point. A Square that forbids Rectangle's independent width/height updates breaks that mutable Rectangle contract; mathematical naming alone does not establish substitutability.</p>
+<pre><code class="language-java">// lab: ComposedFees
+import java.math.BigDecimal;
+public class ComposedFees {
+  interface FeePolicy { BigDecimal fee(BigDecimal amount); }
+  record Checkout(FeePolicy policy) {
+    Checkout { java.util.Objects.requireNonNull(policy); }
+    BigDecimal total(BigDecimal amount) {
+      if (amount.signum()&lt;0) throw new IllegalArgumentException(&quot;negative amount&quot;);
+      return amount.add(policy.fee(amount));
+    }
+  }
+  public static void main(String[] args) {
+    var free = new Checkout(amount -&gt; BigDecimal.ZERO);
+    var flat = new Checkout(amount -&gt; new BigDecimal(&quot;2.00&quot;));
+    assert free.total(new BigDecimal(&quot;10.00&quot;)).compareTo(new BigDecimal(&quot;10&quot;))==0;
+    assert flat.total(new BigDecimal(&quot;10.00&quot;)).compareTo(new BigDecimal(&quot;12&quot;))==0;
+    System.out.println(&quot;Fee behavior changes through composition; money uses decimal values.&quot;);
+  }
+}
+</code></pre>
+<h2 id="section-301">9. Design patterns: choose a problem before a pattern</h2>
+<p>SOLID gives design principles; patterns give recurring solution structures. Neither is a requirement to add abstractions to every class. Notebook 13 contains executable implementations of all 23 classic GoF patterns; use this map to connect them to interview scenarios.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Patterns</th>
+<th>How to recognize the need</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Creational</td>
+<td>Factory Method, Abstract Factory, Builder, Prototype, Singleton</td>
+<td>Construction varies, compatible families matter, configuration is complex, copying is useful, or one lifecycle-owned instance is required</td>
+</tr>
+<tr>
+<td>Structural</td>
+<td>Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy</td>
+<td>Translate an API, separate independent variations, model trees, wrap behavior, simplify a subsystem, share immutable state, or mediate access</td>
+</tr>
+<tr>
+<td>Behavioral</td>
+<td>Chain of Responsibility, Command, Interpreter, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor</td>
+<td>Route handlers, represent actions, evaluate a grammar, traverse, coordinate, capture state, notify, vary state/algorithm, share a skeleton, or add operations over a stable structure</td>
+</tr>
+</tbody>
+</table></div>
+<p>For the payment example: Strategy selects a fee algorithm; Adapter translates a bank API; Decorator adds metrics around a gateway; Factory creates the configured adapter; Command represents a durable payment request; State models authorized/captured/refunded transitions; Observer suggests notifications but needs durable messaging when loss is unacceptable. A Spring proxy can implement cross-cutting transaction interception. Spring singleton scope is one bean per relevant container definition, not one object across every JVM or a distributed lock.</p>
+<p>When patterns make design worse: a Factory for one trivial constructor obscures code; a global Singleton hides dependencies and test state; Observer chains hide ordering and errors; Template Method inheritance couples subclasses to parent sequencing; a “retry Decorator” around a non-idempotent debit can duplicate money movement. State the alternative and the failure behavior, not just a pattern name.</p>
+<p>Follow-up: Strategy versus State? Strategy selects an algorithm; State changes behavior according to lifecycle transitions. They may have similar class shapes but express different domain intent. Adapter versus Facade? Adapter makes one interface usable as another; Facade offers a simpler entry point to a subsystem.</p>
+<h2 id="section-366">10. Constructor injection and the Spring transaction proxy</h2>
+<p>Constructor injection is a visible shopping list: a class cannot be created without its required dependencies. It supports final fields and ordinary unit-test construction. Field injection hides requirements and encourages reflection-based setup. An optional dependency should be deliberately optional; avoid treating every missing dependency as acceptable. Circular constructor dependencies often reveal unclear ownership rather than a need to hide the cycle.</p>
+<p>With normal Spring proxy-based transaction management, a caller invokes a managed proxy. The interceptor obtains or joins a transaction, calls the target, then commits or rolls back according to the rules. Default propagation is REQUIRED; unchecked exceptions normally trigger rollback, while checked exceptions need an appropriate rollback rule unless configuration changes that behavior. Catching an exception and returning normally can prevent the intended rollback. <a href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">Spring transactional annotations</a>.</p>
+<p>Self-invocation bypasses that proxy boundary: <code>this.debit()</code> is an ordinary call on the target. Its @Transactional annotation does not start a new transaction in standard proxy mode. If an outer transaction already exists, the inner code may still participate in it, but its own REQUIRES_NEW or rollback settings are not newly intercepted. Move the operation to an injected collaborating bean or use TransactionTemplate for an explicit boundary. AspectJ weaving is a different model, not the default explanation.</p>
+<p>The accompanying Maven test proves the distinction with H2: a direct call through the proxy rolls back an insert when the method throws; a nontransactional same-class caller reaches the method without interception and leaves its autocommitted insert. This is a controlled demonstration, not a recommendation to rely on autocommit in a money workflow.</p>
+<p>Important follow-up: a local JDBC transaction does not atomically roll back a remote bank's HTTP request. That requires an explicit protocol such as idempotency, durable state transitions and reconciliation. Also, transaction context is not automatically carried into arbitrary new threads.</p>
+<h2 id="section-384">11. REST operations and idempotency in payment systems</h2>
+<p>Think of a request as handing in a numbered form. A retry should refer to the same form, not create another debit.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Intended use</th>
+<th>Retry contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET / HEAD</td>
+<td>Read representation / headers</td>
+<td>Safe and idempotent semantics; never use a read to trigger a debit</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>Replace the resource at a known URI</td>
+<td>Idempotent intended effect; responses and incidental logs can differ</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>Remove the addressed resource</td>
+<td>Idempotent intended effect; a later response can be 404</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>Create or execute application-defined work</td>
+<td>Not inherently idempotent; implement a durable key contract when needed</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>Apply a partial change</td>
+<td>Depends on the patch: “set status” differs from “increment balance”</td>
+</tr>
+</tbody>
+</table></div>
+<p>The HTTP terms describe intended method effects, not identical response bytes on every call. <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods">HTTP semantics</a>.</p>
+<p>For <code>POST /payments</code>, scope the idempotency key by authenticated principal/tenant and operation. Store a canonical request fingerprint, state and outcome under a unique constraint. Same key and same payload return the same logical operation; same key with a different amount is a conflict. Decide how long keys remain valid and what happens after retention. Do not use a process-local map as the only protection.</p>
+<p>Within one database, transactionally reserve the key, apply the ledger mutation and write an outbox event. Concurrent duplicates must converge through the constraint and a defined pending/completed response. For an external bank, durably create the intent first, use the bank's supported idempotency contract, and reconcile ambiguous timeouts by operation ID. A crash after the remote charge but before recording its result is the critical gap. Never interpret a timeout as proof that the charge did not occur.</p>
+<p>Use integer minor units when the currency model permits it, or decimal arithmetic with explicit currency/rounding rules. Authentication, amount validation, currency, account ownership, available funds, audit trail and reversals are separate concerns. This is a software design exercise, not a complete financial-control specification.</p>
+<pre><code class="language-python"># lab: DurablePaymentKeys
+import sqlite3
+db = sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE payments(tenant TEXT, request_key TEXT, cents INTEGER, PRIMARY KEY(tenant,request_key));')
+def submit(tenant, key, cents):
+    if type(cents) is not int or cents &lt;= 0:
+        raise ValueError('positive integer minor units required')
+    with db:
+        db.execute('INSERT OR IGNORE INTO payments VALUES(?,?,?)',(tenant,key,cents))
+        stored=db.execute('SELECT cents FROM payments WHERE tenant=? AND request_key=?',(tenant,key)).fetchone()[0]
+        if stored != cents:
+            raise ValueError('idempotency payload conflict')
+    return stored
+assert submit('a','request-1',1250)==submit('a','request-1',1250)
+try:
+    submit('a','request-1',999)
+except ValueError:
+    pass
+else:
+    raise AssertionError('conflict accepted')
+assert submit('b','request-1',999)==999
+assert db.execute('SELECT COUNT(*) FROM payments').fetchone()[0]==2
+db.close()
+print('Tenant-scoped key replay and payload conflict verified in SQLite; no remote charge was made.')
+</code></pre>
+<p>This deliberately small cell validates key semantics, not simultaneous requests or an external bank. The existing Study Coach and real-time labs exercise concurrent duplicate requests and crash recovery separately.</p>
+<h2 id="section-478">12. Millions of records: pagination, lazy loading and exports</h2>
+<p>Do not send millions of database rows in one JSON response. Bound page size, select only required columns, authorize every query, impose timeouts and avoid expensive exact total counts unless needed. Streaming a huge response can reduce application buffering, but it still holds connections and consumes bandwidth; it is not automatically a good interactive API.</p>
+<p>Offset pagination is simple: <code>ORDER BY created_at,id LIMIT 100 OFFSET 500000</code>. Deep offsets may scan/discard many rows; concurrent inserts/deletes can shift page boundaries. Keyset pagination uses the last seen ordered values as a bookmark. For ascending order, select rows after <code>(last_created_at,last_id)</code>. Always include a unique tie-breaker and a supporting index.</p>
+<pre><code class="language-sql">-- MySQL-style parameterized query; use JDBC bind parameters, not string interpolation.
+SELECT id, created_at, amount_minor
+FROM payments
+WHERE tenant_id = ?
+  AND (created_at &gt; ? OR (created_at = ? AND id &gt; ?))
+ORDER BY created_at, id
+LIMIT 101;
+</code></pre>
+<p>Return 100 and use the extra row to decide whether another page exists. An opaque cursor can encode the last tuple, filter/version and an expiry, signed to resist tampering. A signed cursor is not authorization: reapply tenant checks on every request. Changes to sort keys can still move rows across the bookmark. Stable exports may need an explicit snapshot/version policy, not merely a high-water ID.</p>
+<pre><code class="language-python"># lab: BookmarkPages
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE rows(id INTEGER PRIMARY KEY, created INTEGER); CREATE INDEX ix_created_id ON rows(created,id);')
+db.executemany('INSERT INTO rows VALUES(?,?)',[(1,10),(2,10),(3,11),(4,11),(5,12)])
+cursor=(-1,-1); seen=[]
+while True:
+    page=db.execute('SELECT created,id FROM rows WHERE created&gt;? OR (created=? AND id&gt;?) ORDER BY created,id LIMIT 2',(cursor[0],cursor[0],cursor[1])).fetchall()
+    if not page: break
+    seen.extend(row[1] for row in page);cursor=page[-1]
+assert seen==[1,2,3,4,5]
+db.close()
+print('Bookmark includes a unique tie-breaker: every static-data row appears once.')
+</code></pre>
+<p>Browser lazy loading means fetching the next page when needed; ORM lazy loading means deferring a relationship query. They are different. Mapping each returned order to <code>order.customer.name</code> can cause N+1 database queries. Use suitable DTO projections, fetch strategies or batch fetching, then verify query counts. Be cautious combining collection fetch joins and pagination. For very large downloads, prefer an authorized asynchronous export job, durable status and an expiring download link, with retry and cleanup policies.</p>
+<h2 id="section-495">13. MySQL composite indexes: a sorted address book</h2>
+<p>An address book sorted by country, city, then name helps you find a country's entries or one city's names. It is less useful when you know only a name. A composite B-tree index similarly orders tuples. MySQL commonly uses leftmost prefixes: <code>(tenant_id,status,created_at,id)</code> supports relevant searches beginning with tenant_id, but is not equivalent to four independent indexes. Special optimizer paths can exist, so verify the chosen plan rather than saying later columns can never matter. <a href="https://dev.mysql.com/doc/refman/9.7/en/multiple-column-indexes.html">MySQL multiple-column indexes</a>.</p>
+<p>Start with a real query and its frequency. Put useful equality constraints before the relevant range/order portion when that fits the workload. For <code>tenant_id=? AND status=? AND created_at&gt;=? ORDER BY created_at,id</code>, the tuple above is a candidate. The first range may limit later columns' use as range bounds; later columns can still help filtering, ordering in applicable cases or covering. Column order is not simply “highest cardinality first.”</p>
+<p>Indexes cost storage and write/maintenance work. A covering index includes needed values, but adding large payload columns can make it too expensive. InnoDB secondary indexes also carry the primary key. Keep statistics representative and consider data skew. A scan can be cheaper when the query needs much of the table. Do not force an index merely to make EXPLAIN look impressive.</p>
+<p>MySQL diagnostic recipe, not executed against a MySQL server in this notebook:</p>
+<pre><code class="language-sql">CREATE INDEX ix_payment_lookup ON payments(tenant_id,status,created_at,id);
+EXPLAIN SELECT id,created_at FROM payments
+WHERE tenant_id=42 AND status='SETTLED' AND created_at &gt;= '2026-01-01'
+ORDER BY created_at,id LIMIT 100;
+EXPLAIN ANALYZE SELECT id,created_at FROM payments
+WHERE tenant_id=42 AND status='SETTLED' AND created_at &gt;= '2026-01-01'
+ORDER BY created_at,id LIMIT 100;
+</code></pre>
+<p>Inspect the selected key/access path, estimates, actual rows/loops and time on a supported server version. EXPLAIN ANALYZE executes the statement; use representative, safe SELECT workloads in an appropriate environment. Benchmark with realistic parameters and concurrency, not only a tiny empty table. <a href="https://dev.mysql.com/doc/refman/8.4/en/explain.html">MySQL EXPLAIN</a>.</p>
+<h2 id="section-514">14. Oracle EXPLAIN PLAN versus the executed cursor</h2>
+<p>EXPLAIN PLAN asks the optimizer for a proposed plan without executing the target statement. It does not establish which child cursor, bind-sensitive plan or actual row counts your application used. DISPLAY_CURSOR examines a cached cursor's plan; execution statistics must have been collected to see actual rows. <a href="https://docs.oracle.com/database/121/ARPLS/d_xplan.htm">Oracle DBMS_XPLAN</a>.</p>
+<p>Oracle diagnostic recipe; requires an Oracle schema, suitable privileges and matching version, and is not claimed executed here:</p>
+<pre><code class="language-sql">EXPLAIN PLAN FOR
+SELECT id FROM payments WHERE tenant_id=42 AND status='SETTLED';
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY());
+
+SELECT /*+ gather_plan_statistics */ id
+FROM payments WHERE tenant_id=42 AND status='SETTLED';
+-- Fetch the result fully; identify its SQL_ID and CHILD_NUMBER in your environment.
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+  :sql_id, :child_number, 'ALLSTATS LAST +PREDICATE'));
+</code></pre>
+<p>Look for the specific index name, operations such as INDEX RANGE SCAN and TABLE ACCESS BY INDEX ROWID, predicate placement, estimated versus actual rows, starts, buffers and elapsed work. A large estimate error suggests skew, stale statistics or correlation issues. An index used poorly may be slower than a scan. Functions on indexed columns, implicit type conversion and low selectivity can change access choices. Bind the correct types and compare alternatives with evidence.</p>
+<p>Interview answer: “I inspect the executed cursor and actual work, not just the existence of an index. EXPLAIN PLAN is a prediction; DISPLAY_CURSOR with collected statistics helps verify the actual execution.” For an Oracle composite index, test its workload-specific behavior rather than copying a MySQL plan format. Notebook 29 covers the broader SQL, isolation and database design foundations.</p>
+<h2 id="section-530">15. API versioning, security and access/refresh tokens</h2>
+<p>URL versioning (<code>/api/v1/payments</code>) is easy to see, route and document. Header/media-type versioning keeps the URI stable but requires clients, gateways, cache keys and observability to preserve the version header; set Vary appropriately where responses are cacheable. Version the external contract, not every internal implementation edit. Prefer compatible additive changes when clients tolerate them, publish deprecation/migration windows, and test old/new consumers.</p>
+<p>In Spring MVC, separate controller mappings can use paths or header conditions. For example, <code>@GetMapping(path=&quot;/payments&quot;, headers=&quot;X-API-Version=1&quot;)</code> selects a versioned handler. Do not create overlapping mappings that are ambiguous for a request. Newer framework versioning facilities are version-dependent; the explicit mapping example is easier to reason about across versions. <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html">Spring request mapping</a>.</p>
+<p>Secure a REST API with TLS, validated identity, endpoint and object-level authorization, input validation, bounded payloads, rate limits, safe error handling and auditable outcomes. In an OAuth2 resource server, validate token signature with trusted keys, permitted algorithms, issuer, audience and time claims. Do not trust a decoded JWT merely because it is parseable. Enforce tenant/account ownership in service/data access, not only in the UI. <a href="https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html">Spring resource-server validation</a>.</p>
+<p>An access token authorizes API access for a limited period. A refresh token is presented to the authorization server to obtain new access tokens; it is not the normal credential sent to a resource API. Access tokens may be JWTs or opaque; refresh tokens need not be JWTs. Rotation, secure storage, reuse detection and revocation policy matter. A signed JWT is not encrypted, and logout does not instantly invalidate every previously issued self-contained access token without an additional design.</p>
+<p>In a browser, HttpOnly cookies reduce script access but still require a suitable CSRF strategy. CORS controls browser cross-origin access, not authentication. Avoid putting tokens in logs or URLs. Short access-token lifetimes limit exposure; refresh-token lifecycle and compromised-session response remain necessary. The existing identity lab shows real OIDC logout boundaries and their limits.</p>
+<h2 id="section-548">16. Spring Batch: boxes of records and restart bookmarks</h2>
+<p>A batch job is a planned sequence of steps. A chunk step reads items, optionally processes them, and writes a group under a transaction. With chunk size two, five valid inputs normally produce commits for 1–2, 3–4, then 5. Larger chunks can improve throughput but hold more work/locks and increase replay after failure. Tune with realistic payloads. <a href="https://docs.spring.io/spring-batch/reference/5.2/step/chunk-oriented-processing/configuring.html">Spring Batch 5.2 chunk configuration</a>.</p>
+<p>JobRepository records execution metadata. A JobInstance is identified by job name plus identifying parameters; each attempt is a JobExecution, with StepExecutions recording step attempts. Restart a failed instance using the same identifying parameters and preserved repository state. Adding a fresh timestamp often creates a new instance and defeats the intended restart. A completed instance ordinarily cannot simply run again with identical identity. ExecutionContext stores restart state for cooperating stateful components. <a href="https://docs.spring.io/spring-batch/reference/5.2/step/chunk-oriented-processing/restart.html">Spring Batch restart configuration</a>.</p>
+<p>The runnable Maven workshop pins Spring Batch 5.2.4 with Spring Framework 6.2.12, separately from the library's Boot 4 application. A FlatFileItemReader saves its position. The writer fails on item 3 after inserting it. The failed chunk rolls back; rows 1 and 2 remain committed. Restarting the same job instance reprocesses the uncommitted chunk and ultimately leaves exactly rows 1–5. The test checks failure, checkpointed progress, restart identity and final row count. It uses an actual H2 database and Spring Batch metadata, not a handwritten imitation.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Example</th>
+<th>Correct policy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Filter</td>
+<td>Valid row intentionally not eligible</td>
+<td>Processor returns null; track as filtered</td>
+</tr>
+<tr>
+<td>Skip</td>
+<td>Malformed row the business explicitly permits quarantining</td>
+<td>Narrow exception type, skip limit, reason and reconciliation</td>
+</tr>
+<tr>
+<td>Retry</td>
+<td>Transient deadlock/temporary failure</td>
+<td>Bounded attempts/backoff and safe repeatable work</td>
+</tr>
+<tr>
+<td>Fail</td>
+<td>Corrupt source, exhausted retries or unsafe payment state</td>
+<td>Stop and repair/reconcile before restart</td>
+</tr>
+</tbody>
+</table></div>
+<p>Skip is not “ignore everything”; a settlement job cannot silently discard money records and still call itself successful. Reader, processor and writer failures can have different transaction/replay implications. Record reject counts and compare source totals against accepted, filtered and rejected items. Validate the source's identity/checksum so a restart does not read a changed file at an old offset. <a href="https://docs.spring.io/spring-batch/reference/5.2/step/chunk-oriented-processing/configuring-skip.html">Skip configuration</a>, <a href="https://docs.spring.io/spring-batch/reference/5.2/step/chunk-oriented-processing/retry-logic.html">retry configuration</a>.</p>
+<p>A chunk rollback cannot un-send email or undo a successful remote debit. Use transactional database state plus an outbox, provider idempotency and reconciliation for external effects. Partitioning assigns disjoint work units; multi-threaded steps require thread-safe or appropriately scoped components and careful ordering. Restartability is not exactly-once external execution. The test intentionally uses one thread and a stable input file; process-kill and distributed-partition recovery are distinct tests.</p>
+<h2 id="section-627">17. Microservice boundaries and data ownership</h2>
+<p>Imagine several school offices: admissions owns student enrolment, the cashier owns payments and the library owns book loans. Each office publishes a clear service contract. If everyone edits everyone else's records, dividing the rooms does not create independent ownership.</p>
+<p>Decompose around cohesive business capabilities and bounded contexts, not one HTTP controller per service. Define ownership of invariants first. A modular monolith is often simpler while boundaries are uncertain. Microservices introduce network failure, operational overhead and consistency tradeoffs; they are not an automatic scalability upgrade.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Payment-system example</th>
+<th>When it hurts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Database per service</td>
+<td>Ledger owns ledger writes; orders use a contract/event</td>
+<td>Cross-service SQL shortcuts recreate coupling</td>
+</tr>
+<tr>
+<td>API gateway</td>
+<td>Route, authenticate and apply shared limits</td>
+<td>Putting all business logic there creates a new monolith</td>
+</tr>
+<tr>
+<td>Backend for frontend</td>
+<td>Mobile endpoint composes only needed data</td>
+<td>Too many nearly identical BFFs multiply maintenance</td>
+</tr>
+<tr>
+<td>Service discovery</td>
+<td>Find current payment service endpoints</td>
+<td>Treating discovery as proof an instance is healthy</td>
+</tr>
+<tr>
+<td>Strangler migration</td>
+<td>Route selected old endpoints to a new service gradually</td>
+<td>Permanent duplicate sources of truth</td>
+</tr>
+<tr>
+<td>Anti-corruption layer</td>
+<td>Translate legacy bank codes into internal domain terms</td>
+<td>Hiding unhandled legacy semantics behind superficial renaming</td>
+</tr>
+<tr>
+<td>API composition</td>
+<td>Assemble order plus payment status on demand</td>
+<td>Cascading latency and partial failures</td>
+</tr>
+<tr>
+<td>CQRS</td>
+<td>Write model protects invariants; read model optimizes dashboards</td>
+<td>Extra models and eventual consistency without a real need</td>
+</tr>
+<tr>
+<td>Event sourcing</td>
+<td>Store domain events and rebuild state</td>
+<td>Schema evolution, replay and privacy complexity; not required by CQRS</td>
+</tr>
+</tbody>
+</table></div>
+<p>Database-per-service means ownership and access boundaries; it does not necessarily require a separate physical database machine for each service. Never let a dashboard's eventually consistent projection become the authoritative source for whether funds are available.</p>
+<h2 id="section-755">18. Saga, outbox and idempotent consumer: connect the dots</h2>
+<p>A Saga coordinates local transactions with recovery actions. For an order: reserve stock, authorize payment, confirm order. If confirmation cannot complete, compensation might release stock and void authorization. Compensation is a new business action, not a time machine that guarantees restoration of every external effect. Captured money may require a refund with its own failure path.</p>
+<p>Choreography lets services react to events; it reduces central coordination but can hide cycles and lifecycle ownership. Orchestration uses an explicit coordinator and durable state; it makes progress visible but needs its own recovery design. Choose based on the workflow's complexity and responsibility boundaries.</p>
+<p>Outbox solves a specific dual-write gap. Save the local state change and outgoing event in one database transaction. A relay publishes later; it may publish twice after a crash. An inbox/deduplication record on the receiving side, committed with the business effect, makes duplicate handling safe. A unique event ID alone is insufficient unless its check and effect share the required atomic boundary.</p>
+<pre><code class="language-python"># lab: InboxReplay
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE inbox(id TEXT PRIMARY KEY); CREATE TABLE tally(value INTEGER); INSERT INTO tally VALUES(0);')
+def consume(event_id, fail=False):
+    with db:
+        inserted=db.execute('INSERT OR IGNORE INTO inbox VALUES(?)',(event_id,)).rowcount
+        if not inserted: return False
+        db.execute('UPDATE tally SET value=value+1')
+        if fail: raise RuntimeError('simulated crash before commit')
+    return True
+try: consume('event-1',True)
+except RuntimeError: pass
+assert db.execute('SELECT COUNT(*) FROM inbox').fetchone()[0]==0
+assert consume('event-1') is True
+assert consume('event-1') is False
+assert db.execute('SELECT value FROM tally').fetchone()[0]==1
+db.close()
+print('Business update and dedup marker roll back together, then replay applies once.')
+</code></pre>
+<p>Complete request flow: authenticated client → gateway → order API with idempotency key → local order/outbox commit → relay → broker → payment inbox/local intent commit → bank call with provider idempotency key → durable outcome → Saga transition → read projection → SSE status update. Every arrow crossing a process can fail or deliver late. Trace IDs help observation; idempotency/event IDs protect business semantics and should not be confused with trace IDs.</p>
+<p>Kafka transaction guarantees do not automatically encompass an arbitrary external bank request. Store ordering/version information for each aggregate when necessary, reject or reconcile stale transitions, and define how a dead-letter item returns to the normal flow after repair.</p>
+<h2 id="section-774">19. Resilience patterns and failure budgets</h2>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Child-friendly idea</th>
+<th>Implementation question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Timeout/deadline</td>
+<td>Stop waiting for a bus after a limit</td>
+<td>Does one end-to-end deadline constrain every downstream call?</td>
+</tr>
+<tr>
+<td>Retry with jitter</td>
+<td>Try again after different short waits</td>
+<td>Is the operation safe to repeat, and which errors are transient?</td>
+</tr>
+<tr>
+<td>Circuit breaker</td>
+<td>Stop knocking on a broken door</td>
+<td>What opens it, and how many half-open probes are allowed?</td>
+</tr>
+<tr>
+<td>Bulkhead</td>
+<td>Separate ship compartments</td>
+<td>Are threads, connections and queues bounded per dependency?</td>
+</tr>
+<tr>
+<td>Rate limit</td>
+<td>Admit only a bounded arrival rate</td>
+<td>Is fairness per user/tenant, and is Retry-After meaningful?</td>
+</tr>
+<tr>
+<td>Load shedding</td>
+<td>Reject work before collapse</td>
+<td>Which work can be safely rejected and retried?</td>
+</tr>
+<tr>
+<td>Cache-aside</td>
+<td>Check the desk copy before the archive</td>
+<td>What are TTL, invalidation, ownership and stale-data rules?</td>
+</tr>
+<tr>
+<td>Backpressure</td>
+<td>Slow the producer when the consumer fills</td>
+<td>Is the buffer actually bounded, and can producers obey?</td>
+</tr>
+</tbody>
+</table></div>
+<p>Retries at three nested layers with three attempts each can produce 27 downstream attempts for one request. Give one layer clear retry ownership, propagate deadlines and use bounded exponential backoff with jitter. A circuit breaker is not a timeout and does not stop every already-running call. A fallback must not invent a successful payment; return pending/unavailable or a clearly labelled stale read when the contract permits it.</p>
+<p>For readiness, ask whether an instance should receive traffic. For liveness, ask whether restarting it is likely to help. If a shared bank outage makes every pod fail liveness, restarting all pods creates more load without repairing the bank. Graceful shutdown should stop new work, drain or checkpoint safely and release leases predictably. Trace latency, saturation, error rates and business reconciliation gaps, not only CPU.</p>
+<h2 id="section-888">20. Kubernetes secrets and cloud interview answers</h2>
+<p>Never bake credentials into an image, source file or Docker ARG/ENV layer. Image layers can retain historical content. Supply runtime configuration through an appropriately protected Secret or an external secret manager integration, using workload identity where possible. Base64 in a Secret manifest is encoding, not encryption. Restrict RBAC, protect etcd storage, avoid secret logging and plan rotation. <a href="https://kubernetes.io/docs/concepts/security/secrets-good-practices/">Kubernetes secret practices</a>.</p>
+<p>Mounted Secret files can be updated eventually; the application must reload them correctly. Environment variables in a running process do not automatically refresh when the Secret changes. A subPath mount has different update behavior. Rotation requires overlap/cutover rules and revocation, not just editing a YAML value. Separate build credentials from runtime application credentials, and do not commit populated Secret manifests.</p>
+<p>Answer structure for cloud questions: “I deployed [actual workload] using [actual services]. Traffic entered through [route/TLS]. Workload identity permitted [scope]. State lived in [store]. We observed [metrics/logs], tested [failure] and controlled cost using [actual mechanism].” If you only ran this library, describe the local Docker/K3s topology and explicitly distinguish it from a managed-cloud deployment. The audit records that boundary.</p>
+<p>Mini incident: after rotating a database password, half the pods fail. Investigate running process configuration, connection-pool reconnection, provider overlap rules and rollout readiness. Do not assume the Secret object's latest value is already the value every process uses.</p>
+<h2 id="section-903">21. JUnit, Mockito and automation testing</h2>
+<p>A unit test is a small experiment: arrange an input and dependencies, act once, assert the important result. JUnit runs and reports the experiment. Mockito can replace a boundary with a controlled test double, stub an outcome and verify a meaningful interaction. A mocked repository does not test SQL, constraints or transaction rollback.</p>
+<p>The Maven workshop includes a fee-calculating service with constructor-injected Ledger. Its Mockito test checks the calculated amount and exactly one save; invalid input must cause no ledger interaction. The transaction test starts a real Spring context and H2 database. The batch test uses real Spring Batch metadata and a restartable reader. These layers answer different questions.</p>
+<p>Test money edge cases, payload conflicts, duplicate requests, rollback, lock ordering, exhausted retry, authorization and empty pages. Use assertThrows for the intended exception; do not merely catch and ignore any exception. Prefer deterministic coordination such as latches/barriers over arbitrary sleeps in concurrency tests. Check failure propagation from submitted tasks.</p>
+<p>Automation includes unit tests, database integration tests, API/consumer-contract tests, browser journeys, accessibility checks, performance/recovery scenarios and CI. Contract tests catch incompatible interfaces but do not prove the whole workflow works. Browser tests cover selected journeys but are slower and more fragile than focused tests. Keep clocks, IDs and dependencies controllable where that improves reproducibility. Testcontainers needs a working container engine; do not silently substitute H2 and claim MySQL/Oracle behavior was tested.</p>
+<p>Run the actual workshop from the library root:</p>
+<pre><code class="language-shell">mvn -f labs/interview-workshop/pom.xml test
+python run_notebook_labs.py --book 31-java-microservices-interview-masterclass
+</code></pre>
+<p>The first command needs Java 21+, Maven and initial dependency downloads. The second needs Python plus JDK tools for Java cells. The chapter's MySQL/Oracle commands remain labelled diagnostic recipes; the executed database tests use H2 and SQLite.</p>
+<h2 id="section-925">22. Sprint Retrospective and a graded interview round</h2>
+<p>A Sprint Retrospective is the team's inspection of how the Sprint went and how to improve effectiveness and quality. Discuss interactions, process, tools, assumptions and the Definition of Done, then choose actionable improvements. It is different from the Sprint Review, which inspects the product outcome with stakeholders and adapts future direction. It is not a blame meeting or merely a status update. <a href="https://scrumguides.org/scrum-guide.html">Scrum Guide</a>.</p>
+<p>Example: repeated flaky browser tests delayed releases. Bring failure evidence, identify uncontrolled clocks, agree to inject a clock into the affected feature, assign an owner and check the result next Sprint. “Communicate better” without an action or observation is hard to evaluate. Teams should make it safe to discuss mistakes while still assigning concrete follow-through.</p>
+<p>Attempt this 45-minute round without the answers: ten minutes on HashMap/equality and employee filtering, ten on lock choice and transaction self-invocation, fifteen designing a payment POST plus paginated GET, and ten on Batch restart, index verification and one retrospective action.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Question / follow-up</th>
+<th>Answer key essentials</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Colliding keys, equal keys and mutable keys</td>
+<td>Collision is not equality; equal keys replace; equality/hash contract; mutation can break lookup</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Filter employees older than 40</td>
+<td>Predicate&lt;Employee&gt;, strict greater-than, boundary at 40</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Lock and map choice</td>
+<td>Proper finally unlock, single-key atomic operations, no distributed-lock claim</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Transaction self-invocation</td>
+<td>Proxy boundary bypass; outer transaction nuance; collaborator/TransactionTemplate repair</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Payment retry after lost response</td>
+<td>Tenant-scoped durable key, fingerprint, unique constraint, ambiguous remote result, reconciliation</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Huge GET and indexes</td>
+<td>Bounded keyset page, unique tie-breaker, authorization, query-specific index and actual plan</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Batch failure on record 3</td>
+<td>Committed chunk retained, failed chunk rolled back, same instance parameters, checkpoint and stable input</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Microservice failure flow</td>
+<td>Outbox duplicates, transactional inbox, Saga compensation limits, bounded retries</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Retrospective</td>
+<td>Process inspection, concrete improvement, distinction from Review</td>
+<td>2</td>
+</tr>
+</tbody>
+</table></div>
+<p>Total 30. Suggested practice target: 24, with no claim that a timeout proves a payment failed or that a local transaction undoes a remote debit. Any such error needs correction regardless of total. Explain why your design works, how it fails and how you would test it. Your personal grade remains unset until you submit unaided answers and elapsed time.</p>
+<h2 id="section-1056">23. Question coverage and next study links</h2>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Supplied interview area</th>
+<th>Where answered here</th>
+<th>Existing deeper notebook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Introduction and experience</td>
+<td>Lesson 1</td>
+<td><a href="15-interview-practice.html">Interview practice</a></td>
+</tr>
+<tr>
+<td>HashMap, collisions, equals/hashCode</td>
+<td>Lessons 2–3</td>
+<td><a href="03-java-spring-boot.html">Java foundations</a></td>
+</tr>
+<tr>
+<td>Abstract class/main, try/finally/resources</td>
+<td>Lesson 4</td>
+<td><a href="10-java-spring-depth.html">Java depth</a></td>
+</tr>
+<tr>
+<td>Functional interfaces, annotation, Predicate</td>
+<td>Lesson 5</td>
+<td><a href="03-java-spring-boot.html">Java foundations</a></td>
+</tr>
+<tr>
+<td>synchronized/locks, concurrent maps, race/deadlock</td>
+<td>Lessons 6–7</td>
+<td><a href="10-java-spring-depth.html">Java depth</a></td>
+</tr>
+<tr>
+<td>SOLID, SRP, composition/inheritance, design patterns</td>
+<td>Lessons 8–9</td>
+<td><a href="13-patterns-workshop.html">All 23 GoF implementations</a></td>
+</tr>
+<tr>
+<td>Injection, transaction internals/self-invocation</td>
+<td>Lesson 10</td>
+<td><a href="14-fullstack-workshop.html">Full-stack workshop</a></td>
+</tr>
+<tr>
+<td>HTTP/idempotency and millions of GET records</td>
+<td>Lessons 11–12</td>
+<td><a href="29-databases-for-fullstack-and-ai.html">Database foundations</a></td>
+</tr>
+<tr>
+<td>Composite indexes, MySQL/Oracle plans</td>
+<td>Lessons 13–14</td>
+<td><a href="29-databases-for-fullstack-and-ai.html">Databases</a></td>
+</tr>
+<tr>
+<td>API versions, API security, access/refresh tokens</td>
+<td>Lesson 15</td>
+<td><a href="17-identity-and-deployment.html">Identity and deployment</a></td>
+</tr>
+<tr>
+<td>Batch chunks, restartability, error handling</td>
+<td>Lesson 16 and Maven workshop</td>
+<td><a href="27-reliability-evaluation-and-operations.html">Recovery and operations</a></td>
+</tr>
+<tr>
+<td>Microservice patterns and connected architecture</td>
+<td>Lessons 17–19</td>
+<td><a href="18-distributed-systems-lab.html">Distributed systems</a></td>
+</tr>
+<tr>
+<td>Kubernetes secrets and cloud experience</td>
+<td>Lesson 20</td>
+<td><a href="24-kubernetes-from-pods-to-recovery.html">Kubernetes</a></td>
+</tr>
+<tr>
+<td>JUnit, Mockito, automation and retrospective</td>
+<td>Lessons 21–22</td>
+<td><a href="28-fullstack-capstone-and-assessment.html">Capstone assessment</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>Reference checks were performed on 25 September 2026. Linked official sources are optional verification material; the teaching explanations, examples and answer keys are included in this notebook. Exact framework pins and executed results are recorded in the workshop, while provider-specific recipes and personal experience remain explicitly distinguished.</p>
+</main></body></html>

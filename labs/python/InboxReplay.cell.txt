@@ -1,0 +1,19 @@
+# lab: InboxReplay
+import sqlite3
+db=sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE inbox(id TEXT PRIMARY KEY); CREATE TABLE tally(value INTEGER); INSERT INTO tally VALUES(0);')
+def consume(event_id, fail=False):
+    with db:
+        inserted=db.execute('INSERT OR IGNORE INTO inbox VALUES(?)',(event_id,)).rowcount
+        if not inserted: return False
+        db.execute('UPDATE tally SET value=value+1')
+        if fail: raise RuntimeError('simulated crash before commit')
+    return True
+try: consume('event-1',True)
+except RuntimeError: pass
+assert db.execute('SELECT COUNT(*) FROM inbox').fetchone()[0]==0
+assert consume('event-1') is True
+assert consume('event-1') is False
+assert db.execute('SELECT value FROM tally').fetchone()[0]==1
+db.close()
+print('Business update and dedup marker roll back together, then replay applies once.')

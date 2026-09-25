@@ -2,7 +2,7 @@
 
 ## 1. Choose reading or running
 
-All thirty HTML notebooks can be read without an internet connection, account or model. Each has matching Markdown and Jupyter editions. Recorded code outputs are included. Running the code requires the appropriate runtime; reading on a phone does not execute Java, Docker or model inference on that phone.
+All HTML notebooks can be read without an internet connection, account or model. Each has matching Markdown and Jupyter editions. Recorded code outputs are included. Running the code requires the appropriate runtime; reading on a phone does not execute Java, Docker or model inference on that phone.
 
 Unzip Engineering-Notebooks.zip. The folder containing index.html, study_server.py and START-HERE.html is the library root. You can move that folder to another Windows, macOS or Linux laptop. For basic laptop reading, open index.html in a browser; no command is required.
 
@@ -83,6 +83,8 @@ On macOS/Linux substitute python3 when needed. Edit flow.json to choose the rout
 Native service runners that use Windows process management are not claimed cross-platform. The offline HTML and pure-Python RAG lab are portable; running every service on every OS requires the respective runtime setup. Actual container and cluster results are recorded in COMPLETION-AUDIT and the supplied JSON reports. The ZIP includes source and evidence, not dependencies, secrets or model weights.
 
 ## 7. Suggested study route
+
+For the Java/Spring interview list, open Notebook 31. Run `python run_notebook_labs.py --book 31-java-microservices-interview-masterclass` from the library root with Python and JDK 21+ installed. Run `mvn -f labs/interview-workshop/pom.xml test` for the actual Spring transaction, Batch restart, JUnit and Mockito workshop. Initial Maven dependency downloads need internet; the reading chapter does not.
 
 Start with START-HERE. Study database Notebook 29 before the full-stack transaction exercises. Follow Kafka 22, containers 23, Kubernetes 24, caching 25 and real-time 26. Use reliability 27 and capstone 28 to connect the pieces, then RAG 30 to design your own retrieval flow. Return to the earlier Python, Java, React, algorithms and agent notebooks whenever a prerequisite is unfamiliar.
 

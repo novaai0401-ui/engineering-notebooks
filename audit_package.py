@@ -12,7 +12,7 @@ with zipfile.ZipFile(archive) as package:
         assert p.suffix.lower() not in {'.exe','.dll','.jar','.hprof','.log','.pyc'},name
     books=[name for name in names if Path(name).suffix=='.ipynb' and Path(name).name[:2].isdigit()]
     evidence=json.loads(package.read('engineering-notebooks/validation.json'))
-    assert len(books)==len(evidence['books'])==30
+    assert len(books)==len(evidence['books'])==len(list(root.glob('[0-9][0-9]-*.md')))
     cells=0
     for name in books:
         notebook=json.loads(package.read(name))
@@ -20,7 +20,7 @@ with zipfile.ZipFile(archive) as package:
             if cell['cell_type']=='code':
                 cells+=1;assert cell['execution_count'] is not None,name
                 assert all(o['output_type']!='error' for o in cell['outputs']),name
-    assert cells==len(evidence['labs'])==134,cells
+    assert cells==len(evidence['labs']) and cells>=134,cells
 runtime=root/'.runtime';runtime.mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='portable-',dir=runtime) as temporary:
     destination=Path(temporary).resolve();assert destination.is_relative_to(runtime.resolve())

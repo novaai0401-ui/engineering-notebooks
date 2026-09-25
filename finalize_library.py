@@ -62,6 +62,7 @@ for book in report['books']:
     n=sum(lab['book']==book['name'] for lab in report['labs'])
     lines.append(f'| [{book["title"]}]({book["name"]}.html) | {book["chapters"]} | {n} |')
 lines=[line.replace('21 notebooks,',str(len(report['books']))+' notebooks,').replace('Docker unavailable; recipes supplied, not executed',runtime_summary) for line in lines]
+lines=[line.replace('Updated on 24 September 2026','Updated on 25 September 2026') for line in lines]
 lines.insert(lines.index('## Notebook contents')-1,'**Model-quality finding:** the earlier Study Coach generated answer made an incorrect checkpoint-idempotency claim; its factual review remains failed. The separate RAG lab clarified its source and passed four revised tutor-reviewed development cases after an initial flawed answer and runtime timeout. This small set does not establish general accuracy. The reports preserve all stages, and the extractive mode remains the default.')
 lines+=['','Architecture and interview workbooks primarily contain guided reading and exercises. Executable cells retain recorded outputs. Java and JavaScript are launched by Python notebook cells and require their own runtimes. Each of the 23 GoF patterns has a small executable implementation and assertion in Notebook 13.','','## Network test evidence','']
 lines+=['A separate versioned retrieval evaluation passed 16 development cases: 10 relevance cases, 4 ownership cases and 2 no-evidence cases. The report stores returned IDs, latency and a source hash. This is not an LLM reasoning benchmark.','']
@@ -95,7 +96,7 @@ for relative in ['labs/rag-flow/bounded-generation-report.json','labs/rag-flow/d
     if candidate.exists():
         data=json.loads(candidate.read_text(encoding='utf-8'));report['projects'][relative]=data
         advanced+=['### '+relative,'','```json',json.dumps(data,indent=2),'```','']
-for candidate in [root/'labs/kubernetes-initial-report.json',root/'labs/kubernetes-initial-review.json',root/'labs/kubernetes-readiness-race-report.json',*sorted((root/'labs/realtime-cache').glob('endurance-*-report.json'))]:
+for candidate in [root/'labs/interview-workshop/test-report.json',root/'labs/kubernetes-initial-report.json',root/'labs/kubernetes-initial-review.json',root/'labs/kubernetes-readiness-race-report.json',*sorted((root/'labs/realtime-cache').glob('endurance-*-report.json'))]:
     if not candidate.exists():continue
     relative=candidate.relative_to(root).as_posix();data=json.loads(candidate.read_text(encoding='utf-8'));report['projects'][relative]=data
     advanced+=['### '+relative,'','```json',json.dumps(data,indent=2),'```','']

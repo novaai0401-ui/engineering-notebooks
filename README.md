@@ -1,6 +1,8 @@
 # Engineering notebooks
 
-Thirty tutorial notebooks covering AI/ML, generative AI, agents, RAG, Python, Java/Spring, React, databases, algorithms, design patterns and full-stack operations. Includes 357 lessons, runnable labs and recorded verification evidence.
+31 tutorial notebooks covering AI/ML, generative AI, agents, RAG, Python, Java/Spring, React, databases, algorithms, design patterns and full-stack operations. Includes 380 lessons, runnable labs and recorded verification evidence.
+
+New: [Java, Spring Batch and microservices interview masterclass](31-java-microservices-interview-masterclass.md), answering the supplied interview questions with simple stories, eight executable examples, a five-test Spring/JUnit/Mockito workshop, answer keys and a question-by-question coverage map.
 
 ## Read the library
 
@@ -26,7 +28,7 @@ Open the network address printed by the server on your phone. Reading does not r
 
 ## Scope
 
-Recorded local checks include Docker, Kubernetes, Redis failover, durable logout, streaming, graph maintenance and a ten-minute soak. The notebooks retain 134 passing executable cells. Optional services require their documented dependencies and initial downloads.
+Recorded local checks include Docker, Kubernetes, Redis failover, durable logout, streaming, graph maintenance and a ten-minute soak. The notebooks retain 142 passing executable cells. Optional services require their documented dependencies and initial downloads.
 
 Local execution is not a public-cloud deployment or physical-device accessibility audit. Personal interview grading requires unaided learner answers. Generative model evaluation retains failures: the latest eight-case development regression passed six cases. Extractive answers remain the default; no universal exam or model-accuracy guarantee is made.
 

@@ -151,6 +151,11 @@
       "passed": true
     },
     {
+      "page": "31-java-microservices-interview-masterclass.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
       "page": "COMPLETION-AUDIT.html",
       "width": 1280,
       "passed": true
@@ -322,6 +327,11 @@
     },
     {
       "page": "30-rag-patterns-and-user-defined-flows.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "31-java-microservices-interview-masterclass.html",
       "width": 390,
       "passed": true
     },

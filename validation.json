@@ -180,6 +180,12 @@
       "title": "30 \u2014 RAG: connect the question to the right evidence",
       "words": 4259,
       "chapters": 21
+    },
+    {
+      "name": "31-java-microservices-interview-masterclass",
+      "title": "Notebook 31 \u2014 Java, Spring Batch and microservices interview masterclass",
+      "words": 7336,
+      "chapters": 23
     }
   ],
   "labs": [
@@ -1253,6 +1259,70 @@
       "language": "python",
       "status": "passed",
       "output": "{'precision': 0.3333333333333333, 'recall': 0.5, 'complete_chain': False}\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "CollisionCards",
+      "language": "java",
+      "status": "passed",
+      "output": "Unequal colliding keys coexist; equal keys replace values.\n",
+      "seconds": 10.031
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "CleanupStory",
+      "language": "java",
+      "status": "passed",
+      "output": "Abstract main ran; body failure retained; close failure suppressed.\n",
+      "seconds": 2.937
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "EmployeePredicates",
+      "language": "java",
+      "status": "passed",
+      "output": "[Ravi]\n",
+      "seconds": 3.922
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "SafeCounter",
+      "language": "java",
+      "status": "passed",
+      "output": "4000 increments retained; task failures propagate through Future.get.\n",
+      "seconds": 6.89
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "ComposedFees",
+      "language": "java",
+      "status": "passed",
+      "output": "Fee behavior changes through composition; money uses decimal values.\n",
+      "seconds": 3.812
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "DurablePaymentKeys",
+      "language": "python",
+      "status": "passed",
+      "output": "Tenant-scoped key replay and payload conflict verified in SQLite; no remote charge was made.\n",
+      "seconds": 0.11
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "BookmarkPages",
+      "language": "python",
+      "status": "passed",
+      "output": "Bookmark includes a unique tie-breaker: every static-data row appears once.\n",
+      "seconds": 0.016
+    },
+    {
+      "book": "31-java-microservices-interview-masterclass",
+      "name": "InboxReplay",
+      "language": "python",
+      "status": "passed",
+      "output": "Business update and dedup marker roll back together, then replay applies once.\n",
       "seconds": 0.0
     }
   ],
@@ -3195,6 +3265,45 @@
       ],
       "version": "v1.37.0+k3s1",
       "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
+    },
+    "labs/interview-workshop/test-report.json": {
+      "status": "passed",
+      "recorded_utc": "2026-09-25T05:13:22.306747+00:00",
+      "tests": 5,
+      "suites": [
+        {
+          "suite": "learning.BatchRestartTest",
+          "passed": 1,
+          "tests": [
+            "failedChunkRollsBackAndSameInstanceRestartsFromCommittedCheckpoint"
+          ]
+        },
+        {
+          "suite": "learning.PaymentServiceTest",
+          "passed": 3,
+          "tests": [
+            "calculatesAndSavesExactlyOnce",
+            "invalidInputNeverTouchesLedger",
+            "persistenceFailureIsNotReportedAsSuccess"
+          ]
+        },
+        {
+          "suite": "learning.TransactionBoundaryTest",
+          "passed": 1,
+          "tests": [
+            "proxyRollsBackButSelfInvocationBypassesInterception"
+          ]
+        }
+      ],
+      "versions": {
+        "spring-framework": "6.2.12",
+        "spring-batch": "5.2.4",
+        "junit": "5.13.4",
+        "mockito": "5.20.0",
+        "h2": "2.3.232",
+        "java_target": 21
+      },
+      "scope": "Actual Maven/JUnit tests of Mockito boundaries, Spring proxy transaction behavior and a Spring Batch failed-chunk restart. H2 database and stable local file; not MySQL/Oracle, a process-kill restart or remote payment exactly-once certification."
     },
     "labs/kubernetes-initial-report.json": {
       "status": "failed",

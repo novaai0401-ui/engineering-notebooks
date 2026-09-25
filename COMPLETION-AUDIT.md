@@ -1,12 +1,13 @@
 # Completion audit: implemented work and verified boundaries
 
-Updated 24 September 2026. Thirty notebooks cover the requested curriculum. This audit separates implemented lessons, executed local tests and acceptance checks requiring your environment or participation. It does not promise every possible exam or algorithm.
+Updated 25 September 2026. 31 notebooks cover the requested curriculum. This audit separates implemented lessons, executed local tests and acceptance checks requiring your environment or participation. It does not promise every possible exam or algorithm.
 
 ## Completed local work
 
 | Area | What actually ran | Evidence |
 | --- | --- | --- |
-| Notebook exercises | 134 recorded passing executable cells; thirty reading notebooks | [Validation](VALIDATION.html) |
+| Notebook exercises | 142 recorded passing executable cells; 31 reading notebooks | [Validation](VALIDATION.html) |
+| Interview expansion | Java/Spring questions, SOLID/GoF and microservice patterns, pagination, MySQL/Oracle diagnostics, Batch restart and testing | [Notebook 31](31-java-microservices-interview-masterclass.html), [Spring workshop](labs/interview-workshop/test-report.json) |
 | Docker | Current recorded result: **passed**. Supplied multi-stage images, authenticated Java/Python job, approval, idempotency, SSE and volume restart test | [Container report](labs/study-coach/container-report.json) |
 | Kubernetes | Current recorded result: **passed**. Actual K3s node, pod replacement and scaling; capstone Services, Secret and persistent volume checks | [Cluster report](labs/kubernetes-report.json) |
 | Redis | Three actual servers and three Sentinels; primary killed, replacement discovered, data/write/TTL checked, old primary rejoins as replica | [Redis report](labs/redis-failover-report.json) |
@@ -18,7 +19,7 @@ Updated 24 September 2026. Thirty notebooks cover the requested curriculum. This
 | Pretrained RAG | Actual MiniLM encoder: twelve relevance and four ownership cases; configurable retrieval and bounded model-selected search | [Retrieval report](labs/rag-flow/pretrained-report.json), [integration](labs/rag-flow/model-integration-report.json) |
 | Graph pipeline | Actual model extracts relationships, then provenance/ACL checks, SQLite persistence, multi-hop traversal, communities, updates and deletion run | [Graph report](labs/rag-flow/graph-pipeline-report.json) |
 | Generation failure handling | Timeout/connection/malformed-output faults return clearly labelled authorized excerpts; no-evidence requests skip generation | [Recovery tests](labs/rag-flow/generation-recovery-report.json) |
-| Reading/accessibility automation | Seventy desktop/narrow reading layouts, selected keyboard journeys and automated accessibility checks; portable archive smoke tests | [Validation](VALIDATION.html), [portable report](portable-report.json) |
+| Reading/accessibility automation | Desktop/narrow reading layouts, selected keyboard journeys and automated accessibility checks; portable archive smoke tests | [Layout report](reading-layout-report.json), [portable report](portable-report.json) |
 
 Raw reports preserve limitations and failed attempts. Follow [Reliability extensions](labs/RELIABILITY-EXTENSIONS.md) to reproduce advanced checks. The Docker and Kubernetes rows display actual report status, not an assumption that a recipe passed.
 

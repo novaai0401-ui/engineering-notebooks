@@ -1,0 +1,24 @@
+# lab: DurablePaymentKeys
+import sqlite3
+db = sqlite3.connect(':memory:')
+db.executescript('CREATE TABLE payments(tenant TEXT, request_key TEXT, cents INTEGER, PRIMARY KEY(tenant,request_key));')
+def submit(tenant, key, cents):
+    if type(cents) is not int or cents <= 0:
+        raise ValueError('positive integer minor units required')
+    with db:
+        db.execute('INSERT OR IGNORE INTO payments VALUES(?,?,?)',(tenant,key,cents))
+        stored=db.execute('SELECT cents FROM payments WHERE tenant=? AND request_key=?',(tenant,key)).fetchone()[0]
+        if stored != cents:
+            raise ValueError('idempotency payload conflict')
+    return stored
+assert submit('a','request-1',1250)==submit('a','request-1',1250)
+try:
+    submit('a','request-1',999)
+except ValueError:
+    pass
+else:
+    raise AssertionError('conflict accepted')
+assert submit('b','request-1',999)==999
+assert db.execute('SELECT COUNT(*) FROM payments').fetchone()[0]==2
+db.close()
+print('Tenant-scoped key replay and payload conflict verified in SQLite; no remote charge was made.')

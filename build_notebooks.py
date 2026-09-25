@@ -108,12 +108,15 @@ def execute(code, scope):
 
 cards=[]
 previous=json.loads((ROOT/'validation.json').read_text(encoding='utf-8')) if (ROOT/'validation.json').exists() else None
+selected_book=sys.argv[sys.argv.index('--book')+1] if '--book' in sys.argv else None
+if selected_book and selected_book not in {path.stem for path in SOURCES}:raise ValueError('Unknown notebook stem')
 for source_path in SOURCES:
     text=source_path.read_text(encoding='utf-8')
     title=text.splitlines()[0].removeprefix('# ')
     body,toc,chapters=render_markdown(text)
     stem=source_path.stem
-    if '--new-only' in sys.argv and int(stem[:2])<=21 and previous:
+    retained=previous and any(book['name']==stem for book in previous['books'])
+    if retained and (selected_book and stem!=selected_book or '--new-only' in sys.argv):
         REPORT['books'].append(next(b for b in previous['books'] if b['name']==stem))
         REPORT['labs'].extend(x for x in previous['labs'] if x['book']==stem)
         REPORT['recipes'].extend(x for x in previous['recipes'] if x['book']==stem)

@@ -1,13 +1,13 @@
 # Validation and coverage report
 
-Updated on 24 September 2026; individual reports include retained earlier evidence. Executable evidence is distinguished from deployment recipes and architectural extensions.
+Updated on 25 September 2026; individual reports include retained earlier evidence. Executable evidence is distinguished from deployment recipes and architectural extensions.
 
 ## Results
 
 | Check | Result |
 | --- | --- |
-| Notebook execution | 134 passed; no failed cells |
-| Reading material | 30 notebooks, 357 lessons, 61,946 words |
+| Notebook execution | 142 passed; no failed cells |
+| Reading material | 31 notebooks, 380 lessons, 69,282 words |
 | Connected Java service | 8 integration tests passed |
 | Original Spring starter | 3 tests passed in foundation validation |
 | React unit/DOM/hydration | 3 tests passed |
@@ -53,6 +53,7 @@ Updated on 24 September 2026; individual reports include retained earlier eviden
 | [28 — Put the pieces together: a full-stack engineering capstone](28-fullstack-capstone-and-assessment.html) | 8 | 1 |
 | [29 — Databases: the organised memory of your application](29-databases-for-fullstack-and-ai.html) | 18 | 7 |
 | [30 — RAG: connect the question to the right evidence](30-rag-patterns-and-user-defined-flows.html) | 21 | 3 |
+| [Notebook 31 — Java, Spring Batch and microservices interview masterclass](31-java-microservices-interview-masterclass.html) | 23 | 8 |
 
 Architecture and interview workbooks primarily contain guided reading and exercises. Executable cells retain recorded outputs. Java and JavaScript are launched by Python notebook cells and require their own runtimes. Each of the 23 GoF patterns has a small executable implementation and assertion in Notebook 13.
 
@@ -1187,6 +1188,70 @@ Status: passed.
 
 ```text
 {'precision': 0.3333333333333333, 'recall': 0.5, 'complete_chain': False}
+```
+
+### 31-java-microservices-interview-masterclass / CollisionCards
+
+Status: passed.
+
+```text
+Unequal colliding keys coexist; equal keys replace values.
+```
+
+### 31-java-microservices-interview-masterclass / CleanupStory
+
+Status: passed.
+
+```text
+Abstract main ran; body failure retained; close failure suppressed.
+```
+
+### 31-java-microservices-interview-masterclass / EmployeePredicates
+
+Status: passed.
+
+```text
+[Ravi]
+```
+
+### 31-java-microservices-interview-masterclass / SafeCounter
+
+Status: passed.
+
+```text
+4000 increments retained; task failures propagate through Future.get.
+```
+
+### 31-java-microservices-interview-masterclass / ComposedFees
+
+Status: passed.
+
+```text
+Fee behavior changes through composition; money uses decimal values.
+```
+
+### 31-java-microservices-interview-masterclass / DurablePaymentKeys
+
+Status: passed.
+
+```text
+Tenant-scoped key replay and payload conflict verified in SQLite; no remote charge was made.
+```
+
+### 31-java-microservices-interview-masterclass / BookmarkPages
+
+Status: passed.
+
+```text
+Bookmark includes a unique tie-breaker: every static-data row appears once.
+```
+
+### 31-java-microservices-interview-masterclass / InboxReplay
+
+Status: passed.
+
+```text
+Business update and dedup marker roll back together, then replay applies once.
 ```
 
 ## Advanced integration evidence
@@ -3089,6 +3154,50 @@ Status: passed.
   ],
   "version": "v1.37.0+k3s1",
   "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
+}
+```
+
+### labs/interview-workshop/test-report.json
+
+```json
+{
+  "status": "passed",
+  "recorded_utc": "2026-09-25T05:13:22.306747+00:00",
+  "tests": 5,
+  "suites": [
+    {
+      "suite": "learning.BatchRestartTest",
+      "passed": 1,
+      "tests": [
+        "failedChunkRollsBackAndSameInstanceRestartsFromCommittedCheckpoint"
+      ]
+    },
+    {
+      "suite": "learning.PaymentServiceTest",
+      "passed": 3,
+      "tests": [
+        "calculatesAndSavesExactlyOnce",
+        "invalidInputNeverTouchesLedger",
+        "persistenceFailureIsNotReportedAsSuccess"
+      ]
+    },
+    {
+      "suite": "learning.TransactionBoundaryTest",
+      "passed": 1,
+      "tests": [
+        "proxyRollsBackButSelfInvocationBypassesInterception"
+      ]
+    }
+  ],
+  "versions": {
+    "spring-framework": "6.2.12",
+    "spring-batch": "5.2.4",
+    "junit": "5.13.4",
+    "mockito": "5.20.0",
+    "h2": "2.3.232",
+    "java_target": 21
+  },
+  "scope": "Actual Maven/JUnit tests of Mockito boundaries, Spring proxy transaction behavior and a Spring Batch failed-chunk restart. H2 database and stable local file; not MySQL/Oracle, a process-kill restart or remote payment exactly-once certification."
 }
 ```
 

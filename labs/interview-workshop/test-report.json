@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "recorded_utc": "2026-09-25T05:13:22.306747+00:00",
+  "tests": 5,
+  "suites": [
+    {
+      "suite": "learning.BatchRestartTest",
+      "passed": 1,
+      "tests": [
+        "failedChunkRollsBackAndSameInstanceRestartsFromCommittedCheckpoint"
+      ]
+    },
+    {
+      "suite": "learning.PaymentServiceTest",
+      "passed": 3,
+      "tests": [
+        "calculatesAndSavesExactlyOnce",
+        "invalidInputNeverTouchesLedger",
+        "persistenceFailureIsNotReportedAsSuccess"
+      ]
+    },
+    {
+      "suite": "learning.TransactionBoundaryTest",
+      "passed": 1,
+      "tests": [
+        "proxyRollsBackButSelfInvocationBypassesInterception"
+      ]
+    }
+  ],
+  "versions": {
+    "spring-framework": "6.2.12",
+    "spring-batch": "5.2.4",
+    "junit": "5.13.4",
+    "mockito": "5.20.0",
+    "h2": "2.3.232",
+    "java_target": 21
+  },
+  "scope": "Actual Maven/JUnit tests of Mockito boundaries, Spring proxy transaction behavior and a Spring Batch failed-chunk restart. H2 database and stable local file; not MySQL/Oracle, a process-kill restart or remote payment exactly-once certification."
+}

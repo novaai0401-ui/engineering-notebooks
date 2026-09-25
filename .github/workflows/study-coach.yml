@@ -31,6 +31,8 @@ jobs:
       - name: Java integration tests and artifact
         working-directory: labs/study-coach/java
         run: mvn -B -ntp package
+      - name: Interview workshop unit, transaction and batch restart tests
+        run: mvn -B -ntp -f labs/interview-workshop/pom.xml test
       - name: Native end-to-end and recovery tests
         run: python labs/study-coach/test_system.py
       - name: Generate local container credentials
