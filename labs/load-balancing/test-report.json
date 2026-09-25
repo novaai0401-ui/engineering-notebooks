@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "passed": [
+    "Actual round-robin proxy distributed 20 authenticated requests equally; anonymous request rejected",
+    "Proxy replaced forged forwarding header with the observed loopback peer",
+    "First SSE event reached client before backend was permitted to produce its second event",
+    "Real weighted round robin produced 30:10 requests for configured 3:1 weights",
+    "POST that applied an effect then returned 503 was not replayed on the other backend",
+    "Killing backend A allowed safe GET traffic to reach B through passive failure detection/retry",
+    "Both backends unavailable produced an explicit proxy error, not fabricated success"
+  ],
+  "nginx_version": "nginx version: nginx/1.28.3",
+  "weighted_counts": {
+    "A": 30,
+    "B": 10
+  },
+  "scope": "One local NGINX process and two Python backend processes with loopback bearer authentication. No public TLS, WebSocket tunnel, L4 proxy, active health checker, multi-host failure or cloud certification. Algorithm/queue simulations are separate notebook cells."
+}

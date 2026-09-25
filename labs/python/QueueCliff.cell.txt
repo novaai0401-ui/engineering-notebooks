@@ -1,0 +1,9 @@
+# lab: QueueCliff
+service_rate=100.0
+for arrival in (20.0,70.0,95.0,99.0):
+    # M/M/1 illustration: Poisson arrivals, exponential service, one server, stable load.
+    mean_seconds=1/(service_rate-arrival)
+    in_system=arrival*mean_seconds
+    assert mean_seconds>0
+    print(f'{arrival:.0f}/s -> mean {mean_seconds:.3f}s, average in system {in_system:.1f}')
+assert 200*.25==50

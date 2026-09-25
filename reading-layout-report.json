@@ -156,6 +156,16 @@
       "passed": true
     },
     {
+      "page": "32-load-balancing-from-playground-to-production.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
+      "page": "33-production-readiness-and-evidence-workbook.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
       "page": "COMPLETION-AUDIT.html",
       "width": 1280,
       "passed": true
@@ -332,6 +342,16 @@
     },
     {
       "page": "31-java-microservices-interview-masterclass.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "32-load-balancing-from-playground-to-production.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "33-production-readiness-and-evidence-workbook.html",
       "width": 390,
       "passed": true
     },

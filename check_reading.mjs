@@ -9,7 +9,7 @@ try{
    const result=await page.evaluate(()=>({title:document.querySelector('h1')?.textContent,overflow:document.documentElement.scrollWidth>innerWidth+2,text:document.querySelector('main')?.textContent?.length||0}));
    if(!result.title||result.text<300||result.overflow)throw Error(JSON.stringify({name,width,...result}));
    checks.push({page:name,width,passed:true});
-   if(['index.html','29-databases-for-fullstack-and-ai.html','30-rag-patterns-and-user-defined-flows.html','31-java-microservices-interview-masterclass.html'].includes(name)){
+   if(['index.html','29-databases-for-fullstack-and-ai.html','30-rag-patterns-and-user-defined-flows.html','31-java-microservices-interview-masterclass.html','32-load-balancing-from-playground-to-production.html','33-production-readiness-and-evidence-workbook.html'].includes(name)){
     fs.mkdirSync(path.join(root,'previews'),{recursive:true});await page.screenshot({path:path.join(root,'previews',name.replace('.html','')+'-'+width+'.png')});
    }
   }

@@ -1,0 +1,10 @@
+# lab: SmoothTicketCounters
+from collections import Counter
+weights={'A':3,'B':1}; current={name:0 for name in weights}; assignments=[]
+for _ in range(40):
+    for name,weight in weights.items(): current[name]+=weight
+    chosen=max(current,key=current.get)
+    current[chosen]-=sum(weights.values());assignments.append(chosen)
+assert Counter(assignments)=={'A':30,'B':10}
+print('First eight choices:',assignments[:8])
+print('Forty requests:',dict(Counter(assignments)))

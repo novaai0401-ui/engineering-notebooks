@@ -1,13 +1,14 @@
 # Completion audit: implemented work and verified boundaries
 
-Updated 25 September 2026. 31 notebooks cover the requested curriculum. This audit separates implemented lessons, executed local tests and acceptance checks requiring your environment or participation. It does not promise every possible exam or algorithm.
+Updated 25 September 2026. 33 notebooks cover the requested curriculum. This audit separates implemented lessons, executed local tests and acceptance checks requiring your environment or participation. It does not promise every possible exam or algorithm.
 
 ## Completed local work
 
 | Area | What actually ran | Evidence |
 | --- | --- | --- |
-| Notebook exercises | 142 recorded passing executable cells; 31 reading notebooks | [Validation](VALIDATION.html) |
+| Notebook exercises | 153 recorded passing executable cells; 33 reading notebooks | [Validation](VALIDATION.html) |
 | Interview expansion | Java/Spring questions, SOLID/GoF and microservice patterns, pagination, MySQL/Oracle diagnostics, Batch restart and testing | [Notebook 31](31-java-microservices-interview-masterclass.html), [Spring workshop](labs/interview-workshop/test-report.json) |
+| Load balancing | Real NGINX with two backend processes: round robin, weights, authorization, forwarding headers, SSE, POST retry safety and backend loss | [NGINX report](labs/load-balancing/test-report.json), [Notebook 32](32-load-balancing-from-playground-to-production.html) |
 | Docker | Current recorded result: **passed**. Supplied multi-stage images, authenticated Java/Python job, approval, idempotency, SSE and volume restart test | [Container report](labs/study-coach/container-report.json) |
 | Kubernetes | Current recorded result: **passed**. Actual K3s node, pod replacement and scaling; capstone Services, Secret and persistent volume checks | [Cluster report](labs/kubernetes-report.json) |
 | Redis | Three actual servers and three Sentinels; primary killed, replacement discovered, data/write/TTL checked, old primary rejoins as replica | [Redis report](labs/redis-failover-report.json) |
@@ -32,6 +33,10 @@ The original strict eight-case factual baseline passed five; tutor review identi
 [Original baseline](labs/rag-flow/factual-holdout-report.json), [bounded retest](labs/rag-flow/bounded-generation-report.json), [development regression](labs/rag-flow/development-regression-report.json). Earlier incorrect Study Coach generation remains in its factual review. Extractive output stays the default. The new fallback repairs availability during generation failure; it does not repair arbitrary model reasoning. Broader independent factual adjudication remains needed before relying on generated answers without review.
 
 ## Acceptance work that still requires input or access
+
+The written curriculum now covers each previously pending area in [Notebook 33: production readiness](33-production-readiness-and-evidence-workbook.html). The MySQL/Oracle scripts are supplied but have not been run on those engines. Multi-host, public TLS, longer-duration and provider-specific recovery checks remain bounded by the target environment. Added explanations and simulations are not relabelled as external acceptance.
+
+Hosted CI for prior commit bc63933215c492cfe2e2a9edd2f2cd1e87111443 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36097858718). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
 
 1. **Actual public-cloud deployment:** provide the authorized account/project, region and spending limit. Local Docker/K3s execution is real, but it is not a cloud rollout. No destination or budget has been supplied.
 2. **Physical-device and manual screen-reader audit:** use an actual device with Safari/VoiceOver or the chosen mobile browser/screen reader and record the tasks in [Manual acceptance](labs/MANUAL-ACCEPTANCE.md). Desktop WebKit and narrow viewports cannot establish physical iPhone behavior.

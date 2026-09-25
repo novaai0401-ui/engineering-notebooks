@@ -96,7 +96,7 @@ for relative in ['labs/rag-flow/bounded-generation-report.json','labs/rag-flow/d
     if candidate.exists():
         data=json.loads(candidate.read_text(encoding='utf-8'));report['projects'][relative]=data
         advanced+=['### '+relative,'','```json',json.dumps(data,indent=2),'```','']
-for candidate in [root/'labs/interview-workshop/test-report.json',root/'labs/kubernetes-initial-report.json',root/'labs/kubernetes-initial-review.json',root/'labs/kubernetes-readiness-race-report.json',*sorted((root/'labs/realtime-cache').glob('endurance-*-report.json'))]:
+for candidate in [root/'labs/load-balancing/test-report.json',root/'labs/ci-prior-report.json',root/'labs/interview-workshop/test-report.json',root/'labs/kubernetes-initial-report.json',root/'labs/kubernetes-initial-review.json',root/'labs/kubernetes-readiness-race-report.json',*sorted((root/'labs/realtime-cache').glob('endurance-*-report.json'))]:
     if not candidate.exists():continue
     relative=candidate.relative_to(root).as_posix();data=json.loads(candidate.read_text(encoding='utf-8'));report['projects'][relative]=data
     advanced+=['### '+relative,'','```json',json.dumps(data,indent=2),'```','']

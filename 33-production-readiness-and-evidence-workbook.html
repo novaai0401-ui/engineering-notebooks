@@ -1,0 +1,355 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notebook 33 — The launch room: cloud, AI quality, databases and recovery</title><style>
+:root{color-scheme:light;--ink:#19313f;--muted:#475c65;--paper:#fffdf8;--accent:#095769;--line:#ced9db}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:18px/1.75 Georgia,serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #b15a15;outline-offset:4px}
+nav{position:fixed;inset:0 auto 0 0;width:290px;overflow:auto;background:#edf3f2;border-right:1px solid var(--line);padding:25px;font:14px/1.5 system-ui,sans-serif}
+nav strong{font-size:20px}nav ul{list-style:none;padding:0}nav li{margin:10px 0}nav a{text-decoration:none}nav details{font-size:12px;margin-top:5px}nav details ul{padding-left:12px}summary{cursor:pointer}
+main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25;letter-spacing:-.025em}
+h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
+pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
+p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+.meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
+.index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
+@media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
+@media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-9">1. Four labels that prevent false confidence</a></li><li><a href="#section-24">2. Cloud architecture: map responsibilities before product names</a></li><li><a href="#section-40">3. Infrastructure as code, identity and cost controls</a></li><li><a href="#section-55">4. A deployment sequence you can explain under pressure</a></li><li><a href="#section-150">5. Service levels: translate a promise into a measurement</a></li><li><a href="#section-166">6. AI evaluation: the answer can be fluent and wrong</a></li><li><a href="#section-181">7. Build a scorecard that cannot hide failures</a></li><li><a href="#section-194">8. Small samples: six out of eight is not certainty</a></li><li><a href="#section-207">9. Adversarial RAG and agent boundaries</a></li><li><a href="#section-222">10. Database detective work: reproduce the slow query</a></li><li><a href="#section-237">11. MySQL: chosen key, actual work and misleading hints</a></li><li><a href="#section-252">12. Oracle: estimates versus the executed child cursor</a></li><li><a href="#section-267">13. Transactions, migrations and database recovery</a></li><li><a href="#section-286">14. Physical accessibility: follow a person, not a score</a></li><li><a href="#section-301">15. Accessible errors, focus and streaming status</a></li><li><a href="#section-316">16. Multi-host failure: separate the failure domains</a></li><li><a href="#section-331">17. Endurance, open-loop load and coordinated omission</a></li><li><a href="#section-346">18. Identity rotation: three different keys, three different problems</a></li><li><a href="#section-361">19. Revocation across an unavailable instance</a></li><li><a href="#section-376">20. Disaster recovery: RPO, RTO and the missing last orders</a></li><li><a href="#section-392">21. Incident command, runbooks and post-incident learning</a></li><li><a href="#section-407">22. GitHub CI: a green check answers a specific question</a></li><li><a href="#section-422">23. A practice programme that reveals understanding</a></li><li><a href="#section-437">24. A scored launch-room challenge</a></li><li><a href="#section-554">25. Reading coverage versus acceptance work</a></li></ul></nav><main id="content"><p class="downloads"><a href="33-production-readiness-and-evidence-workbook.ipynb">Jupyter notebook</a><a href="33-production-readiness-and-evidence-workbook.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 33 — The launch room: cloud, AI quality, databases and recovery</h1>
+<p>Mira's cinema now has a working load balancer. The team celebrates—until someone asks a harder question: “What evidence would make us comfortable opening ticket sales tomorrow?” A diagram is not enough. Neither is one green test. This notebook turns each previously pending area into a detailed learning journey and an acceptance exercise.</p>
+<p>You will move through the launch room, the AI review desk, the database investigation, an accessibility session and a recovery drill. Each lesson follows a problem, a mechanism, a worked decision and a question to answer. Five executable Python cells make important ideas tangible. Cloud deployment, independent factual review, physical-device testing and your personal interview score remain unexecuted where the required environment or participation is absent. Adding explanations does not fabricate those results.</p>
+<h2 id="section-9">1. Four labels that prevent false confidence</h2>
+<p>Give every claim one of four labels: <strong>explained</strong>, <strong>simulated</strong>, <strong>executed locally</strong>, or <strong>accepted in the target environment</strong>. A local three-process Kafka test is executed locally; it is not an independent-host network-partition test. A diagram of an AWS load balancer is explained; it is not an AWS deployment. A browser viewport is a simulation of width, not a physical iPhone.</p>
+<p>For every experiment, record the question, configuration/version, inputs, expected result, observations, failure evidence and limits. Avoid “it works” without naming what “it” means. If an earlier failure led to a correction, retain both the failure and the new result. Otherwise the history can look more reliable than the system actually was.</p>
+<p>Mira's acceptance register has seven columns: requirement, owner, environment, procedure, evidence, outcome and next action. Outcome can be PASS, FAIL or NOT RUN. NOT RUN is useful information; it tells the next engineer what must happen rather than making them rediscover missing proof.</p>
+<p><strong>Exercise:</strong> classify “NGINX sent requests to B after process A was stopped.” Answer: a local process-failure result. It says nothing by itself about a broken network link, shared disk failure or a region outage.</p>
+<h2 id="section-24">2. Cloud architecture: map responsibilities before product names</h2>
+<p>Build the smallest topology that meets explicit needs. Start with request volume, latency, data sensitivity, availability objective, recovery objectives, team capacity and spending limit. Then map responsibilities to services: ingress/TLS, compute, durable database, cache, queue, object storage, identity, secrets, telemetry and backups.</p>
+<pre><code class="language-text">Public DNS + certificate
+        -&gt; managed ingress/load balancer
+        -&gt; application replicas in selected failure domains
+        -&gt; private database / cache / broker endpoints
+
+Background workers -&gt; durable job queue -&gt; authorized data/model services
+Deployment identity -&gt; artifact registry + narrowly scoped deployment permissions
+Telemetry -&gt; collector/storage with retention and access policy
+Backups -&gt; separate recovery destination + tested restore procedure
+</code></pre>
+<p>This provider-neutral diagram is not an instruction to run every service publicly. Decide which components need inbound internet access and which should be reachable only from the application. Control outbound access too, especially for agents that consume untrusted documents and might otherwise call arbitrary destinations.</p>
+<p>In one possible AWS mapping, an Application Load Balancer fronts a managed container workload, with a managed relational database and a secret manager. That is an example, not a claim that an account was provisioned or a recommendation independent of your requirements. Other platforms can satisfy the same responsibilities. Compare operational behavior and team knowledge, not only icon similarity.</p>
+<p><strong>Predict:</strong> every load-balancer target fails its health check. Will traffic always stop? Not necessarily. Some products have fail-open behavior; AWS ALB documents one such condition. Test the exact provider policy instead of importing assumptions from a local proxy. <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html">ALB health-check behavior</a>.</p>
+<h2 id="section-40">3. Infrastructure as code, identity and cost controls</h2>
+<p>Infrastructure as code records desired resources and their relationships. A reviewed plan exposes intended changes; application creates or updates real resources. Neither step proves the running application is healthy. Keep state protected and concurrency controlled. Separate environments with explicit ownership rather than depending on a naming convention alone.</p>
+<p>Use a deployment identity scoped to the selected environment. Prefer short-lived federation/workload credentials where supported over copied long-lived keys. Treat a CI secret as sensitive even when logs mask it: malicious build code can still try to transmit values elsewhere. Pull-request trust, action dependencies and repository permissions matter. <a href="https://docs.github.com/en/actions/concepts/security/secrets">GitHub secret concepts</a>.</p>
+<p>Budgeting starts with an estimate of steady usage, peaks, storage growth, backups, network egress and retained logs. An alert often warns rather than imposing a hard cap. Set ownership tags, alert recipients and a cleanup plan. Do not assume stopping a compute instance deletes its volumes, snapshots, addresses or load balancer.</p>
+<p>For the actual deployment exercise, fill in: account/project, region, environment name, spending limit, identity, domain ownership, approved data, desired lifetime and teardown owner. These values are still needed before a real cloud rollout. The library contains local runtime evidence and this deployment procedure; it does not invent credentials or a spending decision.</p>
+<h2 id="section-55">4. A deployment sequence you can explain under pressure</h2>
+<p>First build an immutable artifact and record its digest. Run appropriate unit, integration, migration and dependency checks. Prepare runtime secrets without placing them in image layers. Review infrastructure changes and confirm the intended account. Deploy the smallest staging slice, then verify DNS, certificate identity, routes, health and authorization from the intended client network.</p>
+<p>Next test business behavior: create an authenticated job, retry its idempotency key, submit a conflicting payload, stream status, reconnect, terminate a worker and inspect the final durable outcome. Verify telemetry contains correlation without credentials. Exercise backup restoration into a separate destination. Only then decide whether the rollout meets the declared acceptance bar.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Concrete evidence</th>
+<th>Failure response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Artifact</td>
+<td>Exact digest and passing build report</td>
+<td>Do not deploy an unidentified image</td>
+</tr>
+<tr>
+<td>Migration</td>
+<td>Old/new compatibility and rehearsal</td>
+<td>Stop before destructive schema change</td>
+</tr>
+<tr>
+<td>Network/TLS</td>
+<td>Expected certificate, routes and private boundaries</td>
+<td>Correct routing/trust, not disabled verification</td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>Valid login, denied cross-tenant access, revocation checks</td>
+<td>Keep protected functions unavailable</td>
+</tr>
+<tr>
+<td>Business flow</td>
+<td>Durable successful/retried/failed outcomes</td>
+<td>Repair or roll back within data compatibility</td>
+</tr>
+<tr>
+<td>Recovery</td>
+<td>Timed restore and reconciliation</td>
+<td>Revise recovery claims and procedure</td>
+</tr>
+</tbody>
+</table></div>
+<p>For canaries, choose a small eligible population and compare meaningful metrics against a baseline over a representative interval. A low request count may hide a severe failure. A rollback of code must respect data already written by the new version. Stop conditions and decision ownership should be agreed before the incident.</p>
+<h2 id="section-150">5. Service levels: translate a promise into a measurement</h2>
+<p>An SLI is a measurement, an SLO is its target, and an SLA is an agreement with consequences under specified terms. For a booking API, “successful eligible requests completed within two seconds” is more specific than “the server is healthy.” Define exclusions, observation point and what counts as a successful business outcome.</p>
+<p>For a request-based 99.9% success SLO across 100,000 eligible requests, the error budget is 100 failed requests. That is not automatically 43.2 minutes of downtime: a request-based budget and a time-based availability calculation use different denominators.</p>
+<pre><code class="language-python"># lab: RequestErrorBudget
+eligible=100_000; target=.999; failed=140
+allowed=round(eligible*(1-target))
+assert allowed==100
+burn=failed/allowed
+print('Allowed failures:',allowed,'; observed:',failed,'; budget used:',round(100*burn),'%')
+assert burn&gt;1
+</code></pre>
+<p>Fast burn over a short window may justify immediate action; a longer window helps distinguish sustained trouble from noise. A budget is a decision aid for reliability investment, not permission to ignore individual harmful failures. An incorrect payment can matter even when aggregate HTTP availability looks excellent.</p>
+<p>Ask: which user journey is missing from the dashboard? A homepage probe can be green while checkout fails. Add synthetic journeys and business reconciliation metrics where appropriate, and keep their test data clearly separated.</p>
+<h2 id="section-166">6. AI evaluation: the answer can be fluent and wrong</h2>
+<p>Mira adds an assistant that answers refund questions from policy documents. It retrieves the right page and produces a beautifully phrased answer—but changes “within fourteen days” into “within thirty days.” Retrieval succeeded; grounded answer generation failed.</p>
+<p>Evaluate stages separately. Ingestion checks detect missing/stale documents and permission metadata. Retrieval metrics check whether needed evidence appears. Reranking and context assembly checks detect dropped or truncated support. Generation checks assess factual claims, completeness, justified abstention and instruction resistance. End-to-end checks include identity, latency, cost, timeouts and user-visible recovery.</p>
+<p>Create a versioned case record containing question, authorized identity, source snapshot/hash, expected claims, forbidden claims, acceptable abstention conditions, category and adjudication notes. Keep a development set for iteration and an untouched holdout for a later decision. Once you inspect a failing holdout and tune to it, that case becomes development evidence; choose a genuinely new set for the next independent estimate.</p>
+<p>The existing eight-case generation regression passed six cases. This notebook does not relabel it. One unnecessary abstention and one timeout remain failures under that test. Source-only fallback improves availability during generation failure, but does not magically improve every model answer.</p>
+<h2 id="section-181">7. Build a scorecard that cannot hide failures</h2>
+<p>Report factual correctness, answer coverage, unsupported-claim rate, permission violations, justified abstentions, inappropriate abstentions, latency/timeouts and cost separately. If you report correctness only among answered questions, also show how many questions received answers. A system that refuses everything can avoid unsupported claims while being useless.</p>
+<pre><code class="language-python"># lab: HonestAnswerScorecard
+# Synthetic outcomes for learning metric denominators, not new model measurements.
+cases=[
+  {'answered':True,'correct':True,'timeout':False},
+  {'answered':True,'correct':True,'timeout':False},
+  {'answered':True,'correct':False,'timeout':False},
+  {'answered':False,'correct':False,'timeout':False},
+  {'answered':False,'correct':False,'timeout':True},
+]
+answered=sum(x['answered'] for x in cases)
+correct=sum(x['correct'] for x in cases)
+coverage=answered/len(cases); conditional=correct/answered
+assert coverage==.6 and correct/len(cases)==.4
+assert sum(x['timeout'] for x in cases)==1
+print('Coverage:',coverage,'; correctness among answered:',round(conditional,3),'; correct over all:',correct/len(cases))
+</code></pre>
+<p>A citation should support the claim attached to it. Check whether the cited source is authorized, current, actually retrieved and sufficient for the assertion. Citation existence is not entailment. Human reviewers should assess claim-level support against the source, record disagreements and resolve them through a stated rubric. An LLM judge can assist triage, but it can share biases, be manipulated by answer text or disagree with domain experts.</p>
+<p>For a release decision, separate zero-tolerance cases from averages. One unauthorized disclosure should not disappear inside a 98% overall score. Set thresholds before looking at results, document who adjudicates ambiguous cases and retain unsuccessful runs.</p>
+<h2 id="section-194">8. Small samples: six out of eight is not certainty</h2>
+<p>An observed pass rate is an estimate for the sampled cases, not a guarantee for all future users. A simple confidence interval illustrates sampling uncertainty, but it cannot fix an unrepresentative dataset. Eight nearly identical questions reveal little about a different language, tenant boundary or source conflict.</p>
+<pre><code class="language-python"># lab: SmallSampleUncertainty
+import math
+def wilson(successes,total,z=1.96):
+    if not 0&lt;=successes&lt;=total or total&lt;=0: raise ValueError('invalid counts')
+    p=successes/total; denom=1+z*z/total
+    center=(p+z*z/(2*total))/denom
+    radius=z*math.sqrt(p*(1-p)/total+z*z/(4*total*total))/denom
+    return center-radius,center+radius
+low,high=wilson(6,8)
+assert low&lt;.5 and high&gt;.9
+print('Observed 0.75; approximate 95% Wilson interval:',tuple(round(x,3) for x in (low,high)))
+</code></pre>
+<p>This interval assumes a suitable sampling model; correlated hand-picked development examples do not become an independent population sample merely because we computed it. Use stratified categories, fresh source families and real failure diversity. Pairwise comparisons on the same cases can help isolate model/configuration changes, but avoid repeatedly tuning to the final test set.</p>
+<p>Interesting review exercise: one model gets all easy policy questions right but exposes a private document once. Another misses two answerable questions but never crosses the access boundary. Do not collapse that decision into a single undifferentiated accuracy percentage.</p>
+<h2 id="section-207">9. Adversarial RAG and agent boundaries</h2>
+<p>Build cases for instructions hidden in documents, forged system messages, malicious URLs, conflicting sources, stale policy dates, unsupported premises, no evidence, ambiguous entities, multilingual requests, oversized contexts and attempted cross-tenant retrieval. Test whether permissions are applied before retrieval expansion, graph summaries, caching and generation—not merely when rendering the final answer.</p>
+<p>Treat retrieved text as data. Give tools narrow schemas and allowlisted capabilities. Validate tool arguments outside the model, obtain identity from authentication, impose step/time/cost budgets and require the application-defined approval boundary for consequential actions. A model's statement “approved” is not a human approval record.</p>
+<p>For agent evaluation, inspect the trace: what evidence led to which action, which policy allowed it, whether retries duplicated an effect, and what survived a checkpoint restart. Separate task success from safe execution. A correct final answer does not excuse an unauthorized intermediate read.</p>
+<p>An independent evaluation exercise should use a reviewer who did not tune the prompt, with a frozen source snapshot and a predeclared rubric. Include enough examples in each failure category to make the results useful. This library's authored cases are development evidence; an outside adjudication has not been invented.</p>
+<h2 id="section-222">10. Database detective work: reproduce the slow query</h2>
+<p>Mira sees “database slow” on a dashboard. Before creating an index, capture the query shape, bind types, data distribution, execution frequency, returned row count, concurrency, isolation level, waits and plan. Determine whether time is spent waiting for a lock, scanning rows, sorting, doing random I/O or waiting for a connection pool. An index does not solve every one of those problems.</p>
+<p>Use a disposable schema and representative synthetic data. The supplied <code>labs/database-plan-workshop/mysql.sql</code> and <code>oracle.sql</code> create clearly named teaching tables, seed a dataset and show before/after plan procedures. They do not contain credentials or delete an existing schema. Run them only in a chosen lab schema and record the actual engine/version and output. They have not been executed against those two engines in this environment.</p>
+<p>The schema models tenant, ticket ID, status, creation time and price. A candidate index <code>(tenant_id,status,created_at,id)</code> fits a particular equality-plus-ordering query. Test another query that omits status and observe how that changes available ordering/access paths. The same index need not serve both optimally.</p>
+<p>Do not compare a cold first run of one query with a warmed tenth run of another and call the difference an index benefit. Record cache conditions, repeat controlled samples, check result equivalence and examine writes too. Indexes trade read work against storage and maintenance.</p>
+<h2 id="section-237">11. MySQL: chosen key, actual work and misleading hints</h2>
+<p>EXPLAIN describes the optimizer's selected plan. Inspect the access type, selected key, estimated rows, filtering and sorting. <code>possible_keys</code> lists candidates; it is not proof that an index was used. EXPLAIN ANALYZE on supported statements executes the statement and adds observed timing/row/loop information. <a href="https://dev.mysql.com/doc/refman/8.4/en/explain.html">MySQL EXPLAIN reference</a>.</p>
+<p>After adding the composite index, inspect whether the intended prefix is useful for the actual predicates. A range condition can change how later key parts participate. An implicit conversion, function applied to a column or a low-selectivity predicate can alter the chosen path. Keep statistics current and understand collation/type effects. A full scan on a small table is not automatically a defect.</p>
+<p>Exercise sequence: run the unindexed filtered/order query; create the candidate index; gather the relevant statistics; run the same query/parameters; compare actual examined work and sorting; then remove the tenant predicate from the query without changing the index. Explain why the result may differ. Do not use FORCE INDEX as a substitute for understanding the optimizer's cost decision.</p>
+<p>For pagination, verify that the cursor's unique tie-breaker matches the ORDER BY and index design. A query that returns ten rows may still examine millions. Small response size is not proof of a cheap database operation.</p>
+<h2 id="section-252">12. Oracle: estimates versus the executed child cursor</h2>
+<p>EXPLAIN PLAN produces a proposed plan. For actual execution analysis, identify the relevant SQL_ID and child cursor, collect execution statistics deliberately, fetch the result fully where appropriate, and inspect DBMS_XPLAN.DISPLAY_CURSOR. Compare estimated and actual rows, starts, predicates and buffer work. Child cursors and bind-sensitive behavior are reasons to identify the execution precisely rather than assuming the last similar SQL text is the right one.</p>
+<p>Gather optimizer statistics through a controlled process suitable for the table and workload. Histograms and correlated columns can matter, but adding them indiscriminately is not a universal improvement. Check stale statistics, data skew and parameter distribution before forcing a plan. <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/tgsql/gathering-optimizer-statistics.html">Oracle statistics guidance</a>.</p>
+<p>The workshop includes a distinctive query comment to help locate its cursor. It needs appropriate access to the diagnostic views; do not grant broad production privileges just to follow a tutorial. The plan's presence of an index is only the beginning: an inefficient index path with many row visits may be worse than a scan.</p>
+<p><strong>Explain to a child:</strong> the estimated plan is the route you draw before leaving home; execution statistics show where you actually walked and waited. A shorter line on the map is not always a shorter journey when a bridge is closed.</p>
+<h2 id="section-267">13. Transactions, migrations and database recovery</h2>
+<p>Protect business invariants at the database boundary. Unique constraints resolve races more reliably than two independent “does it exist?” checks. Understand transaction isolation for your actual engine: dirty reads, non-repeatable reads, phantoms and write-skew discussions depend on the operation and implementation. Do not transfer SQLite/H2 behavior to MySQL or Oracle without verification.</p>
+<p>For a migration, define old/new compatibility, locking impact, expected duration, rollback/forward-repair options and monitoring. Additive schema changes can still be operationally expensive on a large table. Backfill in bounded batches with durable progress and a way to pause. Keep destructive cleanup until readers no longer need the old representation.</p>
+<p>Replication is not a backup. An accidental deletion can replicate perfectly. A backup is not a successful restore until you have restored and verified it. Use engine-supported snapshot/backup methods rather than copying an active database file and hoping all pages represent one consistent moment.</p>
+<p>The next exercise uses SQLite's backup API and verifies business rows in a separate file. It teaches verification mechanics; it is not a MySQL/Oracle recovery certification.</p>
+<pre><code class="language-python"># lab: RestoreAndReconcile
+import sqlite3,tempfile
+from pathlib import Path
+with tempfile.TemporaryDirectory() as folder:
+    folder=Path(folder)
+    live=sqlite3.connect(folder/'live.db')
+    live.execute('CREATE TABLE ledger(id INTEGER PRIMARY KEY,cents INTEGER NOT NULL)')
+    live.executemany('INSERT INTO ledger VALUES(?,?)',[(1,1200),(2,800)])
+    live.commit()
+    backup=sqlite3.connect(folder/'backup.db');live.backup(backup);backup.close()
+    live.execute('DELETE FROM ledger');live.commit()
+    restored=sqlite3.connect(folder/'restored.db');saved=sqlite3.connect(folder/'backup.db')
+    saved.backup(restored)
+    assert restored.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
+    assert restored.execute('SELECT COUNT(*),SUM(cents) FROM ledger').fetchone()==(2,2000)
+    saved.close();restored.close();live.close()
+print('A separate restore passed structural integrity and business reconciliation checks.')
+</code></pre>
+<p>Counts and sums are useful but can miss compensating errors; compare identifiers, constraints and domain-specific reconciliations too. Record which acknowledged operations occurred after the recovery point and how they are replayed or resolved.</p>
+<h2 id="section-286">14. Physical accessibility: follow a person, not a score</h2>
+<p>Meet Arun, who navigates by keyboard, and Leela, who uses a screen reader on a phone. Can they discover the chapter, understand its headings, reach code examples, submit a form, recover from an error and understand a streamed answer? A page can look attractive and pass an automated rule set while still making those journeys difficult.</p>
+<p>Use semantic headings, landmarks, labels and native controls where possible. Keep focus visible, names meaningful and state changes understandable without relying only on color. Test zoom/reflow and touch targets in the real browser. A desktop WebKit engine is useful evidence, but not a complete substitute for Safari on an actual iPhone with its keyboard, viewport and assistive technology. <a href="https://www.w3.org/WAI/test-evaluate/">Accessibility evaluation overview</a>.</p>
+<p>Use the existing MANUAL-ACCEPTANCE worksheet to record device model, OS, browser, assistive technology, task, expected behavior, actual observation and retest. Leave unexecuted rows NOT RUN. A tutor cannot simulate a person's experience by writing “passed” into that table.</p>
+<p>For code blocks and tables, check that scrolling is possible without trapping focus and that headers identify relationships. A visually obvious comparison can be confusing when read linearly. Explain a diagram in surrounding prose so its meaning survives when the reader cannot see the arrows.</p>
+<h2 id="section-301">15. Accessible errors, focus and streaming status</h2>
+<p>Imagine a form says “Invalid input” in red at the top while focus remains on a distant button. Leela hears nothing and submits repeatedly. Associate the error with the field, describe the repair, keep the user's valid input, and provide a predictable focus strategy for the context. Success and pending status also need to be perceivable. <a href="https://www.w3.org/WAI/tutorials/forms/notifications/">WAI form notifications</a>.</p>
+<p>For a streaming AI answer, announcing every token can overwhelm a screen reader. Consider a stable status such as “Generating answer,” a way to stop, and a final completion announcement while keeping the answer available for normal navigation. Do not forcibly move focus every time content arrives. Let the user control reading rather than chasing a moving focus target.</p>
+<p>Manual scenario: start an answer, move to another control, interrupt the connection, reconnect, then log out. Check announcements, focus, duplicated text, stale-state labels and whether protected content stops updating. Repeat at enlarged text size and on the actual mobile device. Automated axe checks and browser assertions supplement these observations; they do not replace them.</p>
+<p>An acceptance bug report should quote the actual announcement or observed behavior, name the device/version and supply repeatable steps. “Accessibility is bad” is hard to fix; “the error is not announced and is not programmatically associated with the amount field” is actionable.</p>
+<h2 id="section-316">16. Multi-host failure: separate the failure domains</h2>
+<p>Three broker processes on one laptop can demonstrate leader election after a process kill. They cannot demonstrate surviving loss of that laptop. Separate hosts, zones, disks, networks and control-plane dependencies according to the failure you intend to test.</p>
+<p>Build a fault matrix: process crash, slow dependency, connection reset, one-way packet loss, total partition, disk full, stale credential, corrupted state and whole-zone outage. For each, identify expected detection, availability, data safety, recovery path and evidence. Inject one well-defined fault at a time before combining failures; otherwise you may not know which assumption failed.</p>
+<p>A distributed system can have a healthy-looking process on the wrong side of a partition. Fencing prevents an obsolete owner from continuing writes after a new owner takes over. A lease needs a clear authority, expiration model and enforcement at the resource being protected; a timestamp in memory alone may not stop an old worker's external effect.</p>
+<p>Exercise: a worker pauses for a long garbage collection while holding a lease. Another worker acquires the expired lease. The first resumes. How will the database or external operation reject obsolete work? Discuss fencing tokens, operation IDs and downstream cooperation, not only “we use a lock.”</p>
+<h2 id="section-331">17. Endurance, open-loop load and coordinated omission</h2>
+<p>A closed-loop client waits for each response before sending the next request. When the server slows down, the client sends less work. That can hide the queue growth a real independent arrival process would cause. An open-loop generator schedules arrivals independently, subject to its own explicit limits, and can reveal overload more clearly.</p>
+<p>Record offered load, achieved throughput, concurrency, errors, timeouts, rejection counts, latency distribution and generator saturation. A generator that runs out of CPU is not measuring the server's maximum capacity. Avoid coordinated omission: if your test stops issuing requests during a stall, it may underrepresent the waiting time real users would have experienced.</p>
+<p>For endurance, include realistic data growth, token expiry/refresh, cache eviction, log rotation, scheduled jobs, connection churn and a deployment. Sample memory, handles/file descriptors, queue age, storage and database connections. Warm-up, steady state and recovery should be distinguishable. The existing ten-minute soak is real evidence for its bounded workload; it is not a multi-day leak proof.</p>
+<p>Longer tests require a target duration tied to the suspected failure. If a leak appears after daily rotation, a longer but still ten-minute test will never exercise the cause. Choose a workload and observation window from the hypothesis rather than simply maximizing request count.</p>
+<h2 id="section-346">18. Identity rotation: three different keys, three different problems</h2>
+<p>Separate a client secret used by an application to authenticate to an identity provider, a signing key used to sign tokens, and a data-encryption key used to protect stored values. Rotating one does not automatically rotate or revoke the others. Access tokens, refresh tokens, application sessions and provider sessions also have distinct lifecycles.</p>
+<p>A signing-key rotation typically needs a publication/overlap strategy so valid outstanding tokens can still be verified while newly issued tokens use the new key. Clients may cache key sets; refresh behavior and unknown key IDs need bounded handling. A client-secret cutover needs provider-supported overlap or coordinated rollout. Never assume updating one secret object updates every running process and connection pool immediately.</p>
+<p>For refresh tokens, secure issuance/storage, replay resistance and appropriate rotation or sender-constraining mechanisms matter. Revocation policy must cover compromised credentials and reuse. Match the identity-provider capabilities and client type rather than treating every token as an interchangeable JWT. <a href="https://www.rfc-editor.org/rfc/rfc9700.html">OAuth security best current practice</a>.</p>
+<p>Zero-downtime rotation acceptance should test old/new application instances concurrently, fresh and existing sessions, failed callbacks, background refresh, expired tokens, key-cache refresh, an unavailable instance, rollback and final rejection of retired credentials. Record what still succeeds during overlap and exactly when old material stops being accepted. Existing local logout tests cover a narrower, documented network-outage scenario.</p>
+<h2 id="section-361">19. Revocation across an unavailable instance</h2>
+<p>Think of a head teacher announcing that a visitor pass is cancelled. An absent classroom cannot hear the announcement immediately. A durable delivery journal helps when it reconnects, but there is still a policy question: may that classroom admit visitors while its revocation information is stale?</p>
+<p>Options include a shared authoritative session store, short-lived access with an explicit stale-information limit, synchronous checks where availability permits, or a durable revocation feed with readiness reconciliation. Each has latency and availability costs. A queue alone does not guarantee a message is useful after its signed event expires.</p>
+<p>Define a rejoin protocol. Before an instance receives protected traffic, establish its identity, refresh necessary trust material, reconcile relevant revocations and check its progress against an authoritative watermark. If the required information cannot be obtained, choose the documented fail-closed or limited-function behavior rather than silently accepting stale privileges.</p>
+<p>The library's real Spring test observed a temporarily valid session at an isolated receiver, then successful revocation after durable retry. That observation is valuable because it exposes the gap instead of hiding it. It does not prove every long-outage or shared-session design is solved.</p>
+<h2 id="section-376">20. Disaster recovery: RPO, RTO and the missing last orders</h2>
+<p>RPO describes the acceptable recovery-point loss under the defined scenario. RTO describes the target time to restore the required service. They must come from business needs and a concrete recovery strategy; having backups alone does not establish either objective. <a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html">Disaster-recovery planning</a>.</p>
+<pre><code class="language-python"># lab: RecoveryTimeline
+# Synthetic drill times, seconds since incident start.
+incident=0; detected=45; restored=420; validated=540; last_recoverable_commit=-90
+service_recovery=validated-incident
+point_gap=incident-last_recoverable_commit
+assert service_recovery==540 and point_gap==90
+assert service_recovery&gt;restored  # Restore completion alone is not validated service recovery.
+print('Recovery through validation:',service_recovery,'s; recoverable point lag:',point_gap,'s')
+</code></pre>
+<p>A warm standby, pilot-light environment and backup/restore strategy have different cost and recovery-time tradeoffs. Include dependency configuration, certificates, secrets, deployment artifacts, schemas, queues and network routes in the plan. Restoring only the main database may leave background work inconsistent.</p>
+<p>Reconcile external effects after restore. A bank may have captured a payment after your last recoverable database commit. Blindly replaying every “missing” payment can duplicate charges. Use provider operation IDs and durable audit evidence to resolve ambiguity. Fence the old primary before promoting a new writer, and test the eventual failback path too.</p>
+<p>A recovery drill ends when the defined user journey and data reconciliation are accepted, not when a storage console says “restore complete.” Record detection, decision, restoration, validation and traffic-switch times separately.</p>
+<h2 id="section-392">21. Incident command, runbooks and post-incident learning</h2>
+<p>During an incident, establish one coordination channel, a decision owner, a timeline and a bounded mitigation plan. Separate investigation from repeated uncontrolled changes. Preserve useful evidence while protecting sensitive data. Communicate impact and uncertainty plainly: “checkout fails for this population” is more useful than “everything is unstable.”</p>
+<p>A runbook should state symptoms, prerequisites, commands or actions, expected observations, stop conditions, rollback, validation and escalation. Avoid commands that delete broadly named resources. Scope actions to known owned infrastructure and verify the target environment. If a rollback cannot restore schema compatibility, say so before it is needed.</p>
+<p>Afterward, explain contributing conditions and why existing safeguards did not catch them. Assign improvements with owners and verification criteria. “Engineer was careless” rarely explains why one ordinary action could cause broad failure. A useful correction might be a safer default, an invariant check, better observability or a rehearsed recovery procedure.</p>
+<p>Mira's example action: “Add an integration test that verifies the payment status after a lost upstream response using the original operation ID.” That is more testable than “make retries safer.”</p>
+<h2 id="section-407">22. GitHub CI: a green check answers a specific question</h2>
+<p>The hosted run for commit bc63933215c492cfe2e2a9edd2f2cd1e87111443 completed successfully: <a href="https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36097858718">recorded GitHub run</a>. This closes the earlier “latest CI not checked” item for that commit. A future commit has its own status; do not transfer a green result across changed code.</p>
+<p>The workflow builds and tests defined paths. It does not certify public cloud, every physical browser, MySQL/Oracle plans or personal interview skill. Preserve exact commit, environment, job status and relevant reports. A skipped job is not a passed test; an allowed failure should not be summarized as unconditional success.</p>
+<p>Keep test stages purposeful: quick deterministic checks first, then component integrations, then expensive end-to-end or deployment checks where justified. Do not give untrusted pull-request code production deployment credentials. Pin and review dependencies/actions according to your maintenance policy, and scope job permissions to what each step needs.</p>
+<p>The new load-balancing lab is also suitable for CI on a Linux runner with nginx installed. A passing local report remains local evidence until the corresponding hosted job has actually run.</p>
+<h2 id="section-422">23. A practice programme that reveals understanding</h2>
+<p>Reading recognition feels easier than recall. Close the notebook and explain the mechanism in your own words. Then change one assumption: the retry arrives concurrently, the cursor's sort key changes, the model has no evidence, or the identity receiver has been offline longer than token validity.</p>
+<p>Use four rounds: a 15-minute explanation round, a 30-minute coding round, a 30-minute debugging round and a 45-minute system-design round. Grade correctness, invariant preservation, failure reasoning, test quality and communication separately. Keep your original unaided answer, elapsed time, feedback and a fresh follow-up answer. Repeating the same memorized question is not the same as transfer.</p>
+<p>Example coding round: implement a tenant-scoped idempotency record with payload conflicts and tests. Debugging round: a transaction annotation fails only through one call path—trace the proxy boundary. Design round: safely process ticket payments with bursts, restarts, duplicated broker delivery and uncertain remote responses. Explain why your chosen consistency boundary is sufficient.</p>
+<p>Personal readiness remains ungraded until you submit answers. You can use the following scoring sheet yourself, but a completed reading checkbox does not assign points automatically.</p>
+<h2 id="section-437">24. A scored launch-room challenge</h2>
+<p>You have three application instances, an asynchronous payment provider, a database, a RAG assistant and live ticket-status streams. Demand doubles while one zone fails. An identity secret is being rotated and the last backup is ninety seconds old. Design the incident response and the safe next deployment.</p>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Full-credit reasoning</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Traffic/capacity</td>
+<td>Distinguishes existing connections, queues, eligible capacity and overload rejection</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Payment correctness</td>
+<td>Keeps operation identity; reconciles ambiguous provider effects; fences obsolete writers</td>
+<td>5</td>
+</tr>
+<tr>
+<td>State/recovery</td>
+<td>States RPO/RTO boundary; restores and reconciles; does not confuse replicas with backups</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>Distinguishes key types, overlap, revocation lag and rejoin checks</td>
+<td>4</td>
+</tr>
+<tr>
+<td>AI</td>
+<td>Uses authorized evidence, justified abstention, independent evaluation and visible fallback</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>Examines actual query/plan/waits; checks migration compatibility</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>Includes keyboard/screen-reader recovery and controlled status announcements</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Operations</td>
+<td>Names stop conditions, owner, evidence and rollback limits</td>
+<td>3</td>
+</tr>
+</tbody>
+</table></div>
+<p>Total 30. A practice target is 24 with no unauthorized-data or duplicate-payment safety error. The answer need not use every product mentioned in the library. A simpler architecture with explicit boundaries is stronger than a complicated one whose failure behavior cannot be explained.</p>
+<p>Answer outline: reduce nonessential load; preserve status visibility; use existing durable operation identities; avoid promoting competing writers; check actual recovery-point lag; reconcile the unavailable zone's identity state before admission; pause unsafe rotation/cutover changes; provide source-only or unavailable AI output where needed; keep interaction errors accessible; validate restored data and core journeys before reopening traffic; document what remains uncertain.</p>
+<h2 id="section-554">25. Reading coverage versus acceptance work</h2>
+<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Previously pending area</th>
+<th>Detailed learning coverage now</th>
+<th>Evidence still required for final acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Load balancing</td>
+<td>Notebook 32: layers, algorithms, queues, health, sessions, TLS, streams, Kubernetes, draining, global failure and metrics</td>
+<td>Provider-specific/multi-host/TLS checks beyond the scoped local NGINX report</td>
+</tr>
+<tr>
+<td>Cloud deployment</td>
+<td>Lessons 2–5: topology, identity, cost, infrastructure and acceptance gates</td>
+<td>Authorized account/project, region, budget and actual deployment</td>
+</tr>
+<tr>
+<td>AI accuracy</td>
+<td>Lessons 6–9: case design, denominators, confidence, adversarial cases and agent traces</td>
+<td>Fresh independent adjudication; existing 6/8 failures remain</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>Lessons 14–15: human journeys, forms, focus, streaming and recorded manual checks</td>
+<td>Actual devices and assistive technology observations</td>
+</tr>
+<tr>
+<td>MySQL / Oracle</td>
+<td>Lessons 10–13 plus separate engine-specific scripts</td>
+<td>Execution on those engines with recorded actual plans</td>
+</tr>
+<tr>
+<td>Production reliability</td>
+<td>Lessons 16–21: failure domains, endurance, rotation, revocation, disaster recovery and incidents</td>
+<td>Target-environment fault and restore evidence</td>
+</tr>
+<tr>
+<td>Interview readiness</td>
+<td>Lessons 23–24 plus earlier workbooks</td>
+<td>Your unaided responses, grading and a fresh follow-up round</td>
+</tr>
+<tr>
+<td>GitHub CI</td>
+<td>Lesson 22 and the linked successful prior run</td>
+<td>Each new commit's own hosted result</td>
+</tr>
+</tbody>
+</table></div>
+<p>You can now study these topics without chasing another book to understand the basic mechanism, tradeoffs and exercises. Optional official links support version checks; executing external systems still requires their runtimes and access. No finite notebook can include every future research result or guarantee every interview. The useful target is clear reasoning, reproducible experiments and honest evidence.</p>
+</main></body></html>

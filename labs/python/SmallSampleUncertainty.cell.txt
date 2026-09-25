@@ -1,0 +1,11 @@
+# lab: SmallSampleUncertainty
+import math
+def wilson(successes,total,z=1.96):
+    if not 0<=successes<=total or total<=0: raise ValueError('invalid counts')
+    p=successes/total; denom=1+z*z/total
+    center=(p+z*z/(2*total))/denom
+    radius=z*math.sqrt(p*(1-p)/total+z*z/(4*total*total))/denom
+    return center-radius,center+radius
+low,high=wilson(6,8)
+assert low<.5 and high>.9
+print('Observed 0.75; approximate 95% Wilson interval:',tuple(round(x,3) for x in (low,high)))

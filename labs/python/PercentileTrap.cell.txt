@@ -1,0 +1,9 @@
+# lab: PercentileTrap
+times=[10]*95+[1000]*5
+mean=sum(times)/len(times)
+ordered=sorted(times)
+def nearest_rank(p):
+    import math
+    return ordered[max(0,math.ceil(p*len(ordered))-1)]
+assert mean==59.5 and nearest_rank(.99)==1000
+print('Mean:',mean,'ms; p99:',nearest_rank(.99),'ms')

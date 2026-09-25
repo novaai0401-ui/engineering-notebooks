@@ -5,6 +5,20 @@ on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
+  load-balancing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install real proxy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nginx
+      - name: Exercise proxy distribution, streaming and failure behavior
+        run: python labs/load-balancing/test_nginx.py
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30

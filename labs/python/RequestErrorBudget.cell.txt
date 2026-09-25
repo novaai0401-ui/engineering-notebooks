@@ -1,0 +1,7 @@
+# lab: RequestErrorBudget
+eligible=100_000; target=.999; failed=140
+allowed=round(eligible*(1-target))
+assert allowed==100
+burn=failed/allowed
+print('Allowed failures:',allowed,'; observed:',failed,'; budget used:',round(100*burn),'%')
+assert burn>1

@@ -1,0 +1,15 @@
+# lab: HonestAnswerScorecard
+# Synthetic outcomes for learning metric denominators, not new model measurements.
+cases=[
+  {'answered':True,'correct':True,'timeout':False},
+  {'answered':True,'correct':True,'timeout':False},
+  {'answered':True,'correct':False,'timeout':False},
+  {'answered':False,'correct':False,'timeout':False},
+  {'answered':False,'correct':False,'timeout':True},
+]
+answered=sum(x['answered'] for x in cases)
+correct=sum(x['correct'] for x in cases)
+coverage=answered/len(cases); conditional=correct/answered
+assert coverage==.6 and correct/len(cases)==.4
+assert sum(x['timeout'] for x in cases)==1
+print('Coverage:',coverage,'; correctness among answered:',round(conditional,3),'; correct over all:',correct/len(cases))

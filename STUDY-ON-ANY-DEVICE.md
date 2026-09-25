@@ -84,6 +84,15 @@ Native service runners that use Windows process management are not claimed cross
 
 ## 7. Suggested study route
 
+For load balancing and production readiness, read Notebooks 32 and 33. Their eleven Python notebook cells use the standard library:
+
+```shell
+python run_notebook_labs.py --book 32-load-balancing-from-playground-to-production
+python run_notebook_labs.py --book 33-production-readiness-and-evidence-workbook
+```
+
+For the actual NGINX experiment, install nginx and Python in the isolated Linux lab as shown in Notebook 32, then run `python labs/run_linux_lab.py load-balancing`. MySQL/Oracle plan scripts are in labs/database-plan-workshop and require separately chosen lab database schemas; they are not needed for reading or the Python cells.
+
 For the Java/Spring interview list, open Notebook 31. Run `python run_notebook_labs.py --book 31-java-microservices-interview-masterclass` from the library root with Python and JDK 21+ installed. Run `mvn -f labs/interview-workshop/pom.xml test` for the actual Spring transaction, Batch restart, JUnit and Mockito workshop. Initial Maven dependency downloads need internet; the reading chapter does not.
 
 Start with START-HERE. Study database Notebook 29 before the full-stack transaction exercises. Follow Kafka 22, containers 23, Kubernetes 24, caching 25 and real-time 26. Use reliability 27 and capstone 28 to connect the pieces, then RAG 30 to design your own retrieval flow. Return to the earlier Python, Java, React, algorithms and agent notebooks whenever a prerequisite is unfamiliar.

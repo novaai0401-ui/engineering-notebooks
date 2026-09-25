@@ -1,0 +1,9 @@
+# lab: CounterSelection
+loads={'A':8,'B':1,'C':4}
+pair=('A','C')
+choice=min(pair,key=loads.get)
+assert choice=='C'  # Best sampled counter, not necessarily global best B.
+estimate=100.0; alpha=.25
+for sample in (100,100,500): estimate=alpha*sample+(1-alpha)*estimate
+assert estimate==200.0
+print('Two-choice result:',choice,'; smoothed latency:',estimate,'ms')

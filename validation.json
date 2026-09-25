@@ -186,6 +186,18 @@
       "title": "Notebook 31 \u2014 Java, Spring Batch and microservices interview masterclass",
       "words": 7336,
       "chapters": 23
+    },
+    {
+      "name": "32-load-balancing-from-playground-to-production",
+      "title": "Notebook 32 \u2014 Load balancing: from a playground queue to production traffic",
+      "words": 4214,
+      "chapters": 20
+    },
+    {
+      "name": "33-production-readiness-and-evidence-workbook",
+      "title": "Notebook 33 \u2014 The launch room: cloud, AI quality, databases and recovery",
+      "words": 5551,
+      "chapters": 25
     }
   ],
   "labs": [
@@ -1324,6 +1336,94 @@
       "status": "passed",
       "output": "Business update and dedup marker roll back together, then replay applies once.\n",
       "seconds": 0.0
+    },
+    {
+      "book": "32-load-balancing-from-playground-to-production",
+      "name": "SmoothTicketCounters",
+      "language": "python",
+      "status": "passed",
+      "output": "First eight choices: ['A', 'A', 'B', 'A', 'A', 'A', 'B', 'A']\nForty requests: {'A': 30, 'B': 10}\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "32-load-balancing-from-playground-to-production",
+      "name": "CounterSelection",
+      "language": "python",
+      "status": "passed",
+      "output": "Two-choice result: C ; smoothed latency: 200.0 ms\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "32-load-balancing-from-playground-to-production",
+      "name": "StableRouting",
+      "language": "python",
+      "status": "passed",
+      "output": "247 of 1000 keys moved; changed keys moved only to the added server.\n",
+      "seconds": 0.094
+    },
+    {
+      "book": "32-load-balancing-from-playground-to-production",
+      "name": "QueueCliff",
+      "language": "python",
+      "status": "passed",
+      "output": "20/s -> mean 0.013s, average in system 0.2\n70/s -> mean 0.033s, average in system 2.3\n95/s -> mean 0.200s, average in system 19.0\n99/s -> mean 1.000s, average in system 99.0\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "32-load-balancing-from-playground-to-production",
+      "name": "DrainTheCounter",
+      "language": "python",
+      "status": "passed",
+      "output": "No new admissions after drain; existing work reaches zero before stop.\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "32-load-balancing-from-playground-to-production",
+      "name": "PercentileTrap",
+      "language": "python",
+      "status": "passed",
+      "output": "Mean: 59.5 ms; p99: 1000 ms\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "33-production-readiness-and-evidence-workbook",
+      "name": "RequestErrorBudget",
+      "language": "python",
+      "status": "passed",
+      "output": "Allowed failures: 100 ; observed: 140 ; budget used: 140 %\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "33-production-readiness-and-evidence-workbook",
+      "name": "HonestAnswerScorecard",
+      "language": "python",
+      "status": "passed",
+      "output": "Coverage: 0.6 ; correctness among answered: 0.667 ; correct over all: 0.4\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "33-production-readiness-and-evidence-workbook",
+      "name": "SmallSampleUncertainty",
+      "language": "python",
+      "status": "passed",
+      "output": "Observed 0.75; approximate 95% Wilson interval: (0.409, 0.929)\n",
+      "seconds": 0.0
+    },
+    {
+      "book": "33-production-readiness-and-evidence-workbook",
+      "name": "RestoreAndReconcile",
+      "language": "python",
+      "status": "passed",
+      "output": "A separate restore passed structural integrity and business reconciliation checks.\n",
+      "seconds": 0.094
+    },
+    {
+      "book": "33-production-readiness-and-evidence-workbook",
+      "name": "RecoveryTimeline",
+      "language": "python",
+      "status": "passed",
+      "output": "Recovery through validation: 540 s; recoverable point lag: 90 s\n",
+      "seconds": 0.0
     }
   ],
   "recipes": [
@@ -2105,7 +2205,7 @@
     "portable-report.json": {
       "passed": [
         "Extracted ZIP passed offline RAG and generation-recovery tests with Python site-packages disabled",
-        "Extracted database and RAG notebook cells executed with standard-library-only Python",
+        "Extracted database, RAG, load-balancing and production-readiness notebook cells executed with standard-library-only Python",
         "Extracted study server passed real loopback HTTP and path-boundary tests"
       ],
       "limitations": "Executed on Windows Python 3.11 with -S; not a physical macOS/Linux/phone test and not all optional service dependencies."
@@ -3265,6 +3365,32 @@
       ],
       "version": "v1.37.0+k3s1",
       "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
+    },
+    "labs/load-balancing/test-report.json": {
+      "status": "passed",
+      "passed": [
+        "Actual round-robin proxy distributed 20 authenticated requests equally; anonymous request rejected",
+        "Proxy replaced forged forwarding header with the observed loopback peer",
+        "First SSE event reached client before backend was permitted to produce its second event",
+        "Real weighted round robin produced 30:10 requests for configured 3:1 weights",
+        "POST that applied an effect then returned 503 was not replayed on the other backend",
+        "Killing backend A allowed safe GET traffic to reach B through passive failure detection/retry",
+        "Both backends unavailable produced an explicit proxy error, not fabricated success"
+      ],
+      "nginx_version": "nginx version: nginx/1.28.3",
+      "weighted_counts": {
+        "A": 30,
+        "B": 10
+      },
+      "scope": "One local NGINX process and two Python backend processes with loopback bearer authentication. No public TLS, WebSocket tunnel, L4 proxy, active health checker, multi-host failure or cloud certification. Algorithm/queue simulations are separate notebook cells."
+    },
+    "labs/ci-prior-report.json": {
+      "conclusion": "success",
+      "headSha": "bc63933215c492cfe2e2a9edd2f2cd1e87111443",
+      "name": "Study Coach verification",
+      "status": "completed",
+      "url": "https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36097858718",
+      "scope": "Previous commit only; does not certify later changes"
     },
     "labs/interview-workshop/test-report.json": {
       "status": "passed",

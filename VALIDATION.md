@@ -6,8 +6,8 @@ Updated on 25 September 2026; individual reports include retained earlier eviden
 
 | Check | Result |
 | --- | --- |
-| Notebook execution | 142 passed; no failed cells |
-| Reading material | 31 notebooks, 380 lessons, 69,282 words |
+| Notebook execution | 153 passed; no failed cells |
+| Reading material | 33 notebooks, 425 lessons, 79,047 words |
 | Connected Java service | 8 integration tests passed |
 | Original Spring starter | 3 tests passed in foundation validation |
 | React unit/DOM/hydration | 3 tests passed |
@@ -54,6 +54,8 @@ Updated on 25 September 2026; individual reports include retained earlier eviden
 | [29 — Databases: the organised memory of your application](29-databases-for-fullstack-and-ai.html) | 18 | 7 |
 | [30 — RAG: connect the question to the right evidence](30-rag-patterns-and-user-defined-flows.html) | 21 | 3 |
 | [Notebook 31 — Java, Spring Batch and microservices interview masterclass](31-java-microservices-interview-masterclass.html) | 23 | 8 |
+| [Notebook 32 — Load balancing: from a playground queue to production traffic](32-load-balancing-from-playground-to-production.html) | 20 | 6 |
+| [Notebook 33 — The launch room: cloud, AI quality, databases and recovery](33-production-readiness-and-evidence-workbook.html) | 25 | 5 |
 
 Architecture and interview workbooks primarily contain guided reading and exercises. Executable cells retain recorded outputs. Java and JavaScript are launched by Python notebook cells and require their own runtimes. Each of the 23 GoF patterns has a small executable implementation and assertion in Notebook 13.
 
@@ -1254,6 +1256,98 @@ Status: passed.
 Business update and dedup marker roll back together, then replay applies once.
 ```
 
+### 32-load-balancing-from-playground-to-production / SmoothTicketCounters
+
+Status: passed.
+
+```text
+First eight choices: ['A', 'A', 'B', 'A', 'A', 'A', 'B', 'A']
+Forty requests: {'A': 30, 'B': 10}
+```
+
+### 32-load-balancing-from-playground-to-production / CounterSelection
+
+Status: passed.
+
+```text
+Two-choice result: C ; smoothed latency: 200.0 ms
+```
+
+### 32-load-balancing-from-playground-to-production / StableRouting
+
+Status: passed.
+
+```text
+247 of 1000 keys moved; changed keys moved only to the added server.
+```
+
+### 32-load-balancing-from-playground-to-production / QueueCliff
+
+Status: passed.
+
+```text
+20/s -> mean 0.013s, average in system 0.2
+70/s -> mean 0.033s, average in system 2.3
+95/s -> mean 0.200s, average in system 19.0
+99/s -> mean 1.000s, average in system 99.0
+```
+
+### 32-load-balancing-from-playground-to-production / DrainTheCounter
+
+Status: passed.
+
+```text
+No new admissions after drain; existing work reaches zero before stop.
+```
+
+### 32-load-balancing-from-playground-to-production / PercentileTrap
+
+Status: passed.
+
+```text
+Mean: 59.5 ms; p99: 1000 ms
+```
+
+### 33-production-readiness-and-evidence-workbook / RequestErrorBudget
+
+Status: passed.
+
+```text
+Allowed failures: 100 ; observed: 140 ; budget used: 140 %
+```
+
+### 33-production-readiness-and-evidence-workbook / HonestAnswerScorecard
+
+Status: passed.
+
+```text
+Coverage: 0.6 ; correctness among answered: 0.667 ; correct over all: 0.4
+```
+
+### 33-production-readiness-and-evidence-workbook / SmallSampleUncertainty
+
+Status: passed.
+
+```text
+Observed 0.75; approximate 95% Wilson interval: (0.409, 0.929)
+```
+
+### 33-production-readiness-and-evidence-workbook / RestoreAndReconcile
+
+Status: passed.
+
+```text
+A separate restore passed structural integrity and business reconciliation checks.
+```
+
+### 33-production-readiness-and-evidence-workbook / RecoveryTimeline
+
+Status: passed.
+
+```text
+Recovery through validation: 540 s; recoverable point lag: 90 s
+```
+
 ## Advanced integration evidence
 
 ### live-model-report.json
@@ -1854,7 +1948,7 @@ Business update and dedup marker roll back together, then replay applies once.
 {
   "passed": [
     "Extracted ZIP passed offline RAG and generation-recovery tests with Python site-packages disabled",
-    "Extracted database and RAG notebook cells executed with standard-library-only Python",
+    "Extracted database, RAG, load-balancing and production-readiness notebook cells executed with standard-library-only Python",
     "Extracted study server passed real loopback HTTP and path-boundary tests"
   ],
   "limitations": "Executed on Windows Python 3.11 with -S; not a physical macOS/Linux/phone test and not all optional service dependencies."
@@ -3154,6 +3248,42 @@ Business update and dedup marker roll back together, then replay applies once.
   ],
   "version": "v1.37.0+k3s1",
   "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
+}
+```
+
+### labs/load-balancing/test-report.json
+
+```json
+{
+  "status": "passed",
+  "passed": [
+    "Actual round-robin proxy distributed 20 authenticated requests equally; anonymous request rejected",
+    "Proxy replaced forged forwarding header with the observed loopback peer",
+    "First SSE event reached client before backend was permitted to produce its second event",
+    "Real weighted round robin produced 30:10 requests for configured 3:1 weights",
+    "POST that applied an effect then returned 503 was not replayed on the other backend",
+    "Killing backend A allowed safe GET traffic to reach B through passive failure detection/retry",
+    "Both backends unavailable produced an explicit proxy error, not fabricated success"
+  ],
+  "nginx_version": "nginx version: nginx/1.28.3",
+  "weighted_counts": {
+    "A": 30,
+    "B": 10
+  },
+  "scope": "One local NGINX process and two Python backend processes with loopback bearer authentication. No public TLS, WebSocket tunnel, L4 proxy, active health checker, multi-host failure or cloud certification. Algorithm/queue simulations are separate notebook cells."
+}
+```
+
+### labs/ci-prior-report.json
+
+```json
+{
+  "conclusion": "success",
+  "headSha": "bc63933215c492cfe2e2a9edd2f2cd1e87111443",
+  "name": "Study Coach verification",
+  "status": "completed",
+  "url": "https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36097858718",
+  "scope": "Previous commit only; does not certify later changes"
 }
 ```
 

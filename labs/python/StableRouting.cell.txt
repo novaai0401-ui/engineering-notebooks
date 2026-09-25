@@ -1,0 +1,9 @@
+# lab: StableRouting
+import hashlib
+def owner(key,servers):
+    return max(servers,key=lambda server:int.from_bytes(hashlib.sha256((key+'|'+server).encode()).digest(),'big'))
+old=['A','B','C'];new=old+['D'];keys=[f'ticket-{i}' for i in range(1000)]
+changed=[k for k in keys if owner(k,old)!=owner(k,new)]
+assert changed and all(owner(k,new)=='D' for k in changed)
+assert all(owner(k,old)==owner(k,new) for k in keys if owner(k,new)!='D')
+print(len(changed),'of 1000 keys moved; changed keys moved only to the added server.')

@@ -1,0 +1,17 @@
+# lab: RestoreAndReconcile
+import sqlite3,tempfile
+from pathlib import Path
+with tempfile.TemporaryDirectory() as folder:
+    folder=Path(folder)
+    live=sqlite3.connect(folder/'live.db')
+    live.execute('CREATE TABLE ledger(id INTEGER PRIMARY KEY,cents INTEGER NOT NULL)')
+    live.executemany('INSERT INTO ledger VALUES(?,?)',[(1,1200),(2,800)])
+    live.commit()
+    backup=sqlite3.connect(folder/'backup.db');live.backup(backup);backup.close()
+    live.execute('DELETE FROM ledger');live.commit()
+    restored=sqlite3.connect(folder/'restored.db');saved=sqlite3.connect(folder/'backup.db')
+    saved.backup(restored)
+    assert restored.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
+    assert restored.execute('SELECT COUNT(*),SUM(cents) FROM ledger').fetchone()==(2,2000)
+    saved.close();restored.close();live.close()
+print('A separate restore passed structural integrity and business reconciliation checks.')

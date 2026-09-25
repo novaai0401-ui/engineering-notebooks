@@ -1,0 +1,8 @@
+# lab: RecoveryTimeline
+# Synthetic drill times, seconds since incident start.
+incident=0; detected=45; restored=420; validated=540; last_recoverable_commit=-90
+service_recovery=validated-incident
+point_gap=incident-last_recoverable_commit
+assert service_recovery==540 and point_gap==90
+assert service_recovery>restored  # Restore completion alone is not validated service recovery.
+print('Recovery through validation:',service_recovery,'s; recoverable point lag:',point_gap,'s')
