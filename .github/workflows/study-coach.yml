@@ -1,4 +1,4 @@
-# Reference CI workflow. It has not run on GitHub in this task.
+# CI evidence is tied to each exact commit; consult GitHub run results.
 # Use this notebook-library directory as the repository root.
 name: Study Coach verification
 on: [push, pull_request, workflow_dispatch]
@@ -18,7 +18,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y nginx
       - name: Exercise proxy distribution, streaming and failure behavior
-        run: python labs/load-balancing/test_nginx.py
+        run: |
+          python labs/load-balancing/test_nginx.py
+          python -m pip install "aiohttp>=3.13,<4"
+          python labs/load-balancing/test_tls_websocket.py
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -42,6 +45,8 @@ jobs:
           npm ci
           npm run build
           npx playwright install --with-deps chromium firefox webkit
+      - name: Reading accessibility and keyboard scrolling
+        run: node check_accessibility.mjs
       - name: Java integration tests and artifact
         working-directory: labs/study-coach/java
         run: mvn -B -ntp package

@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -19,7 +19,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>For each pattern, learn four things: the problem, the cooperating roles, a simpler alternative, and the cost. Explain those before naming the pattern in an interview. The 23 patterns here are the classic GoF catalog, not every design pattern ever described.</p>
 <h2 id="section-9">1. Factory Method — subclasses choose the product</h2>
 <p>A delivery workflow knows it needs a transport but lets a subclass choose the transport implementation. The creator's workflow calls an overridable creation method. This differs from merely putting an <code>if</code> statement in a factory function. Use it when extending a framework through subclasses is already appropriate. A constructor parameter or ordinary factory function is often simpler when inheritance buys nothing.</p>
-<pre><code class="language-python"># lab: pattern_factory_method
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_factory_method
 from abc import ABC, abstractmethod
 class Delivery(ABC):
     @abstractmethod
@@ -35,7 +35,7 @@ print('Creator workflow uses the subclass-created product')
 <p><strong>Failure mode:</strong> one subclass per trivial parameter creates needless hierarchy. <strong>Test idea:</strong> supply a different creator and confirm the shared workflow remains unchanged.</p>
 <h2 id="section-19">2. Abstract Factory — create compatible families</h2>
 <p>A classroom screen needs both a button and a notice. A family factory creates matching variants so a client does not accidentally mix incompatible families. Use this when several related products must vary together. A theme configuration is simpler when only colors vary; do not create object families for every cosmetic value.</p>
-<pre><code class="language-python"># lab: pattern_abstract_factory
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_abstract_factory
 class QuietButton:
     def render(self):return 'quiet button'
 class QuietNotice:
@@ -58,7 +58,7 @@ print('Each factory supplies a consistent product family')
 <p><strong>Cost:</strong> adding a new product kind requires changing every factory. Adding a new family is easier. That asymmetry should match the changes you expect.</p>
 <h2 id="section-29">3. Builder — construct a valid object step by step</h2>
 <p>A builder accumulates construction choices and validates them at the final boundary. The resulting object should not share accidental mutable construction state. Use this for many optional fields or staged construction. For two required arguments, a constructor is clearer. A fluent API alone does not necessarily implement a meaningful builder.</p>
-<pre><code class="language-python"># lab: pattern_builder_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_builder_complete
 from dataclasses import dataclass
 @dataclass(frozen=True)
 class StudyPlan:
@@ -80,7 +80,7 @@ print('Built values are validated and independent of later builder changes')
 </code></pre>
 <h2 id="section-36">4. Prototype — copy a configured example</h2>
 <p>Instead of reconstructing a complex configuration from scratch, clone a prototype. Decide which members are copied deeply and which represent shared external resources. A deep copy of a database connection is not a meaningful new connection. Prefer explicit constructors when they make ownership clearer.</p>
-<pre><code class="language-python"># lab: pattern_prototype
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_prototype
 from copy import deepcopy
 class ExerciseTemplate:
     def __init__(self,title,hints):self.title=title;self.hints=hints
@@ -93,7 +93,7 @@ print('Prototype clone does not share its mutable hint list')
 <p><strong>Cost:</strong> implicit copying rules can hide expensive work or copy inappropriate identity fields. Test nested mutation, not only equality immediately after cloning.</p>
 <h2 id="section-46">5. Singleton — one instance within a defined boundary</h2>
 <p>This pattern restricts construction and exposes one instance. Define the boundary: one Python class in one process is not one instance across a distributed system. Shared mutable state complicates tests and concurrency. Dependency injection of one ordinary object is often preferable because dependencies remain visible.</p>
-<pre><code class="language-python"># lab: pattern_singleton
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_singleton
 import threading
 class ProcessRegistry:
     _instance=None
@@ -109,7 +109,7 @@ print('Construction is serialized and returns one process-local instance')
 <p>The lock protects instance creation, not every future operation on it. Avoid mutable initialization that reruns on every constructor call. Serialization, subclassing and multiple processes require separate design decisions.</p>
 <h2 id="section-56">6. Adapter — translate an incompatible interface</h2>
 <p>A legacy API reports temperature in Fahrenheit while the new client expects Celsius. The adapter translates the interface and semantics without modifying the legacy component. A plain conversion function is sufficient for one isolated call; an adapter object helps when integrating a larger stable interface.</p>
-<pre><code class="language-python"># lab: pattern_adapter_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_adapter_complete
 class LegacyThermometer:
     def fahrenheit(self):return 68
 class CelsiusAdapter:
@@ -121,7 +121,7 @@ print('Adapter translates both method shape and units')
 <p><strong>Failure mode:</strong> forwarding methods while forgetting units, error semantics or ownership. The tests should assert meaning, not just that a method was called.</p>
 <h2 id="section-66">7. Bridge — vary abstraction and implementation independently</h2>
 <p>A report has a high-level purpose; its output device is a separate choice. The bridge lets report types and renderers vary without creating every report-renderer subclass combination. If only one axis changes, simple composition without a named hierarchy may be enough.</p>
-<pre><code class="language-python"># lab: pattern_bridge
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_bridge
 class PlainRenderer:
     def render(self,title):return title
 class BracketRenderer:
@@ -138,7 +138,7 @@ print('Report kind and rendering implementation vary independently')
 <p><strong>Cost:</strong> premature separation creates abstractions with only one trivial implementation. Identify actual independent variation first.</p>
 <h2 id="section-76">8. Composite — treat a tree uniformly</h2>
 <p>A lesson takes a number of minutes; a module contains lessons or other modules and sums their times. Both answer the same operation. Use a composite when a recursive whole-part structure is natural. Do not force leaf-only operations onto containers without defining meaningful behavior.</p>
-<pre><code class="language-python"># lab: pattern_composite
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_composite
 class LessonPart:
     def __init__(self,duration):self.duration=duration
     def minutes(self):return self.duration
@@ -152,7 +152,7 @@ print('The same operation works on leaves and nested groups')
 <p>Cycles would destroy the tree assumption and can cause infinite recursion. Enforce acyclicity or add cycle handling if arbitrary graphs are allowed.</p>
 <h2 id="section-86">9. Decorator — wrap behavior while preserving the interface</h2>
 <p>A reader returns text. One decorator uppercases it; another adds brackets. Each wrapper still behaves like a reader and can be composed. Decorator order matters. A direct function pipeline is simpler when there is no persistent object interface to preserve.</p>
-<pre><code class="language-python"># lab: pattern_decorator_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_decorator_complete
 class TextReader:
     def read(self):return 'agents'
 class UpperReader:
@@ -167,7 +167,7 @@ print('Wrappers add behavior while retaining the reader contract')
 <p><strong>Failure mode:</strong> wrappers accidentally double-log, double-retry or change exception behavior. Test combinations, especially when a retry decorator wraps a side-effecting operation.</p>
 <h2 id="section-96">10. Facade — a simpler entry point to a subsystem</h2>
 <p>A study session requires loading a lesson and selecting a quiz. A facade presents one convenient operation while leaving the underlying components independently usable. It should simplify orchestration, not swallow every error or become the application's all-knowing object.</p>
-<pre><code class="language-python"># lab: pattern_facade
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_facade
 class LessonStore:
     def load(self,topic):return {'topic':topic,'text':'Explain '+topic}
 class QuizStore:
@@ -182,7 +182,7 @@ print('Facade coordinates a small subsystem through one use-case operation')
 <p>An application service may already play this role. Adding another facade on top of it without simplifying the contract is redundant.</p>
 <h2 id="section-106">11. Flyweight — share immutable intrinsic data</h2>
 <p>Many displayed characters can share one immutable style, while position remains separate. The factory reuses styles by value. Intrinsic state is shared; extrinsic state stays with each use. Use it when repeated immutable data materially consumes memory. A cache without a size or lifecycle policy can cost more than it saves.</p>
-<pre><code class="language-python"># lab: pattern_flyweight
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_flyweight
 from dataclasses import dataclass
 @dataclass(frozen=True)
 class GlyphStyle:
@@ -201,7 +201,7 @@ print('Immutable style is shared; position is not')
 <p>Never share mutable user-specific data accidentally. Interning every unique string forever is not a general memory optimization.</p>
 <h2 id="section-116">12. Proxy — control access to another object</h2>
 <p>A proxy implements the same interface while deciding whether or when to contact the real object. It may enforce access, lazy-load, or represent a remote object. A proxy cannot make remote latency and failures disappear; callers still need an honest contract.</p>
-<pre><code class="language-python"># lab: pattern_proxy
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_proxy
 class SecretStore:
     def read(self):return 'private lesson'
 class PermissionProxy:
@@ -218,7 +218,7 @@ print('Proxy enforces a check before delegation')
 <p>The boolean is deliberately supplied by test setup, not by an untrusted caller. Real authorization must derive it from authenticated identity and policy. If clients can bypass the proxy and call the object directly, the security boundary is ineffective.</p>
 <h2 id="section-126">13. Chain of Responsibility — pass a request through handlers</h2>
 <p>Each handler either processes a request or passes it onward. The terminal behavior must be explicit. Middleware pipelines often resemble this pattern, although some pipelines always execute every stage rather than stopping at the first handler. Use a straightforward conditional when there are only two stable cases.</p>
-<pre><code class="language-python"># lab: pattern_chain
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_chain
 class Handler:
     def __init__(self,predicate,action,next_handler=None):self.predicate=predicate;self.action=action;self.next=next_handler
     def handle(self,request):
@@ -236,7 +236,7 @@ print('A chain delegates until one handler accepts, or fails explicitly')
 <p>Handler order changes behavior. Authentication and authorization middleware must not be optional stages that an earlier success bypasses accidentally.</p>
 <h2 id="section-136">14. Command — turn a request into an object</h2>
 <p>A command captures the receiver and requested operation. An invoker can queue it, record it, or support undo. Undo is not always possible: an external email cannot be unsent merely by restoring local state. Prefer a plain function when commands do not need identity, history or lifecycle.</p>
-<pre><code class="language-python"># lab: pattern_command_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_command_complete
 class Document:
     def __init__(self):self.text=''
 class AppendCommand:
@@ -254,7 +254,7 @@ print('Command captures an operation and restores its prior local state')
 <p>This undo assumes no intervening edits. Concurrent editing requires version checks or operation-aware transformations; blindly restoring a snapshot can erase someone else's work.</p>
 <h2 id="section-146">15. Interpreter — evaluate a small language</h2>
 <p>Represent an expression as a tree and define how each node evaluates. This is appropriate for a small, deliberately restricted language. Never substitute unrestricted <code>eval</code> for a safe interpreter of untrusted input. Large grammars usually deserve parser tools and a more systematic compiler design.</p>
-<pre><code class="language-python"># lab: pattern_interpreter
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_interpreter
 class Literal:
     def __init__(self,value):self.value=value
     def evaluate(self,context):return self.value
@@ -271,7 +271,7 @@ print('A restricted expression tree has explicit evaluation rules')
 <p>The example constructs the tree directly; it does not include a text parser. A network-facing interpreter needs input-size, depth, execution and resource limits.</p>
 <h2 id="section-156">16. Iterator — traverse without exposing representation</h2>
 <p>An iterator supplies one element at a time and tracks traversal state separately from the collection. Two iterators should be able to progress independently. Python generators provide a concise implementation; a custom class is unnecessary unless you need additional behavior.</p>
-<pre><code class="language-python"># lab: pattern_iterator
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_iterator
 class LessonShelf:
     def __init__(self,lessons):self._lessons=tuple(lessons)
     def __iter__(self):
@@ -284,7 +284,7 @@ print('Traversal state belongs to each iterator, not the collection')
 <p>Define mutation semantics for mutable collections: snapshot, fail-fast, or weakly consistent traversal. Do not promise all three simultaneously.</p>
 <h2 id="section-166">17. Mediator — coordinate peers through one collaboration point</h2>
 <p>Instead of every participant knowing every other participant, a mediator routes collaboration. A classroom mediator forwards a question to a tutor and records the answer. It reduces peer coupling, but a giant mediator can become harder to maintain than the original network.</p>
-<pre><code class="language-python"># lab: pattern_mediator
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_mediator
 class TutorParticipant:
     def answer(self,question):return 'Example for '+question
 class LearnerParticipant:
@@ -301,7 +301,7 @@ print('The learner delegates collaboration to a mediator')
 <p>A direct call is better when two components have one simple relationship. Add mediation for genuine coordination rules, not to hide every dependency.</p>
 <h2 id="section-176">18. Memento — capture and restore private state</h2>
 <p>The originator creates a snapshot; a caretaker stores it; restoration happens through the originator. This separates history management from editing logic. Python does not enforce deep privacy here, so immutable snapshots make the intended boundary clear. For large documents, full snapshots may be too expensive; commands or deltas are alternatives.</p>
-<pre><code class="language-python"># lab: pattern_memento
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_memento
 from dataclasses import dataclass
 @dataclass(frozen=True)
 class Snapshot:
@@ -319,7 +319,7 @@ print('Caretaker stores a snapshot without implementing restoration')
 <p>As with command undo, restoring old state can conflict with concurrent changes. Persisted snapshots also need schema-version handling.</p>
 <h2 id="section-186">19. Observer — notify subscribers of a change</h2>
 <p>A subject maintains subscriptions and notifies observers. The subject does not need to know each observer's purpose. Manage subscription lifetime so old screens and objects do not stay reachable forever. A direct call is clearer for one mandatory collaborator whose failure must abort the operation.</p>
-<pre><code class="language-python"># lab: pattern_observer_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_observer_complete
 class Scores:
     def __init__(self):self.listeners=[]
     def subscribe(self,listener):
@@ -337,7 +337,7 @@ print('Subscribers receive changes and can unsubscribe idempotently')
 <p>This implementation propagates listener errors and stops later notifications. That is an explicit policy, not a universal observer guarantee. Async observers introduce ordering, backpressure and delivery questions similar to messaging.</p>
 <h2 id="section-196">20. State — behavior changes with lifecycle state</h2>
 <p>A job behaves differently while waiting, running and completed. State objects encapsulate allowed transitions. A transition table is often simpler for a small finite lifecycle; state objects help when each state has substantial behavior. Invalid transitions should fail visibly rather than silently mutate the object.</p>
-<pre><code class="language-python"># lab: pattern_state_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_state_complete
 class Waiting:
     def approve(self,job):job.state=Running()
     def finish(self,job):raise ValueError('not running')
@@ -360,7 +360,7 @@ print('State objects own transition behavior')
 <p>For persisted concurrent jobs, an in-memory state class is not enough. Enforce transitions with conditional database updates or appropriate transactions too.</p>
 <h2 id="section-206">21. Strategy — select an interchangeable algorithm</h2>
 <p>A strategy changes how a task is performed while preserving its contract. A scorer can use mean or minimum aggregation without changing the report. Python functions are often the simplest strategies; Java may use a functional interface. Avoid a class hierarchy if a function parameter clearly expresses the variation.</p>
-<pre><code class="language-python"># lab: pattern_strategy_complete
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_strategy_complete
 def mean_score(values):return sum(values)/len(values)
 def strict_score(values):return min(values)
 class Assessment:
@@ -375,7 +375,7 @@ print('The same assessment workflow selects different grading algorithms')
 <p>Strategies must honor shared expectations about input, output and side effects. Swapping in a strategy with different units or mutation behavior breaks substitutability.</p>
 <h2 id="section-216">22. Template Method — fix the skeleton, vary selected steps</h2>
 <p>A training pipeline fixes the order load → transform → summarize, while subclasses customize a step. Factory Method customizes creation; Template Method customizes steps of an algorithm. Composition with function arguments is often easier to combine and test than deep inheritance.</p>
-<pre><code class="language-python"># lab: pattern_template_method
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_template_method
 from abc import ABC,abstractmethod
 class Pipeline(ABC):
     def run(self,values):
@@ -391,7 +391,7 @@ print('The pipeline skeleton delegates one variable step')
 <p>Too many hooks make the skeleton impossible to reason about. Document when hooks run and which invariants subclasses must preserve.</p>
 <h2 id="section-226">23. Visitor — add operations to a stable object structure</h2>
 <p>Objects accept a visitor, which implements an operation for each concrete element type. This makes adding new operations easier when element types are stable. Adding a new element type requires updating visitors, so the tradeoff is the opposite of some inheritance designs.</p>
-<pre><code class="language-python"># lab: pattern_visitor
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pattern_visitor
 class VideoLesson:
     def __init__(self,minutes):self.minutes=minutes
     def accept(self,visitor):return visitor.video(self)

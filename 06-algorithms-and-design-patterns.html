@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -27,7 +27,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>A trie stores shared prefixes, useful for autocomplete. A graph stores vertices and edges, representing relationships or transitions. A disjoint-set structure tracks which items belong to the same connected group. Select a structure based on operations, not familiarity.</p>
 <h2 id="section-33">3. Hash lookup: find a pair without checking every pair</h2>
 <p>For numbers [2,7,11,15] and target 9, the answer uses 2 and 7. Instead of comparing every pair, remember earlier values and ask whether the complement has appeared.</p>
-<pre><code class="language-python"># lab: two_sum
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: two_sum
 def two_sum(numbers, target):
     seen = {}
     for index, value in enumerate(numbers):
@@ -46,7 +46,7 @@ print(&quot;Pair indices found without reusing one item&quot;)
 <h2 id="section-43">4. Two pointers and sliding windows</h2>
 <p>Two pointers move through data while preserving a relationship. For a sorted array and target sum, compare endpoints. If their sum is too small, advance the lower pointer; if too large, decrease the upper pointer. Sorted order justifies eliminating candidates.</p>
 <p>A sliding window tracks a contiguous region. Grow the right edge and shrink the left when a condition is violated. It works when the update and shrink rules preserve a useful invariant; not every optimization problem has that structure.</p>
-<pre><code class="language-python"># lab: longest_unique_window
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: longest_unique_window
 def longest_unique(text):
     last = {}
     left = best = 0
@@ -64,7 +64,7 @@ print(&quot;Longest window lengths verified&quot;)
 <p><code>last</code> remembers the most recent index. The left boundary never moves backward. After the update, the current window has no repeated character. Each index advances once, giving O(n) expected time. Python characters here are code points; user-perceived grapheme clusters require more text processing.</p>
 <h2 id="section-56">5. Binary search and boundary thinking</h2>
 <p>Binary search repeatedly discards a region known not to contain the desired answer. It needs sorted data or a monotonic predicate. Monotonic means once the condition becomes true along the search order, it remains true.</p>
-<pre><code class="language-python"># lab: lower_bound
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: lower_bound
 def lower_bound(values, target):
     low, high = 0, len(values)
     while low &lt; high:
@@ -86,7 +86,7 @@ print(&quot;First not-less-than position verified&quot;)
 <p>Insertion sort grows a sorted prefix by inserting each next item; it is simple and useful for small or nearly sorted inputs, but quadratic in the worst case. Selection sort repeatedly selects a minimum. Bubble sort repeatedly swaps adjacent out-of-order items; it is mainly pedagogical.</p>
 <p>Merge sort sorts halves and merges them, giving O(n log n) comparison work and commonly O(n) extra array storage. Quicksort partitions around a pivot and recurses, with expected O(n log n) but quadratic worst cases for unsuitable pivot behavior. Heapsort uses a heap for O(n log n) worst-case time and in-place array implementations, but is not typically stable.</p>
 <p>Stable sorting preserves relative order of equal keys. Counting sort uses bounded discrete keys; radix sort processes key digits using appropriate passes. Their costs depend on key range or representation, so they do not contradict comparison-sorting lower bounds. Production language sorts use engineered hybrids rather than always one textbook algorithm.</p>
-<pre><code class="language-python"># lab: merge_sort
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: merge_sort
 def merge_sort(values):
     if len(values) &lt; 2:
         return list(values)
@@ -110,7 +110,7 @@ print(&quot;Split, sort, merge&quot;)
 <h2 id="section-85">7. Stacks, monotonic structures, and intervals</h2>
 <p>A stack matches nested brackets: push opening brackets, then require the corresponding closing bracket. It also supports DFS and undo histories. A monotonic stack keeps values ordered so elements can be discarded once they can no longer answer future questions, such as finding the next greater value.</p>
 <p>Interval problems often begin by sorting starts. To merge intervals, extend the current interval when the next start overlaps its end; otherwise finish the current group. Define whether touching endpoints count as overlap and whether intervals are closed or half-open.</p>
-<pre><code class="language-python"># lab: merge_intervals
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: merge_intervals
 def merge_intervals(intervals):
     merged = []
     for start, end in sorted(intervals):
@@ -130,7 +130,7 @@ print(&quot;Closed intervals touching at an endpoint merge&quot;)
 <h2 id="section-98">8. Trees, heaps, and top-k</h2>
 <p>A binary tree gives each node at most two children. A binary search tree imposes an ordering invariant; without balancing, its height can become n. Preorder visits node before children, inorder visits left-node-right, and postorder visits children before node. Level order uses a queue.</p>
 <p>A min-heap keeps its smallest item at the root with a parent/child ordering rule. For the largest k elements, keep a min-heap of at most k: replace its smallest when a larger value arrives. This costs O(n log k) time and O(k) storage for a streaming top-k implementation.</p>
-<pre><code class="language-python"># lab: top_k
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: top_k
 import heapq
 def largest_k(values, k):
     if k &lt; 0:
@@ -152,7 +152,7 @@ print(&quot;Largest values retained with bounded heap&quot;)
 <p>The heap stores the current best k candidates, with the easiest one to discard at the root. Sorting the final heap gives display order and adds O(k log k). A heap alone does not promise that iterating all entries returns sorted values.</p>
 <h2 id="section-111">9. Graphs: BFS, DFS, and dependency order</h2>
 <p>Vertices are places or tasks; edges are connections. BFS explores by edge count using a queue and finds shortest paths in unweighted graphs. DFS explores one branch deeply and is useful for reachability, traversal, and some cycle checks. Directed and undirected cycle detection require different handling.</p>
-<pre><code class="language-python"># lab: bfs_path
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: bfs_path
 from collections import deque
 def shortest_path(graph, start, goal):
     queue = deque([start])
@@ -180,7 +180,7 @@ print(&quot;Unweighted shortest route reconstructed&quot;)
 <h2 id="section-124">10. Weighted routes and connectivity</h2>
 <p>Dijkstra repeatedly expands the smallest tentative distance and relaxes outgoing edges. It requires nonnegative weights for its ordinary guarantee. Bellman-Ford handles negative edges and can detect reachable negative cycles, with higher O(VE) time. Floyd-Warshall solves all-pairs shortest paths in O(V cubed) time for a dense dynamic-programming formulation.</p>
 <p>A* orders search using cost so far plus a heuristic remaining cost. Admissibility means the heuristic does not overestimate the optimum remaining cost; graph-search details such as reopening and consistency also matter. A useful heuristic reduces search, while a poor one may behave like uninformed search or invalidate guarantees.</p>
-<pre><code class="language-python"># lab: dijkstra
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: dijkstra
 import heapq
 def distances_from(graph, start):
     if any(weight &lt; 0 for edges in graph.values() for _, weight in edges):
@@ -207,7 +207,7 @@ print(&quot;Cheaper indirect weighted route found&quot;)
 <h2 id="section-140">11. Recursion, backtracking, and dynamic programming</h2>
 <p>Recursion solves a problem through smaller versions. A base case stops it. Backtracking tries a choice, explores consequences, and undoes the choice before trying another. Generating subsets, permutations, and constraint assignments uses this pattern; worst-case search can be exponential.</p>
 <p>Dynamic programming reuses overlapping subproblem answers. Define the state, recurrence, base cases, evaluation order, and answer location. Memoization computes on demand; tabulation fills an ordered table. An elegant recurrence with the wrong state can still be incorrect.</p>
-<pre><code class="language-python"># lab: coin_change
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: coin_change
 def fewest_coins(coins, amount):
     if amount &lt; 0 or any(c &lt;= 0 for c in coins):
         raise ValueError(&quot;positive coins and nonnegative amount required&quot;)
@@ -322,7 +322,7 @@ print(&quot;Optimal count found; unreachable case handled&quot;)
 </table></div>
 <p>Factory Method varies a creation step through a subtype or equivalent extension point. Abstract Factory creates related families. Builder separates assembly from the completed object. Prototype copies an existing object. Singleton controls instance availability. These solve distinct problems and should not be collapsed into “ways to call new.”</p>
 <h3 id="section-364">Lab: Builder with an invariant</h3>
-<pre><code class="language-python"># lab: builder_pattern
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: builder_pattern
 from dataclasses import dataclass
 @dataclass(frozen=True)
 class ReportRequest:
@@ -404,7 +404,7 @@ print(request)
 </tbody>
 </table></div>
 <p>Adapter changes how an existing interface is presented. Decorator adds behavior through wrapping. Proxy controls access or indirection. Facade simplifies a subsystem's surface. Similar-looking wrapper code can serve different intent, so identify the problem rather than only its syntax.</p>
-<pre><code class="language-python"># lab: adapter_decorator
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: adapter_decorator
 class LegacyModel:
     def generate_text(self, prompt):
         return {&quot;text&quot;: prompt.upper()}
@@ -506,7 +506,7 @@ print(&quot;Adapter translated; decorator counted&quot;)
 </tbody>
 </table></div>
 <h3 id="section-682">Lab: Strategy and State</h3>
-<pre><code class="language-python"># lab: strategy_state
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: strategy_state
 def rank(items, score):
     return sorted(items, key=score, reverse=True)
 assert rank([&quot;a&quot;,&quot;bbbb&quot;,&quot;cc&quot;], len) == [&quot;bbbb&quot;,&quot;cc&quot;,&quot;a&quot;]
@@ -529,7 +529,7 @@ print(&quot;Strategy selected behavior; state table protected transitions&quot;)
 </code></pre>
 <p>Passing <code>len</code> is a functional Strategy implementation: behavior is supplied independently of the sorting orchestration. The transition table demonstrates the State idea without a separate class for each state. A class-based implementation can move state-specific behavior into state objects when complexity warrants it.</p>
 <h3 id="section-689">Lab: Command and Observer</h3>
-<pre><code class="language-python"># lab: command_observer
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: command_observer
 from dataclasses import dataclass
 @dataclass(frozen=True)
 class AddPoints:

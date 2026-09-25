@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -22,7 +22,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-15">2. A key chooses an ordering lane</h2>
 <p>Suppose every event for order 7 uses key <code>order-7</code>. A consistent partitioner normally puts those events in the same partition. Their order is preserved in that partition under the producer and consumer configuration's guarantees. There is no global ordering across all partitions. Adding partitions can change key mapping; plan ordering-sensitive migrations explicitly.</p>
 <p>Two consumers in one group divide partitions. In the traditional assignment model a partition belongs to one active member in that group at a time. With two partitions and five consumers, some consumers have no partition work. A different group can independently read the same records.</p>
-<pre><code class="language-python"># lab: partition_ordering
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: partition_ordering
 import hashlib
 def lane(key,count):return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8],'big')%count
 events=[('order-7','created'),('order-8','created'),('order-7','approved')]
@@ -44,7 +44,7 @@ print('Same-key order retained inside its lane. This teaching hash is not Kafkaâ
 <p>Use a stable business event ID and an inbox uniqueness constraint for the third case. Bind an HTTP idempotency key to the caller and request payload for the second. The first is addressed by appropriate producer configuration. These controls complement each other.</p>
 <h2 id="section-58">6. Offsets are the next bookmark</h2>
 <p>If a consumer has successfully processed offset 12, it normally commits 13: the next position to read. Commit before the business effect and a crash can lose that effect. Commit after the effect and a crash can repeat it. For a database effect, store the event ID and effect in one database transaction, then commit the Kafka offset. Redelivery finds the inbox record and becomes harmless.</p>
-<pre><code class="language-python"># lab: consumer_inbox
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: consumer_inbox
 ledger=[];inbox=set()
 def apply(event):
     if event['id'] in inbox:return False

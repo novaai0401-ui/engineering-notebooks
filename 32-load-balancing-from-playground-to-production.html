@@ -8,18 +8,18 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
 @media(max-width:900px){nav{position:static;width:100%;max-height:300px}main{margin:0;padding:25px 20px 60px}body{font-size:17px}h1{font-size:34px}}
 @media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
-</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-9">1. Follow one request: who actually chooses the server?</a></li><li><a href="#section-22">2. Layer 4 versus Layer 7: envelopes versus letters</a></li><li><a href="#section-106">3. Round robin and weights: sharing turns fairly</a></li><li><a href="#section-122">4. Least connections, least requests, latency and two choices</a></li><li><a href="#section-138">5. Consistent hashing, rendezvous hashing and hot keys</a></li><li><a href="#section-154">6. Capacity and queues: why the last few percent hurt</a></li><li><a href="#section-170">7. Health checks: a pulse is not a completed purchase</a></li><li><a href="#section-185">8. Sticky sessions and shared state: a favourite counter can close</a></li><li><a href="#section-200">9. TLS termination, re-encryption and the trust boundary</a></li><li><a href="#section-215">10. A real NGINX experiment, not just a diagram</a></li><li><a href="#section-238">11. A dangerous retry: the payment succeeded but the response failed</a></li><li><a href="#section-253">12. WebSockets, SSE, HTTP/2 and streaming AI</a></li><li><a href="#section-271">13. Kubernetes Service, Ingress, Gateway and service mesh</a></li><li><a href="#section-286">14. Autoscaling and cold starts: more counters take time to open</a></li><li><a href="#section-301">15. Draining, rolling releases and graceful shutdown</a></li><li><a href="#section-314">16. The balancer can fail too: DNS, zones and regions</a></li><li><a href="#section-326">17. Forwarded headers, rate limits and abuse boundaries</a></li><li><a href="#section-338">18. Observability: explain the queue without guessing</a></li><li><a href="#section-351">19. Interview challenge and answer key</a></li><li><a href="#section-366">20. What was explained, simulated and executed</a></li></ul></nav><main id="content"><p class="downloads"><a href="32-load-balancing-from-playground-to-production.ipynb">Jupyter notebook</a><a href="32-load-balancing-from-playground-to-production.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 32 — Load balancing: from a playground queue to production traffic</h1>
+</style></head><body><a class="skip" href="#content">Skip to content</a><nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p><ul><li><a href="#section-9">1. Follow one request: who actually chooses the server?</a></li><li><a href="#section-22">2. Layer 4 versus Layer 7: envelopes versus letters</a></li><li><a href="#section-106">3. Round robin and weights: sharing turns fairly</a></li><li><a href="#section-122">4. Least connections, least requests, latency and two choices</a></li><li><a href="#section-138">5. Consistent hashing, rendezvous hashing and hot keys</a></li><li><a href="#section-154">6. Capacity and queues: why the last few percent hurt</a></li><li><a href="#section-170">7. Health checks: a pulse is not a completed purchase</a></li><li><a href="#section-185">8. Sticky sessions and shared state: a favourite counter can close</a></li><li><a href="#section-200">9. TLS termination, re-encryption and the trust boundary</a></li><li><a href="#section-215">10. A real NGINX experiment, not just a diagram</a></li><li><a href="#section-238">11. A dangerous retry: the payment succeeded but the response failed</a></li><li><a href="#section-253">12. WebSockets, SSE, HTTP/2 and streaming AI</a></li><li><a href="#section-271">13. Kubernetes Service, Ingress, Gateway and service mesh</a></li><li><a href="#section-286">14. Autoscaling and cold starts: more counters take time to open</a></li><li><a href="#section-301">15. Draining, rolling releases and graceful shutdown</a></li><li><a href="#section-314">16. The balancer can fail too: DNS, zones and regions</a></li><li><a href="#section-326">17. Forwarded headers, rate limits and abuse boundaries</a></li><li><a href="#section-338">18. Observability: explain the queue without guessing</a></li><li><a href="#section-351">19. Interview challenge and answer key</a></li><li><a href="#section-366">20. What was explained, simulated and executed</a><details><summary>Examples and subtopics</summary><ul><li><a href="#section-375">Additional executed transport checks</a></li></ul></details></li></ul></nav><main id="content"><p class="downloads"><a href="32-load-balancing-from-playground-to-production.ipynb">Jupyter notebook</a><a href="32-load-balancing-from-playground-to-production.md">Markdown</a><a href="index.html">Library home</a></p><h1 id="section-0">Notebook 32 — Load balancing: from a playground queue to production traffic</h1>
 <p>Mira runs an online cinema. At noon, tickets for a popular film go on sale. Ten customers become ten thousand. One application server is exhausted while another is nearly idle. Adding servers helped the shopping list, but nobody decided which customer should visit which counter. That is our starting problem.</p>
 <p>This is a complete learning route through the common load-balancing decisions, with six executable Python experiments and a separate real NGINX lab. It does not claim every vendor feature has been deployed. At each stop, predict what happens before reading the explanation. The companion <a href="33-production-readiness-and-evidence-workbook.html">production-readiness notebook</a> follows the same service into cloud deployment, database diagnosis, security, AI evaluation, accessibility and recovery.</p>
 <h2 id="section-9">1. Follow one request: who actually chooses the server?</h2>
 <p>Imagine a receptionist who hands each visitor a counter number. A load balancer chooses a eligible backend for a connection or request. It does not automatically fix slow SQL, incorrect payments, lost sessions or a shared database outage.</p>
-<pre><code class="language-text">Browser
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-text">Browser
   -&gt; DNS resolution / possibly a CDN
   -&gt; public endpoint and load balancer
   -&gt; optional gateway / reverse proxy
@@ -73,7 +73,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>Round robin cycles A, B, C, A, B, C. It is simple and useful when eligible servers have comparable capacity and requests have similar cost. But one report can take a second while another request takes a millisecond. Equal turns are not necessarily equal work.</p>
 <p>Weights express intended relative shares. If A can handle three units while B handles one, a 3:1 policy aims for about three quarters of eligible assignments to A under its specified conditions. Weight is neither CPU percentage nor a guarantee for every short observation window. Health exclusions and existing connections affect measured traffic.</p>
 <p>Smooth weighted round robin spreads the larger share across the sequence instead of sending a huge uninterrupted burst. In this teaching implementation, add every weight to its current score, choose the largest score, then subtract total weight from the winner. The scores act like a record of how much service each backend is owed.</p>
-<pre><code class="language-python"># lab: SmoothTicketCounters
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: SmoothTicketCounters
 from collections import Counter
 weights={'A':3,'B':1}; current={name:0 for name in weights}; assignments=[]
 for _ in range(40):
@@ -89,7 +89,7 @@ print('Forty requests:',dict(Counter(assignments)))
 <p>Least connections chooses the backend with fewer active connections, often with weights. It can help when connection lifetimes vary. Least outstanding requests measures a different unit. A server with one expensive report may be busier than one with ten tiny cache hits; neither count is a perfect measure of work.</p>
 <p>A latency-aware policy can track a smoothed response estimate, but raw latency is noisy. An exponentially weighted moving average gives recent samples influence without forgetting everything: new estimate = alpha × sample + (1−alpha) × old estimate. A fast-failing server can appear “fast,” so latency must be considered alongside errors, load and health. Sampling and exploration matter when an idle backend has stale measurements.</p>
 <p>Power of two choices samples two eligible backends and picks the less loaded one. It avoids comparing every server for every request while improving on blindly choosing one. Real systems must handle stale distributed measurements and independent balancers making simultaneous decisions.</p>
-<pre><code class="language-python"># lab: CounterSelection
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: CounterSelection
 loads={'A':8,'B':1,'C':4}
 pair=('A','C')
 choice=min(pair,key=loads.get)
@@ -103,7 +103,7 @@ print('Two-choice result:',choice,'; smoothed latency:',estimate,'ms')
 <h2 id="section-138">5. Consistent hashing, rendezvous hashing and hot keys</h2>
 <p>Suppose each counter has a local cache. Sending the same catalogue key to the same server improves cache locality. Simple <code>hash(key) % server_count</code> remaps many keys when the count changes. A consistent-hash ring places servers and keys on a circle; virtual nodes can smooth uneven placements. Rendezvous hashing instead scores each key/server pair and chooses the largest score.</p>
 <p>The following deterministic rendezvous example uses SHA-256 so results are stable across processes. Python's built-in hash is not an appropriate persistent cross-process routing contract because some types are randomized between processes.</p>
-<pre><code class="language-python"># lab: StableRouting
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: StableRouting
 import hashlib
 def owner(key,servers):
     return max(servers,key=lambda server:int.from_bytes(hashlib.sha256((key+'|'+server).encode()).digest(),'big'))
@@ -118,7 +118,7 @@ print(len(changed),'of 1000 keys moved; changed keys moved only to the added ser
 <h2 id="section-154">6. Capacity and queues: why the last few percent hurt</h2>
 <p>Mira's counter serves 100 customers per second. At 20 arrivals per second, it has breathing room. At 99, a small burst can leave a long queue. The average alone conceals the waiting customer's experience.</p>
 <p>For a stable system, Little's law connects average in-flight work L, arrival rate lambda and average time W: L = lambda × W. At 200 requests/second and 0.25 seconds average time, about 50 requests are in flight on average. Match the observation boundary: server processing time is not the same as end-to-end time including queues.</p>
-<pre><code class="language-python"># lab: QueueCliff
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: QueueCliff
 service_rate=100.0
 for arrival in (20.0,70.0,95.0,99.0):
     # M/M/1 illustration: Poisson arrivals, exponential service, one server, stable load.
@@ -148,14 +148,14 @@ assert 200*.25==50
 <h2 id="section-215">10. A real NGINX experiment, not just a diagram</h2>
 <p>The runnable lab starts two actual Python backend processes, A and B, plus a real NGINX process in the isolated Linux lab. It uses ephemeral loopback ports and generated credentials. It does not reuse the Study Coach database or change a public site.</p>
 <p>From the library root on the documented Windows/WSL setup:</p>
-<pre><code class="language-shell">python labs/setup_linux_lab.py
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-shell">python labs/setup_linux_lab.py
 wsl -d EngineeringNotebookLab-13e66a98 --exec /sbin/apk add --no-cache nginx python3
 python labs/run_linux_lab.py load-balancing
 </code></pre>
 <p>On a Linux machine with nginx and Python installed, run <code>python3 labs/load-balancing/test_nginx.py</code>. Read <code>labs/load-balancing/test-report.json</code> for the actual result. Setup may need downloads; reading the notebook does not. After all lab work, Windows users can stop only this lab with <code>wsl --terminate EngineeringNotebookLab-13e66a98</code>.</p>
 <p>The assertions check equal round-robin counts, a 3:1 weighted distribution, anonymous rejection, a sanitized forwarding header, incremental SSE delivery, non-replay of a POST after an effect and 503 response, safe GET failover when A dies, and explicit failure when both backends are gone. The test cleans up its processes. A passing report is evidence for these scenarios on one host, not a multi-region availability certificate.</p>
 <p>The following excerpt explains the policy; the test generates a full configuration with available ports:</p>
-<pre><code class="language-nginx">upstream classroom {
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-nginx">upstream classroom {
     server 127.0.0.1:18181 weight=3 max_fails=1 fail_timeout=30s;
     server 127.0.0.1:18182 weight=1 max_fails=1 fail_timeout=30s;
 }
@@ -198,7 +198,7 @@ server {
 <p><strong>Worked estimate:</strong> normal demand is 1,200 requests/second and each instance is comfortable at 200. Six instances fit steady demand, but seven are needed to retain 1,200 after losing one, before extra headroom and deployment overhead. If readiness takes a minute, capacity planning must cover that minute too.</p>
 <h2 id="section-301">15. Draining, rolling releases and graceful shutdown</h2>
 <p>To close a counter politely, stop sending new visitors, let current visitors finish within a deadline, and handle unfinished work explicitly. Removing an endpoint and stopping its process are not necessarily simultaneous at every proxy and client.</p>
-<pre><code class="language-python"># lab: DrainTheCounter
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: DrainTheCounter
 state={'accepting':True,'active':2}
 def admit():
     if not state['accepting']: return False
@@ -221,7 +221,7 @@ print('No new admissions after drain; existing work reaches zero before stop.')
 <p>Rate limits differ from concurrency limits. A tenant sending a few extremely slow requests can occupy all workers while staying under requests-per-second limits. Bound body/header sizes, connection duration and per-dependency concurrency where appropriate. Preserve protocol correctness; custom HTTP parsers and inconsistent proxy/backend parsing can create request-smuggling risks. Use maintained implementations and test the configured chain.</p>
 <h2 id="section-338">18. Observability: explain the queue without guessing</h2>
 <p>Collect request rate, eligible backend count, outstanding work, errors, rejection counts, queue time, backend connection time, response time and end-to-end latency. Separate 4xx due to client behavior from proxy transport failures and backend 5xx. Averages hide tail latency; inspect p95/p99 alongside volume and sample size.</p>
-<pre><code class="language-python"># lab: PercentileTrap
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: PercentileTrap
 times=[10]*95+[1000]*5
 mean=sum(times)/len(times)
 ordered=sorted(times)
@@ -241,4 +241,6 @@ print('Mean:',mean,'ms; p99:',nearest_rank(.99),'ms')
 <h2 id="section-366">20. What was explained, simulated and executed</h2>
 <p>Six notebook cells explore weighted scheduling, sampled choices/EWMA, rendezvous hashing, queue behavior, draining and percentiles. They are deterministic teaching experiments. The NGINX lab separately tests a real local reverse proxy and two backend processes; consult its report for actual results. TLS deployment, L4 balancing, public ingress, WebSocket tunnelling and independent-host failure are explained but not newly certified by that test.</p>
 <p>Continue with Notebook 33 for the cloud deployment acceptance plan, AI-quality scorecards, database plan exercises, accessibility scenarios, identity rotation, disaster recovery and a personal interview schedule. This distinction between understanding, simulation and executed evidence is itself an interview skill.</p>
+<h3 id="section-375">Additional executed transport checks</h3>
+<p>The <a href="labs/load-balancing/tls-websocket-report.json">TLS/WebSocket report</a> now records an actual secure NGINX tunnel: trusted localhost certificate accepted, untrusted certificate rejected, missing authorization and hostile Origin rejected, and bidirectional messages continuing through reload. Follow the <a href="labs/ACCEPTANCE-RUNBOOK.md">acceptance runbook</a> to reproduce it. A private test certificate does not replace public DNS, certificate renewal or cloud ingress acceptance.</p>
 </main></body></html>

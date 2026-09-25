@@ -1,0 +1,85 @@
+{
+  "scope": "Local evidence register, not automatic production certification. A passing provider test is not a passing production rollout. External requirements are not inferred from local simulations.",
+  "local_checks": [
+    {
+      "area": "MySQL execution and restore",
+      "evidence": "labs/database-plan-workshop/mysql-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Oracle execution plans",
+      "evidence": "labs/database-plan-workshop/oracle-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "TLS and WebSocket proxy",
+      "evidence": "labs/load-balancing/tls-websocket-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Spring process crash",
+      "evidence": "labs/study-coach/durable-spring-crash-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Expired delivery and fail-closed restart",
+      "evidence": "labs/study-coach/durable-spring-expiry-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Provider secret overlap",
+      "evidence": "labs/study-coach/secret-overlap-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Thirty-minute endurance",
+      "evidence": "labs/realtime-cache/endurance-1800-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Automated reading accessibility",
+      "evidence": "reading-accessibility-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Tutor-authored AI evaluation",
+      "evidence": "labs/rag-flow/expanded-evaluation-report.json",
+      "status": "failed",
+      "score": "12/16"
+    },
+    {
+      "area": "Public externally labelled AI evaluation",
+      "evidence": "labs/rag-flow/public-evaluation-report.json",
+      "status": "failed",
+      "score": "5/12"
+    }
+  ],
+  "external_requirements": [
+    {
+      "area": "Public cloud, public TLS and provider recovery",
+      "status": "requires target access",
+      "needed": "Authorized account/project, region and spending limit; execute destination-specific deployment and recovery."
+    },
+    {
+      "area": "Physical mobile and screen reader",
+      "status": "requires physical observations",
+      "needed": "Complete labs/MANUAL-ACCEPTANCE.md on the actual device and assistive technology."
+    },
+    {
+      "area": "Personal interview grading",
+      "status": "requires learner answers",
+      "needed": "Original unaided responses and elapsed time, followed by targeted reassessment."
+    },
+    {
+      "area": "Independent-host and production identity acceptance",
+      "status": "requires target environment",
+      "needed": "Separate-host failures, shared persistent-session reconciliation, production rolling cutover and disaster recovery."
+    },
+    {
+      "area": "Historical intermittent login root cause",
+      "status": "unresolved",
+      "needed": "Conclusive reproduction or diagnostic evidence; passing mitigation tests do not prove the original cause."
+    }
+  ],
+  "all_requested_acceptance_complete": false
+}

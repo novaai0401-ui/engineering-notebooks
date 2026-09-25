@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -18,7 +18,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>A React screen is a picture calculated from current inputs. Events request new inputs; React calculates another picture. The browser still handles HTML, focus, network requests and its event loop. Understanding those layers makes framework behavior less mysterious.</p>
 <h2 id="section-6">1. Closures capture bindings and render snapshots</h2>
 <p>A closure is a function that keeps access to its lexical environment. In React, each render creates its own bindings. A callback created during an old render may still read that render's state value. That is often intentional, but can surprise you in timers and asynchronous callbacks. A functional state update asks React to calculate from the pending state rather than an old captured number.</p>
-<pre><code class="language-javascript">// lab: closure_snapshot
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-javascript">// lab: closure_snapshot
 import assert from 'node:assert/strict';
 function makeRender(count){return {later:()=&gt;count,increment:previous=&gt;previous+1};}
 const first=makeRender(0),second=makeRender(1);
@@ -30,7 +30,7 @@ console.log('Old callbacks retain their render binding; functional updates compo
 <p>This JavaScript model illustrates closures; it is not an implementation of React's scheduler. In a component, use <code>setCount(c =&gt; c + 1)</code> when the next value depends on previous state. If an effect needs current reactive values, declare its dependencies or redesign the effect. Suppressing the dependency warning does not repair stale data.</p>
 <h2 id="section-16">2. Event loop, promises and rendering opportunities</h2>
 <p>JavaScript executes the current task until it yields. Promise callbacks run as microtasks after the current synchronous work, before the next task. A timer schedules later work; a zero delay does not mean immediate execution. Long synchronous work prevents input handling and painting, even if it is inside an <code>async</code> function before its first meaningful await.</p>
-<pre><code class="language-javascript">// lab: event_loop_order
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-javascript">// lab: event_loop_order
 import assert from 'node:assert/strict';
 const events=[];
 events.push('sync-start');
@@ -44,7 +44,7 @@ console.log(events.join(' -&gt; '));
 <p>Node and browsers have additional scheduling details that differ. This example tests only the basic ordering it asserts. Use a Web Worker for suitable CPU-heavy browser computation rather than assuming a promise moves work to another CPU thread. React transitions prioritize certain state updates; they do not turn arbitrary synchronous code into parallel computation.</p>
 <h2 id="section-26">3. TypeScript makes impossible combinations harder to express</h2>
 <p>Instead of independent <code>loading</code>, <code>error</code> and <code>data</code> booleans that can contradict each other, use a discriminated union. A request is idle, loading, successful with data, or failed with an error. Narrow on its <code>kind</code> before accessing fields. TypeScript checks compile-time consistency; parse and validate external JSON because a cast does not establish runtime truth.</p>
-<pre><code class="language-typescript">type Remote&lt;T&gt; =
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-typescript">type Remote&lt;T&gt; =
  | {kind:'idle'}
  | {kind:'loading'}
  | {kind:'success'; data:T}
@@ -61,7 +61,7 @@ function caption&lt;T&gt;(state:Remote&lt;T&gt;):string {
 <p>The Study Coach frontend is actual <code>.tsx</code> compiled with strict TypeScript. Its <code>Job</code> and <code>Session</code> types describe the Java contract. A next production step is runtime response validation or a generated contract shared with the API, with explicit compatibility tests when fields evolve. TypeScript alone cannot detect a backend returning a malformed answer.</p>
 <h2 id="section-36">4. Local state versus server state</h2>
 <p>Local state belongs to the interaction: the typed question, a selected tab, whether a dialog is open. Server state is a cached observation of remote truth: job status, permissions, persisted answers. A network request can fail, become stale or finish out of order. Keep an explicit policy for retries, refetching and invalidation.</p>
-<pre><code class="language-javascript">// lab: stale_response_guard
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-javascript">// lab: stale_response_guard
 import assert from 'node:assert/strict';
 let generation=0,display='';
 function startRequest(){const mine=++generation;return value=&gt;{if(mine===generation)display=value;};}

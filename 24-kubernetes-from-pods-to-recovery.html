@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -20,7 +20,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>A cluster has a control plane and worker nodes. The API server accepts declared objects, the scheduler chooses nodes, controllers reconcile actual state with desired state, and node agents run containers. A Pod is the scheduling unit and may contain cooperating containers sharing its network namespace. A Deployment manages replaceable Pods through ReplicaSets. A Service provides a stable discovery/routing abstraction over selected Pods. A StatefulSet adds stable identity and storage association; it does not automatically implement database replication.</p>
 <h2 id="section-12">2. Declarative reconciliation</h2>
 <p>You describe the desired state, rather than manually starting every replacement process. Controllers keep observing and attempting to close the difference. Reconciliation is repeated and eventually convergent under suitable conditions; it is not a promise that every request succeeds during change. <a href="https://kubernetes.io/docs/concepts/architecture/controller/">Kubernetes controllers</a>.</p>
-<pre><code class="language-python"># lab: kubernetes_reconcile_model
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: kubernetes_reconcile_model
 def reconcile(desired,ready,pending):
     return max(0,desired-ready-pending)
 assert reconcile(3,1,1)==1
@@ -31,7 +31,7 @@ print('Count pending work too; otherwise repeated reconciliation overcreates rep
 <p>This arithmetic model teaches an invariant, not a Kubernetes API implementation. Real controllers track identities, generations, ownership, health and deletion.</p>
 <h2 id="section-22">3. An annotated deployment recipe</h2>
 <p>The following generic recipe is a starting configuration for the Python service. Replace the image and supply the named Secret through your deployment process. A separate runnable local K3s capstone exercise appears later in this chapter; its report records the exact workload that was actually tested. Do not assume every example manifest has been applied merely because another cluster test passed.</p>
-<pre><code class="language-yaml">apiVersion: apps/v1
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-yaml">apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: coach-ai

@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "ReadTimeout",
+  "phase1_observed": false,
+  "limitations": "No successful integration claimed for incomplete phases; inspect private runtime logs locally."
+}

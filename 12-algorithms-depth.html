@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -22,7 +22,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>Complexity describes how resource use grows with input size. Include the call stack, output storage, and representation costs. Expected hash-table performance differs from a worst-case guarantee. An <code>O(n)</code> algorithm with a huge allocation can lose to a simpler method on small inputs; asymptotics and measurements answer different questions.</p>
 <h2 id="section-18">2. Binary trees and search-tree invariants</h2>
 <p>A binary tree allows up to two children per node. A binary search tree additionally orders keys: every key in the left subtree is smaller and every key in the right subtree is larger under our no-duplicates convention. Checking only immediate children is insufficient. Carry lower and upper bounds down the entire path.</p>
-<pre><code class="language-python"># lab: tree_bounds_and_traversal
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: tree_bounds_and_traversal
 from dataclasses import dataclass
 @dataclass
 class Node:
@@ -46,7 +46,7 @@ print('Ancestor bounds catch a violation that local child checks miss')
 <p>Both procedures take <code>O(n)</code> time. The explicit traversal stack uses <code>O(h)</code> space for height <code>h</code>; recursive validation also uses <code>O(h)</code> call depth. An unbalanced tree may have <code>h=n</code> and exceed Python's recursion limit. Balanced search trees maintain logarithmic height through rotations and balancing rules; a plain BST does not guarantee that.</p>
 <h2 id="section-28">3. Topological order and cycle detection</h2>
 <p>A directed acyclic graph represents prerequisites. Kahn's algorithm counts incoming edges, starts with nodes having none, and removes their outgoing edges. A node enters the ready queue only after all its prerequisites have been removed. If fewer than all nodes are output, a directed cycle prevented progress.</p>
-<pre><code class="language-python"># lab: topological_sort
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: topological_sort
 from collections import deque
 def topological(graph):
     nodes=set(graph)|{v for neighbors in graph.values() for v in neighbors}
@@ -72,7 +72,7 @@ print('Prerequisites precede dependents; cycles are rejected')
 <p>Ignoring the initial sorting used for deterministic output, the algorithm is <code>O(V+E)</code> time and <code>O(V)</code> auxiliary storage. Sorting ready nodes initially adds up to <code>O(V log V)</code> here. Multiple valid orders may exist. Topological ordering is not shortest-path search, and an undirected cycle requires a different interpretation.</p>
 <h2 id="section-38">4. Union-find and minimum spanning trees</h2>
 <p>Union-find tracks disjoint groups. <code>find</code> returns a representative; <code>union</code> merges two groups. Path compression shortens future searches and union by size prevents avoidable tall trees. Its amortized cost is nearly constant, conventionally expressed using the inverse Ackermann function, for the standard sequence of operations.</p>
-<pre><code class="language-python"># lab: union_find_kruskal
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: union_find_kruskal
 class UnionFind:
     def __init__(self,n):self.parent=list(range(n));self.size=[1]*n
     def find(self,x):
@@ -98,7 +98,7 @@ print('Kruskal chooses the lightest safe edges without closing a cycle')
 <p>The cut property justifies choosing a minimum-weight edge crossing a cut between components. Sorting dominates at <code>O(E log E)</code>. A spanning tree connects every vertex with minimum total edge weight; it does not minimize each source-to-destination route. The implementation assumes valid vertex indices and an undirected graph encoded as weighted edges.</p>
 <h2 id="section-48">5. Tries for prefix queries</h2>
 <p>A trie stores one character per edge. Words sharing a prefix share the same path. A terminal marker distinguishes “a word ends here” from “this is merely a prefix.” Search and insert take <code>O(L)</code> dictionary steps for word length <code>L</code>; space depends on the stored characters and node overhead.</p>
-<pre><code class="language-python"># lab: trie_prefix
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: trie_prefix
 class Trie:
     END=object()
     def __init__(self):self.root={}
@@ -124,7 +124,7 @@ print('Word termination is distinct from prefix existence')
 <p>For only exact membership, a hash set is often simpler and smaller. For autocomplete, collect descendants under the prefix but bound results and define ordering. Unicode normalization, case folding and locale rules are product decisions; blindly lowercasing does not solve every language's matching rules.</p>
 <h2 id="section-58">6. Backtracking: choose, explore, undo</h2>
 <p>Backtracking explores a decision tree while abandoning impossible partial choices. N-queens places one queen per row. A placement is safe if its column and two diagonal identifiers have not been used. When returning from a branch, undo exactly the state added for that choice.</p>
-<pre><code class="language-python"># lab: n_queens_backtracking
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: n_queens_backtracking
 def queens(n):
     solutions=[];columns=set();down=set();up=set();path=[]
     def visit(row):
@@ -144,7 +144,7 @@ print('Pruning finds the two valid four-queen arrangements')
 <p>The search is exponential; a useful loose bound is factorial-style column permutations with polynomial overhead. Output storage can dominate. Returning <code>path</code> itself instead of a copy would make all saved solutions refer to later mutations. This is a frequent interview bug worth explaining before writing code.</p>
 <h2 id="section-68">7. Dynamic programming: state, recurrence, order</h2>
 <p>Dynamic programming stores answers to overlapping subproblems. For longest common subsequence, <code>dp[i][j]</code> is the best length using the first <code>i</code> characters of one string and first <code>j</code> of the other. Matching final characters add one to <code>dp[i-1][j-1]</code>. Otherwise take the better of skipping either final character. Fill smaller prefixes first.</p>
-<pre><code class="language-python"># lab: lcs_dynamic_programming
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: lcs_dynamic_programming
 def lcs(a,b):
     dp=[[0]*(len(b)+1) for _ in range(len(a)+1)]
     for i in range(1,len(a)+1):
@@ -163,7 +163,7 @@ print('Prefix recurrence computes and reconstructs a common subsequence')
 <p>Time and space are <code>O(mn)</code>. If only the length is needed, two rows reduce space to <code>O(min(m,n))</code>; reconstructing a sequence then needs additional technique or stored decisions. A subsequence can skip characters; a substring must be contiguous. Confusing the two produces a different recurrence.</p>
 <h2 id="section-78">8. Knapsack and the direction of iteration</h2>
 <p>For 0/1 knapsack, each item may be used once. <code>dp[c]</code> is the best value using processed items within capacity <code>c</code>. Iterate capacities downward so an item cannot reuse its own update in the same pass. Upward iteration would describe an unbounded-use variant.</p>
-<pre><code class="language-python"># lab: zero_one_knapsack
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: zero_one_knapsack
 def knapsack(weights,values,capacity):
     dp=[0]*(capacity+1)
     for weight,value in zip(weights,values):
@@ -178,7 +178,7 @@ print('Backward capacity iteration preserves the one-use invariant')
 <p>This is <code>O(nC)</code> time and <code>O(C)</code> space, where C is numeric capacity. It is pseudo-polynomial because capacity may be exponentially large relative to the number of bits needed to encode it. A greedy value-to-weight ratio solves the fractional version, not arbitrary 0/1 knapsack.</p>
 <h2 id="section-88">9. Negative edges and shortest paths</h2>
 <p>Dijkstra's greedy finalization relies on nonnegative edge weights. Bellman–Ford repeatedly relaxes every edge. After k passes, distances are correct for shortest paths using at most k edges. A shortest simple path uses at most V-1 edges; another improvement afterwards indicates a reachable negative cycle.</p>
-<pre><code class="language-python"># lab: bellman_ford
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: bellman_ford
 def bellman_ford(n,edges,source):
     dist=[float('inf')]*n;dist[source]=0
     for _ in range(n-1):

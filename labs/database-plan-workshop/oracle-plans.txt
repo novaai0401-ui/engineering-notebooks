@@ -1,0 +1,128 @@
+
+Session altered.
+
+
+User created.
+
+
+User altered.
+
+
+Session altered.
+
+
+Table created.
+
+
+1000 rows created.
+
+
+Commit complete.
+
+
+SEEDED_ROWS
+-----------
+       1000
+
+
+Explained.
+
+
+PLAN_TABLE_OUTPUT
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1914186926
+
+--------------------------------------------------------------------------------------
+| Id  | Operation		| Name	     | Rows  | Bytes | Cost (%CPU)| Time     |
+--------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	|	     |	  20 |	 440 |	   4  (25)| 00:00:01 |
+|*  1 |  COUNT STOPKEY		|	     |	     |	     |		  |	     |
+|   2 |   VIEW			|	     |	  66 |	1452 |	   4  (25)| 00:00:01 |
+|*  3 |    SORT ORDER BY STOPKEY|	     |	  66 |	2838 |	   4  (25)| 00:00:01 |
+|*  4 |     TABLE ACCESS FULL	| NB_TICKETS |	  66 |	2838 |	   3   (0)| 00:00:01 |
+--------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   1 - filter(ROWNUM<=20)
+   3 - filter(ROWNUM<=20)
+   4 - filter("TENANT_ID"=3 AND "STATUS"='SETTLED')
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+22 rows selected.
+
+
+Index created.
+
+
+PL/SQL procedure successfully completed.
+
+
+	ID CREATED_AT
+---------- ------------------
+	13 01-JAN-26
+	23 01-JAN-26
+	43 01-JAN-26
+	53 01-JAN-26
+	73 01-JAN-26
+	83 01-JAN-26
+       103 01-JAN-26
+       113 01-JAN-26
+       133 01-JAN-26
+       143 01-JAN-26
+       163 01-JAN-26
+       173 01-JAN-26
+       193 01-JAN-26
+       203 01-JAN-26
+       223 01-JAN-26
+       233 01-JAN-26
+       253 01-JAN-26
+       263 01-JAN-26
+       283 01-JAN-26
+       293 01-JAN-26
+
+20 rows selected.
+
+
+SQL_ID	      CHILD_NUMBER PLAN_HASH_VALUE LAST_ACTIVE_TIME
+------------- ------------ --------------- ------------------
+4x9j7p2wtg1u7		 0	3974880948 25-SEP-26
+
+
+
+
+
+old   1: SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR('&target_sql',&target_child,'ALLSTATS LAST +PREDICATE'))
+new   1: SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR('4x9j7p2wtg1u7', 	0,'ALLSTATS LAST +PREDICATE'))
+
+PLAN_TABLE_OUTPUT
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID	4x9j7p2wtg1u7, child number 0
+-------------------------------------
+SELECT /*+ gather_plan_statistics */ /* nb_after */ id,created_at FROM
+nb_tickets WHERE tenant_id=3 AND status='SETTLED' ORDER BY
+created_at,id FETCH FIRST 20 ROWS ONLY
+
+Plan hash value: 3974880948
+
+--------------------------------------------------------------------------------------------------
+| Id  | Operation	   | Name	       | Starts | E-Rows | A-Rows |   A-Time   | Buffers |
+--------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT   |		       |      1 |	 |     20 |00:00:00.01 |       4 |
+|*  1 |  COUNT STOPKEY	   |		       |      1 |	 |     20 |00:00:00.01 |       4 |
+|   2 |   VIEW		   |		       |      1 |     21 |     20 |00:00:00.01 |       4 |
+|*  3 |    INDEX RANGE SCAN| NB_TICKETS_LOOKUP |      1 |     21 |     20 |00:00:00.01 |       4 |
+--------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   1 - filter(ROWNUM<=20)
+   3 - access("TENANT_ID"=3 AND "STATUS"='SETTLED')
+
+
+23 rows selected.

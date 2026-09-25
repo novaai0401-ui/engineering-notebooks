@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -23,7 +23,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>Local caches are fast but each process has its own copy. Redis gives multiple processes a shared service and additional network/failure costs. A CDN caches at the edge; browser HTTP caching follows response directives. These layers can disagree unless you specify policy end to end.</p>
 <h2 id="section-21">3. TTL, eviction and capacity</h2>
 <p>TTL expires entries after time; eviction frees capacity. LRU removes least recently used entries, LFU favors frequency, and size-aware admission can reject expensive low-value objects. Redis offers configurable policies; do not assume its approximate eviction implementation is identical to a textbook perfect LRU. A TTL is a maximum local residence under a policy, not proof of global freshness after a remote write.</p>
-<pre><code class="language-python"># lab: cache_lru_and_ttl
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: cache_lru_and_ttl
 from collections import OrderedDict
 class Cache:
     def __init__(self,capacity): self.data=OrderedDict();self.capacity=capacity
@@ -44,7 +44,7 @@ print('Capacity evicted b; time expired a.')
 <p>This toy cache is single-threaded, uses entry count rather than bytes, and conflates cached None with a miss. Production APIs need an explicit hit/miss representation and synchronization policy.</p>
 <h2 id="section-31">4. Invalidation and the late-loader race</h2>
 <p>Deleting a key after a database commit avoids deleting on rolled-back writes, but a concurrent old reader can refill it with old data afterward. Sequence: reader loads version 4; writer commits version 5 and invalidates; reader finally puts version 4. A version fence must reject older fills even when the value was deleted. Store the fence long enough, or revalidate against the authority.</p>
-<pre><code class="language-python"># lab: cache_version_fence
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: cache_version_fence
 fence={'course':4};cached={}
 def put(key,version,value):
     if version&lt;fence.get(key,0):return False

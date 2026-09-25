@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -19,7 +19,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-6">1. Your first mental picture</h2>
 <p>Imagine a school librarian. A language model proposes what to say or do. Tools can search the catalog or calculate a fee. The harness is the surrounding program that checks requests, keeps state, executes allowed tools, and decides when to stop. An agent is the resulting action-selecting system. A capable model without that surrounding machinery is not a reliable autonomous service.</p>
 <p>An architecture describes the parts and their connections. An algorithm describes a procedure. A framework supplies reusable machinery. A protocol defines how separate programs communicate. LangChain is framework machinery; LangGraph supplies stateful orchestration; MCP is a communication protocol. None of these names means the system has authority to perform every action a user mentions.</p>
-<pre><code class="language-text">User -&gt; authenticated application -&gt; agent harness -&gt; model
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-text">User -&gt; authenticated application -&gt; agent harness -&gt; model
                                     |    ^
                                allowed   tool result
                                 tools ----+
@@ -120,7 +120,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 </table></div>
 <h3 id="section-228">Lab: deterministic representatives</h3>
 <p>This offline simulation makes the decision rules visible. It does not contain a trained model or simulate actual intelligence.</p>
-<pre><code class="language-python"># lab: agent_types
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: agent_types
 def reflex(dark):
     return &quot;lamp on&quot; if dark else &quot;lamp off&quot;
 
@@ -145,7 +145,7 @@ print(&quot;Four agent decision rules passed&quot;)
 <p><strong>Exercise:</strong> Increase toll weight to zero. <strong>Answer:</strong> Route A wins because only travel minutes remain. Changing the objective changes behavior even with identical observations.</p>
 <h3 id="section-241">Lab: goals, learning, plans, and bounded revision</h3>
 <p>These small deterministic examples expose each procedure. The running-average learner genuinely updates an estimate from observations, but it is not a neural model. The planner and reviewer are explicit rules, not an LLM.</p>
-<pre><code class="language-python"># lab: agent_goal_learning_plan
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: agent_goal_learning_plan
 from collections import deque
 
 def goal_agent(graph, start, goal):
@@ -191,7 +191,7 @@ print(&quot;Goal search, estimate learning, plan execution, and revision verifie
 <p>Goal search uses a queue and remembers visited places. Reward learning moves the estimate by the new error divided by observation count, giving the arithmetic mean. The plan lists dependencies in a fixed order. The revision loop has a transparent acceptance rule and a cap. Real evaluators must check correctness rather than merely the presence of the word Example. Supervisor and human-assisted patterns appear in the parallel and interrupt labs below.</p>
 <h2 id="section-251">4. Build a small agent harness from scratch</h2>
 <p>The harness needs more than a loop: a tool allowlist, input validation, a budget, error handling, and a termination condition. Production also needs caller authorization, durable state, timeouts, audit records, and side-effect protections. The following toy demonstrates the central loop without network access.</p>
-<pre><code class="language-python"># lab: bounded_harness
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: bounded_harness
 def add(a: int, b: int) -&gt; int:
     if type(a) is not int or type(b) is not int:
         raise ValueError(&quot;integer arguments required&quot;)
@@ -228,7 +228,7 @@ print(result[&quot;answer&quot;])
 <p>Think of a toy construction kit: message objects, model adapters, tools, and structured outputs fit together. Middleware can inspect or modify processing around model and tool calls. Keep business policy in normal tested functions instead of scattering it across prompts.</p>
 <h3 id="section-273">Integration recipe: supply your own configured model</h3>
 <p>This recipe is not an offline lab. It needs LangChain and a configured tool-capable chat model. <code>configured_model</code> must be supplied by your application; it is not a hidden free service.</p>
-<pre><code class="language-python">from langchain.agents import create_agent
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python">from langchain.agents import create_agent
 
 def stock_count(item: str) -&gt; int:
     &quot;&quot;&quot;Return the local demonstration stock count for one item.&quot;&quot;&quot;
@@ -249,7 +249,7 @@ def build_stock_agent(configured_model):
 <p><strong>Check:</strong> Should a tool return fake live inventory? <strong>Answer:</strong> No. This one explicitly says demonstration stock; a deployed tool must use real authorized data or disclose staleness.</p>
 <h3 id="section-286">Lab: actual LangChain execution with a scripted model</h3>
 <p>This tests framework wiring and a tool round trip without a model account. The model is deliberately scripted: it asks for pencil stock once and then reports the tool message. Passing this test does not demonstrate a real model's reasoning ability.</p>
-<pre><code class="language-python"># lab: langchain_scripted_model
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: langchain_scripted_model
 from langchain.agents import create_agent
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, ToolMessage
@@ -284,7 +284,7 @@ print(&quot;LangChain invoked the tool and supplied its result to the scripted m
 <h2 id="section-296">6. LangGraph: draw the path and carry a notebook</h2>
 <p>A graph resembles a school timetable with branches. State carries the work. Nodes do steps. Edges connect steps. Compilation creates an executable graph. LangGraph supports deterministic and model-driven processing; using an LLM is optional. <a href="https://docs.langchain.com/oss/python/langgraph/overview">Official graph overview</a>.</p>
 <h3 id="section-302">Lab: an actual graph without a model account</h3>
-<pre><code class="language-python"># lab: langgraph_basic
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: langgraph_basic
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 
@@ -309,7 +309,7 @@ print(out[&quot;answer&quot;])
 <h2 id="section-312">7. Checkpointing, interrupts, and replay</h2>
 <p>Saving a game's progress is a checkpoint. A graph checkpointer saves execution state associated with a thread identifier. Durable persistence survives process loss; an in-memory saver does not. Separate short-term workflow state from longer-term user memory. <a href="https://docs.langchain.com/oss/python/langgraph/persistence">Persistence guide</a>.</p>
 <p>An interrupt pauses for input. Resuming can restart the interrupted node's body, so code before the interruption may run again. Keep irreversible effects after validated approval and use idempotency. The same thread identifier reconnects the continuation; it does not itself authorize the caller. <a href="https://docs.langchain.com/oss/python/langgraph/interrupts">Interrupt semantics</a>.</p>
-<pre><code class="language-python"># lab: langgraph_interrupt
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: langgraph_interrupt
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import InMemorySaver
@@ -341,7 +341,7 @@ print(&quot;Paused and resumed; no reservation was executed&quot;)
 <h2 id="section-325">8. Parallel agents and orchestration</h2>
 <p>If three children independently check spelling, arithmetic, and citations, they can work concurrently. If one must first produce the draft, reviewers must wait for it. Parallelize independent work, not dependencies.</p>
 <p>Fan-out sends work to multiple workers; fan-in combines results. A supervisor assigns tasks and resolves disagreements. Handoffs transfer active responsibility. Map-reduce maps similar work across items, then reduces outputs. A pipeline passes one stage's output into the next. A DAG has no directed cycles; an agent graph may deliberately contain bounded loops.</p>
-<pre><code class="language-python"># lab: bounded_parallel_workers
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: bounded_parallel_workers
 import asyncio
 
 async def worker(name, evidence, semaphore):
@@ -364,7 +364,7 @@ print(&quot;Three simulated reviewers; at most two inside the bounded section&qu
 <p>Do not assume cancellation reverses a remote side effect. Give workers separate result fields or an explicit reducer. When parallel calls have different durations, total time approaches the slowest branch plus overhead, not the sum, only if resources and dependencies permit genuine overlap.</p>
 <p><strong>Exercise:</strong> One worker fails. Should its absence be disguised as agreement? <strong>Answer:</strong> No. Mark the failure and apply a predefined policy: retry, degrade with disclosure, or stop.</p>
 <h3 id="section-344">Lab: actual LangGraph fan-out and fan-in</h3>
-<pre><code class="language-python"># lab: langgraph_parallel_merge
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: langgraph_parallel_merge
 from typing import TypedDict, Annotated
 import operator
 from langgraph.graph import StateGraph, START, END
@@ -395,7 +395,7 @@ print(merged[&quot;report&quot;])
 <p>“Deep agent” is sometimes informal terminology for a long-running agent with planning and delegation. LangChain's <strong>Deep Agents</strong> is also a specific package. Its harness supplies capabilities such as planning, filesystem interactions, subagents, and context management. Depth here is not the count of neural-network layers. <a href="https://docs.langchain.com/oss/python/deepagents/overview">Official overview</a>.</p>
 <p>A long research task needs a plan, evidence records, intermediate artifacts, and stop criteria. File-backed context can keep detailed artifacts outside the immediate prompt. Summaries save space but may discard important evidence. A delegated subagent should receive a bounded task, permitted tools, required output structure, and budget; return evidence and uncertainty with conclusions.</p>
 <h3 id="section-360">Integration recipe</h3>
-<pre><code class="language-python">from deepagents import create_deep_agent
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python">from deepagents import create_deep_agent
 
 def lookup_term(term: str) -&gt; str:
     &quot;&quot;&quot;Look up one term in the local teaching glossary.&quot;&quot;&quot;
@@ -413,7 +413,7 @@ def build_tutor(configured_tool_calling_model):
 <p><strong>Check:</strong> Does giving an agent a todo list guarantee it completes the task? <strong>Answer:</strong> No. Completion needs observable acceptance tests and resource limits, not just a plan.</p>
 <h3 id="section-370">Lab: Deep Agents harness with the same scripted model</h3>
 <p>Run after the LangChain scripted-model cell. This confirms construction and a basic tool loop in the actual package. It does not test autonomous planning, file operations, subagent quality, or every middleware capability.</p>
-<pre><code class="language-python"># lab: deepagents_scripted_model
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: deepagents_scripted_model
 from deepagents import create_deep_agent
 deep_tutor = create_deep_agent(
     model=ScriptedStockModel(), tools=[stock_count],
@@ -432,7 +432,7 @@ print(&quot;Deep Agents harness completed a scripted tool round trip&quot;)
 <h2 id="section-398">11. FastMCP: author a server and test its client</h2>
 <p>FastMCP is a Python library for creating and consuming MCP services. The standalone package imports from <code>fastmcp</code>; the MCP Python SDK has also provided a FastMCP class under another import path. Similar names do not mean identical releases or APIs. This workbook uses the standalone package and records the installed version. <a href="https://gofastmcp.com/getting-started/welcome">FastMCP introduction</a>.</p>
 <h3 id="section-404">Lab: real MCP calls in memory</h3>
-<pre><code class="language-python"># lab: fastmcp_roundtrip
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: fastmcp_roundtrip
 from fastmcp import FastMCP, Client
 
 server = FastMCP(&quot;SchoolCatalog&quot;)
@@ -457,7 +457,7 @@ print(&quot;MCP returned:&quot;, count)
 <p>For a separate local process, put server declarations in <code>server.py</code> and call <code>server.run()</code> inside an <code>if __name__ == &quot;__main__&quot;:</code> guard. HTTP serving uses the documented transport configuration. The guard prevents imports from automatically starting a blocking server. The notebook lab intentionally does not expose a network endpoint. <a href="https://gofastmcp.com/getting-started/quickstart">Server quickstart</a>.</p>
 <h3 id="section-414">Lab: resources and prompts are different primitives</h3>
 <p>Run after the FastMCP server/client cell. A resource offers content at an identifier; a prompt offers a reusable message template. Neither grants additional privileges.</p>
-<pre><code class="language-python"># lab: fastmcp_resources_prompts
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: fastmcp_resources_prompts
 @server.resource(&quot;catalog://{topic}&quot;)
 def catalog_resource(topic: str) -&gt; str:
     return f&quot;Demonstration notes about {topic}.&quot;

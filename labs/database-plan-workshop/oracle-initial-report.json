@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "engine": "oracle",
+  "image": "gvenzl/oracle-free:23-slim",
+  "checks": [],
+  "scope": "Disposable actual engine on one local Docker host; 1000 synthetic rows. Oracle Free is not Oracle 19c certification. No production benchmark.",
+  "error": "Command '['docker', 'pull', 'gvenzl/oracle-free:23-slim']' timed out after 1200 seconds"
+}

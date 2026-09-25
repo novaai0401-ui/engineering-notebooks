@@ -126,3 +126,6 @@ wsl --terminate EngineeringNotebookLab-13e66a98
 ```
 
 Do not run this stop command during a test. It does not delete the virtual disk. Do not publish .runtime or a WSL disk image; private test credentials and databases may exist there. The supplied ZIP excludes them. Keep the lighter reading server running separately when studying from your phone.
+
+
+For the latest database, TLS/WebSocket, identity, AI evaluation, accessibility and endurance verification commands, see the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md). Results and external requirements are tracked in the [completion audit](COMPLETION-AUDIT.html).

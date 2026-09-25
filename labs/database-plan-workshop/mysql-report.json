@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "engine": "mysql",
+  "image": "mysql:8.4",
+  "checks": [
+    "Seeded 1000 rows",
+    "Executed EXPLAIN and EXPLAIN ANALYZE",
+    "Observed table scan before and covering index lookup after",
+    "Executed changed query without status equality",
+    "Logical backup restored into separate database; all 1000 rows and fields reconciled"
+  ],
+  "scope": "Disposable actual engine on one local Docker host; 1000 synthetic rows. Oracle Free is not Oracle 19c certification. No production benchmark.",
+  "image_digest": [
+    "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+    "mirror.gcr.io/library/mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
+  ],
+  "version": "VERSION()\n8.4.11",
+  "local_backup_restore_seconds": 1.07
+}

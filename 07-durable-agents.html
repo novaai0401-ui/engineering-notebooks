@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -23,7 +23,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p><strong>Trace:</strong> receive request → commit pending job → claim lease → perform idempotent operation → commit result. A crash between the last two steps causes a retry. An idempotent receiver makes that retry harmless.</p>
 <h2 id="section-21">2. Real LangGraph persistence and human approval</h2>
 <p>A checkpoint is a bookmark, not a frozen operating-system process. The framework reconstructs execution from saved state. Interrupts can cause the containing node to run again, so keep irreversible effects after approval and make them idempotent. Use stable thread IDs and a durable backend. The official <a href="https://docs.langchain.com/oss/python/langgraph/persistence">persistence reference</a> explains the framework's checkpoint model; our example below tests reopening its SQLite store.</p>
-<pre><code class="language-python"># lab: durable_graph_approval
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: durable_graph_approval
 from typing import TypedDict
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -69,7 +69,7 @@ print('Persistent approval resumed from a reopened SQLite checkpoint')
 <p>The interrupt payload describes the actual proposal. In a real approval system also bind the decision to the authenticated reviewer, action hash, resource version and expiry. “Yes” from the wrong person or for an old proposal is not authorization. A changed proposal needs a new decision. Do not let retrieved text, a model, or the worker manufacture approval.</p>
 <h2 id="section-31">3. Checkpoint migrations are data migrations</h2>
 <p>Imagine version 1 stores <code>question</code>, while version 2 requires <code>messages</code>. Renaming the field in code does not repair saved checkpoints. Version your application state separately from the framework's storage schema. Write a pure migration, preserve the old meaning, reject unknown future versions, test representative historic records, back up before rollout, and make rollback behavior explicit. Use framework-supported state-update APIs; do not casually rewrite its internal tables.</p>
-<pre><code class="language-python"># lab: checkpoint_state_migration
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: checkpoint_state_migration
 from copy import deepcopy
 def migrate_state(saved):
     state = deepcopy(saved)
@@ -95,7 +95,7 @@ else:
 <p>Changing a graph's node names or interrupt ordering also changes execution semantics. A schema migration cannot automatically make a half-finished old workflow compatible with a new graph. Keep a versioned workflow definition available, drain old runs, or explicitly migrate their execution position. Test the paused and mid-failure states, not just newly started runs.</p>
 <h2 id="section-41">4. Leases, fencing, and recovery after a crash</h2>
 <p>A lease says “worker A may work on this job until time T.” Expiry permits recovery after A disappears. But A may be merely slow, then wake up after worker B takes over. A fencing token distinguishes A's old ownership from B's new ownership. Every database update checks the current token. A stale worker's update affects zero rows.</p>
-<pre><code class="language-python"># lab: stale_worker_fencing
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: stale_worker_fencing
 import sqlite3
 db = sqlite3.connect(':memory:')
 db.execute('create table job(id integer primary key, token integer, answer text)')
@@ -112,7 +112,7 @@ print('Only the current lease holder can publish its result')
 <p>This protects database writes. If the external tool ignores the token, it can still perform an old worker's action. Combine fencing with receiver-side idempotency or conditional resource versions. The Study Coach project uses durable jobs, expiring leases, an attempt budget and token-checked updates. Its answer generation is read-only, which makes repeating computation safe.</p>
 <h2 id="section-51">5. Cancellation and parallel failures</h2>
 <p>Cancellation is a request to stop, not time travel. An already committed payment cannot be “uncalled.” Stop scheduling new work, propagate a cancellation signal, release resources in <code>finally</code>, and decide whether a compensating action is possible. Python <code>TaskGroup</code> cancels siblings when one child fails; collecting partial results needs a different explicit policy. The <a href="https://docs.python.org/3/library/asyncio-task.html">Python task documentation</a> specifies these cancellation rules.</p>
-<pre><code class="language-python"># lab: parallel_failure_cleanup
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: parallel_failure_cleanup
 import asyncio
 async def failure_demo():
     started = asyncio.Event()
@@ -139,7 +139,7 @@ print('A failed child cancelled its sibling and cleanup ran')
 <p>For an all-required workflow, one missing branch invalidates the combined result. For best-effort search, return successful branches with explicit missing-source information. Never silently label a partial answer complete. Bounded parallelism controls concurrency; a deadline controls duration; a token/tool budget controls expenditure. They solve different problems. Add queue limits too: ten running tasks plus a million queued tasks can still exhaust memory.</p>
 <h2 id="section-61">6. Memory with ownership, expiry, and evidence</h2>
 <p>Working memory is the current task state. Episodic memory records past events. Semantic memory stores facts. Procedural memory stores instructions or skills. Retrieval indexes are access paths, not automatically trustworthy memories. A useful record has owner, source, creation time, expiry, confidence or verification state, and a deletion policy.</p>
-<pre><code class="language-python"># lab: scoped_memory
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: scoped_memory
 from dataclasses import dataclass
 @dataclass(frozen=True)
 class Memory:
@@ -161,7 +161,7 @@ print('Owner, expiry and verification filters applied before recall')
 <p>Summaries compress information and can lose a critical negation, date or source. Keep links to original evidence and distinguish user facts from model inferences. Do not store secrets simply because they appeared in a conversation. Updating a preference should supersede the old preference rather than create contradictory permanent facts. Test deletion from source storage, caches and indexes.</p>
 <h2 id="section-71">7. Systematic evaluation instead of impressive demos</h2>
 <p>Build a versioned task set with ordinary cases, ambiguous requests, malicious retrieved instructions, missing evidence, denied tools, timeouts, repeated delivery and cancellations. Keep development cases separate from held-out evaluation. Grade task success, groundedness, permission violations, tool-call count, latency and cost. A single average hides dangerous categories; report them separately.</p>
-<pre><code class="language-python"># lab: agent_evaluation_gate
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: agent_evaluation_gate
 cases = [
     {'category': 'normal', 'success': True, 'violation': False, 'calls': 2},
     {'category': 'denied', 'success': True, 'violation': False, 'calls': 0},

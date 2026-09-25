@@ -1,0 +1,19 @@
+{
+  "passed": [
+    "Real OIDC logins on both Spring instances",
+    "Reachable session revoked while network-isolated logout receiver retained its session",
+    "Actual second Spring process killed and restarted; old browser cookie rejected before delayed logout delivery",
+    "Injected delivery-deadline expiry marked two offline deliveries expired; original cookie had already been rejected on restart before expiry injection"
+  ],
+  "before_restart": {
+    "pending": 2,
+    "delivered": 2,
+    "expired": 0
+  },
+  "after_recovery": {
+    "pending": 0,
+    "delivered": 2,
+    "expired": 2
+  },
+  "limitations": "Forced journal deadline expiry and actual process restart. In-memory sessions fail closed on restart; this does not reconcile a shared persistent session store or replay an expired JWT. No claim of production outage certification."
+}

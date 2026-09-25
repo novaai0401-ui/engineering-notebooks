@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -21,7 +21,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-12">2. Fenwick tree: boxes holding groups of sweets</h2>
 <p>You have a row of boxes. You repeatedly add sweets to one box and ask how many sweets are in the first k boxes. A plain array updates quickly but sums slowly. A Fenwick tree stores carefully chosen partial sums. Index i stores a block whose length is its lowest set binary bit, <code>i &amp; -i</code>. A query removes that bit to jump to the preceding disjoint block. An update adds that bit to reach all containing blocks.</p>
 <p>At index 6, binary 110, the lowest bit has value 2, so that node covers boxes 5 and 6. A prefix query at 6 uses the block at 6, then the block at 4. The blocks are disjoint and together cover 1 through 6. Each jump changes a bit, so query and update take O(log n); storage is O(n). This sum version needs invertible subtraction for range queries.</p>
-<pre><code class="language-python"># lab: fenwick_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: fenwick_workshop
 class Fenwick:
     def __init__(self,n):self.n=n;self.tree=[0]*(n+1)
     def add(self,i,delta):
@@ -43,7 +43,7 @@ print('Range [1,4) initially 8; point updates and prefix queries take logarithmi
 <h2 id="section-22">3. Segment tree: a tournament of summaries</h2>
 <p>A tournament combines pairs, then pairs of pairs, until one root summarizes everything. A segment tree works the same way. Each internal node stores a combination of its children. For sums, the identity is zero and the combination is addition. For minimum, the identity is positive infinity. The operation must be associative; subtraction does not work as a simple summary because grouping changes the result.</p>
 <p>A range query selects O(log n) boundary nodes at each side, totaling O(log n) nodes in the standard iterative implementation. Point update is O(log n); construction and storage are O(n). Lazy propagation extends it to range updates by postponing work, but the deferred operation must compose correctly with the stored summary. Do not add a lazy flag without deriving those rules.</p>
-<pre><code class="language-python"># lab: segment_tree_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: segment_tree_workshop
 class SegTree:
     def __init__(self,values):
         self.n=len(values);self.t=[0]*self.n+list(values)
@@ -68,7 +68,7 @@ print('Segment tree preserves sum summaries after a point replacement.')
 <h2 id="section-32">4. KMP: do not forget what you already matched</h2>
 <p>Searching for “ababac” in a long string can repeatedly compare the same characters. Knuth–Morris–Pratt stores a prefix table. For each pattern prefix, the table tells us the longest proper prefix that is also a suffix. After a mismatch, that suffix is already known to match; resume from its length instead of restarting blindly.</p>
 <p>The text pointer never goes backwards. The pattern pointer may fall back, but its total forward progress bounds those fallbacks. Preprocessing is O(m), search O(n), and auxiliary space O(m). Empty-pattern behavior is a contract choice; here it matches every boundary.</p>
-<pre><code class="language-python"># lab: kmp_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: kmp_workshop
 def kmp(text,pattern):
     if not pattern:return list(range(len(text)+1))
     pi=[0]*len(pattern);j=0
@@ -90,7 +90,7 @@ print('Overlapping matches retained without restarting the text scan.')
 <h2 id="section-42">5. Strongly connected components: groups that can all visit each other</h2>
 <p>In a directed graph, a strongly connected component is a maximal set in which every vertex can reach every other. Kosaraju's algorithm does a depth-first search to record finishing order, reverses all edges, then explores in reverse finishing order. Each second-pass tree is one component. Collapsing components creates a directed acyclic graph, useful for dependency analysis.</p>
 <p>Both passes visit each vertex and edge a constant number of times: O(V+E) time and O(V+E) storage. The recursive teaching implementation below can exceed Python's recursion depth on a very long path; production code should use an explicit stack for large untrusted graphs.</p>
-<pre><code class="language-python"># lab: scc_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: scc_workshop
 def components(graph):
     vertices=set(graph)
     for edges in graph.values():vertices.update(edges)
@@ -119,7 +119,7 @@ print('Four vertices collapse into two strongly connected components.')
 <h2 id="section-52">6. Maximum flow: pipes with limited capacity</h2>
 <p>Flow enters at a source and leaves at a sink. Every intermediate node conserves flow, and each edge has a capacity. A residual graph records both unused forward capacity and the ability to undo earlier flow through a reverse edge. Reverse edges are essential: an early choice may need correction.</p>
 <p>Edmonds–Karp repeatedly finds a shortest residual path using BFS and augments by its smallest capacity. The general adjacency-list bound is O(VE²). The small dense implementation below scans all possible neighbors, so each BFS is O(V²), giving a looser O(V³E) bound from the O(VE) augmentation bound. When no path remains, the reachable residual vertices define a cut whose capacity equals the flow, proving optimality by the max-flow/min-cut theorem.</p>
-<pre><code class="language-python"># lab: maxflow_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: maxflow_workshop
 from collections import deque
 def maxflow(capacity,source,sink):
     n=len(capacity)
@@ -147,7 +147,7 @@ print('Maximum flow is 5, matching the total capacity leaving the source.')
 <h2 id="section-71">8. Gradient descent from the shape of a bowl</h2>
 <p>Let prediction be wx and loss be L=(wx-y)²/2. The chain rule gives dL/dw=(wx-y)x: the outer square contributes the prediction error, and the inner linear expression contributes x. With x=2, y=6 and w=1, the prediction is 2, error is -4 and gradient is -8. A learning rate of 0.1 changes w to 1.8. Its prediction 3.6 is closer to 6.</p>
 <p>The gradient points uphill; subtracting it moves downhill for a sufficiently small step. A huge learning rate can jump past the valley and diverge. Feature scaling changes the shape of the valley and can make optimization easier. A low training loss alone does not establish generalization.</p>
-<pre><code class="language-python"># lab: gradient_check_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: gradient_check_workshop
 def loss(w):return (w*2-6)**2/2
 w=1.0;gradient=(w*2-6)*2;eps=1e-6
 numeric=(loss(w+eps)-loss(w-eps))/(2*eps)
@@ -158,7 +158,7 @@ print({'analytic_gradient':gradient,'finite_difference':round(numeric,6)})
 <h2 id="section-81">9. Softmax and cross-entropy simplify together</h2>
 <p>For probability p_i=exp(z_i)/sum_j exp(z_j), the derivative is dp_i/dz_j=p_i(δ_ij-p_j). The diagonal is p_i(1-p_i); an off-diagonal entry is -p_i p_j. Raising one logit takes probability mass from the others.</p>
 <p>For one-hot target y and cross-entropy L=-sum_i y_i log p_i, combining these derivatives gives dL/dz_i=p_i-y_i. This is why a complicated-looking output layer has a simple gradient. Compute log-softmax with a log-sum-exp formulation rather than taking the logarithm of a rounded probability that might become zero.</p>
-<pre><code class="language-python"># lab: cross_entropy_gradient
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: cross_entropy_gradient
 import numpy as np
 z=np.array([2.,1.,0.]);target=1
 def ce(v):
@@ -173,7 +173,7 @@ print('Cross-entropy gradient:',np.round(g,4).tolist())
 <h2 id="section-91">10. Attention with two library cards</h2>
 <p>A query is what you seek, keys describe available cards, and values carry their content. Dot products measure query-key alignment. Divide scores by sqrt(d_k), apply a mask if future positions are forbidden, then softmax across keys. The output is a weighted sum of values.</p>
 <p>If weights are [0.75,0.25] and values are [4,0] and [0,8], the output is [3,2]. Attention does not simply choose one card; it mixes them. Standard full self-attention forms an n-by-n score matrix, which explains its quadratic sequence-length cost. Cached autoregressive decoding reuses prior keys and values; cache memory still grows with sequence length and model dimensions.</p>
-<pre><code class="language-python"># lab: attention_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: attention_workshop
 import numpy as np
 q=np.array([[1.,0.],[0.,1.]])
 k=q.copy();v=np.array([[4.,0.],[0.,8.]])
@@ -185,7 +185,7 @@ print('Causal attention output:',np.round(output,3).tolist())
 </code></pre>
 <h2 id="section-101">11. Least squares without a fragile inverse</h2>
 <p>Ordinary least squares minimizes ||Xw-y||². Setting its gradient to zero gives XᵀXw=Xᵀy. That derivation is useful; explicitly computing inverse(XᵀX) is often a poor numerical implementation because forming XᵀX squares the condition number. QR or SVD-based least-squares solvers are preferable. Rank deficiency means multiple parameter vectors may explain the same observations; it is a property of the data, not something a bigger learning rate fixes.</p>
-<pre><code class="language-python"># lab: least_squares_workshop
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: least_squares_workshop
 import numpy as np
 X=np.array([[1.,0.],[1.,1.],[1.,2.],[1.,3.]])
 y=np.array([1.,3.,5.,7.])

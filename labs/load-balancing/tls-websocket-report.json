@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "checks": [
+    "Trusted certificate and localhost hostname validation accepted",
+    "Untrusted certificate rejected; verification never disabled",
+    "Missing bearer token and hostile Origin rejected before upgrade",
+    "Bidirectional frames survive graceful NGINX configuration reload"
+  ],
+  "scope": "Real local TLS with an explicitly trusted test certificate and real WebSocket upgrade/proxy/reload. No public CA/domain, cloud ingress, or production session store."
+}

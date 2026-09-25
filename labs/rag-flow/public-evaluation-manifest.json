@@ -1,0 +1,19 @@
+{
+  "dataset_url": "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/dev-v2.0.json",
+  "dataset_sha256": "80a5225e94905956a6446d296ca1093975c4d3b3260f1d6c8f68bc2ab77182d8",
+  "ids": [
+    "5705e63175f01819005e7724",
+    "5728510f4b864d1900164937",
+    "5730035e04bcaa1900d77002",
+    "572fc8a904bcaa1900d76d1f",
+    "5705e63175f01819005e7720",
+    "5727f7523acd2414000df110",
+    "5ad4d55f5b96ef001a10a278",
+    "5a0c99fcf5590b0018dab4a8",
+    "5acff73377cf76001a68668c",
+    "5a0c7fb2f5590b0018dab446",
+    "5a38d6e6a4b263001a8c1952",
+    "5ad56d3e5b96ef001a10ae87"
+  ],
+  "selection": "Six answerable and six unanswerable examples, SHA256(id) ascending, contexts <=100 words, all answer spans <=40 characters; fixed before generation. Not a random representative benchmark."
+}

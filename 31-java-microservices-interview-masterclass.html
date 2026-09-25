@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -27,7 +27,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>HashMap stores an array of buckets. In OpenJDK 21, buckets contain linked nodes or, for sufficiently crowded eligible buckets, red-black tree nodes. The implementation spreads the hash and uses the table size to select a bucket. For insertion it checks existing keys: an equal key replaces its value; an unequal colliding key gets a separate entry. Growth redistributes entries. Treeification constants and the minimum-capacity gate are implementation details, not the Map interface contract. Avoid the misleading claim “the eighth collision always creates a tree.” Tree bins also do not guarantee logarithmic lookup for every pathological non-orderable equal-hash key set. <a href="https://raw.githubusercontent.com/openjdk/jdk21u/master/src/java.base/share/classes/java/util/HashMap.java">OpenJDK implementation</a>.</p>
 <p>Expected get/put cost is constant with suitable hash distribution; resizing and poor distribution affect actual cost. Default load factor is 0.75. HashMap allows a null key and null values, does not promise ordering, and is not thread-safe. A fail-fast iterator is a bug detector, not synchronization. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html">Java HashMap contract</a>.</p>
 <p><strong>Interview answer:</strong> “An array of buckets locates candidate entries by hash; equality selects the key. Modern OpenJDK can use tree bins for crowded buckets. Colliding but unequal keys coexist.”</p>
-<pre><code class="language-java">// lab: CollisionCards
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: CollisionCards
 import java.util.*;
 public class CollisionCards {
   record Key(int id) { @Override public int hashCode() { return 7; } }
@@ -54,7 +54,7 @@ public class CollisionCards {
 <p>An abstract class is a partly built machine. It can hold fields, constructors and implemented methods, and can require subclasses to implement abstract methods. You cannot instantiate it directly. It can have a static main method: launching that method does not require constructing the abstract class.</p>
 <p>finally is not compulsory. A regular try needs a catch or finally; try-with-resources can appear without either. finally normally executes as control leaves the try/catch, including return or throw, but not after every possible JVM/process termination. Do not return from finally: it can hide an earlier result or exception.</p>
 <p>Try-with-resources closes AutoCloseable resources in reverse declaration order. If the body and close both fail, the body's exception remains primary and the close failure is suppressed. This is useful for files, database connections and streams. It does not automatically make business work transactional. <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">Java resource handling</a>.</p>
-<pre><code class="language-java">// lab: CleanupStory
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: CleanupStory
 public abstract class CleanupStory {
   abstract String describe();
   static class Resource implements AutoCloseable {
@@ -122,7 +122,7 @@ public abstract class CleanupStory {
 </tr>
 </tbody>
 </table></div>
-<pre><code class="language-java">// lab: EmployeePredicates
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: EmployeePredicates
 import java.util.*;
 import java.util.function.*;
 public class EmployeePredicates {
@@ -143,7 +143,7 @@ public class EmployeePredicates {
 <h2 id="section-188">6. synchronized versus ReentrantLock</h2>
 <p>A lock is a bathroom key: one owner enters a critical section at a time. synchronized acquires the monitor associated with an object or class and releases it when the block exits, including exceptional exit. It is reentrant: the owning thread can enter again.</p>
 <p>ReentrantLock makes ownership explicit. Choose it when you need timed tryLock, interruptible acquisition or multiple Condition queues. Always release after successful acquisition in finally. Fair mode can reduce barging but may reduce throughput and does not guarantee fair CPU scheduling; untimed tryLock has its own fairness caveat. Do not choose it because of an unconditional “faster” claim. <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/locks/ReentrantLock.html">ReentrantLock contract</a>.</p>
-<pre><code class="language-java">// lab: SafeCounter
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: SafeCounter
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 public class SafeCounter {
@@ -220,7 +220,7 @@ public class SafeCounter {
 </table></div>
 <p>SRP means one coherent reason to change, not “one method per class.” A useful refactoring starts with tests of existing behavior, extracts fee calculation, injects a ledger interface, and keeps transaction coordination explicit in the application service. Do not scatter one business invariant across five classes merely to increase class count.</p>
 <p>Composition means a service <strong>has</strong> a policy. Inheritance means a subtype <strong>is usable as</strong> the parent under its behavioral contract. Choose composition for independently changing behavior, such as fee policy plus notification channel. Use inheritance for a real substitutable hierarchy or a framework's intended extension point. A Square that forbids Rectangle's independent width/height updates breaks that mutable Rectangle contract; mathematical naming alone does not establish substitutability.</p>
-<pre><code class="language-java">// lab: ComposedFees
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: ComposedFees
 import java.math.BigDecimal;
 public class ComposedFees {
   interface FeePolicy { BigDecimal fee(BigDecimal amount); }
@@ -319,7 +319,7 @@ public class ComposedFees {
 <p>For <code>POST /payments</code>, scope the idempotency key by authenticated principal/tenant and operation. Store a canonical request fingerprint, state and outcome under a unique constraint. Same key and same payload return the same logical operation; same key with a different amount is a conflict. Decide how long keys remain valid and what happens after retention. Do not use a process-local map as the only protection.</p>
 <p>Within one database, transactionally reserve the key, apply the ledger mutation and write an outbox event. Concurrent duplicates must converge through the constraint and a defined pending/completed response. For an external bank, durably create the intent first, use the bank's supported idempotency contract, and reconcile ambiguous timeouts by operation ID. A crash after the remote charge but before recording its result is the critical gap. Never interpret a timeout as proof that the charge did not occur.</p>
 <p>Use integer minor units when the currency model permits it, or decimal arithmetic with explicit currency/rounding rules. Authentication, amount validation, currency, account ownership, available funds, audit trail and reversals are separate concerns. This is a software design exercise, not a complete financial-control specification.</p>
-<pre><code class="language-python"># lab: DurablePaymentKeys
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: DurablePaymentKeys
 import sqlite3
 db = sqlite3.connect(':memory:')
 db.executescript('CREATE TABLE payments(tenant TEXT, request_key TEXT, cents INTEGER, PRIMARY KEY(tenant,request_key));')
@@ -348,7 +348,7 @@ print('Tenant-scoped key replay and payload conflict verified in SQLite; no remo
 <h2 id="section-478">12. Millions of records: pagination, lazy loading and exports</h2>
 <p>Do not send millions of database rows in one JSON response. Bound page size, select only required columns, authorize every query, impose timeouts and avoid expensive exact total counts unless needed. Streaming a huge response can reduce application buffering, but it still holds connections and consumes bandwidth; it is not automatically a good interactive API.</p>
 <p>Offset pagination is simple: <code>ORDER BY created_at,id LIMIT 100 OFFSET 500000</code>. Deep offsets may scan/discard many rows; concurrent inserts/deletes can shift page boundaries. Keyset pagination uses the last seen ordered values as a bookmark. For ascending order, select rows after <code>(last_created_at,last_id)</code>. Always include a unique tie-breaker and a supporting index.</p>
-<pre><code class="language-sql">-- MySQL-style parameterized query; use JDBC bind parameters, not string interpolation.
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-sql">-- MySQL-style parameterized query; use JDBC bind parameters, not string interpolation.
 SELECT id, created_at, amount_minor
 FROM payments
 WHERE tenant_id = ?
@@ -357,7 +357,7 @@ ORDER BY created_at, id
 LIMIT 101;
 </code></pre>
 <p>Return 100 and use the extra row to decide whether another page exists. An opaque cursor can encode the last tuple, filter/version and an expiry, signed to resist tampering. A signed cursor is not authorization: reapply tenant checks on every request. Changes to sort keys can still move rows across the bookmark. Stable exports may need an explicit snapshot/version policy, not merely a high-water ID.</p>
-<pre><code class="language-python"># lab: BookmarkPages
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: BookmarkPages
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.executescript('CREATE TABLE rows(id INTEGER PRIMARY KEY, created INTEGER); CREATE INDEX ix_created_id ON rows(created,id);')
@@ -377,7 +377,7 @@ print('Bookmark includes a unique tie-breaker: every static-data row appears onc
 <p>Start with a real query and its frequency. Put useful equality constraints before the relevant range/order portion when that fits the workload. For <code>tenant_id=? AND status=? AND created_at&gt;=? ORDER BY created_at,id</code>, the tuple above is a candidate. The first range may limit later columns' use as range bounds; later columns can still help filtering, ordering in applicable cases or covering. Column order is not simply “highest cardinality first.”</p>
 <p>Indexes cost storage and write/maintenance work. A covering index includes needed values, but adding large payload columns can make it too expensive. InnoDB secondary indexes also carry the primary key. Keep statistics representative and consider data skew. A scan can be cheaper when the query needs much of the table. Do not force an index merely to make EXPLAIN look impressive.</p>
 <p>MySQL diagnostic recipe, not executed against a MySQL server in this notebook:</p>
-<pre><code class="language-sql">CREATE INDEX ix_payment_lookup ON payments(tenant_id,status,created_at,id);
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-sql">CREATE INDEX ix_payment_lookup ON payments(tenant_id,status,created_at,id);
 EXPLAIN SELECT id,created_at FROM payments
 WHERE tenant_id=42 AND status='SETTLED' AND created_at &gt;= '2026-01-01'
 ORDER BY created_at,id LIMIT 100;
@@ -389,7 +389,7 @@ ORDER BY created_at,id LIMIT 100;
 <h2 id="section-514">14. Oracle EXPLAIN PLAN versus the executed cursor</h2>
 <p>EXPLAIN PLAN asks the optimizer for a proposed plan without executing the target statement. It does not establish which child cursor, bind-sensitive plan or actual row counts your application used. DISPLAY_CURSOR examines a cached cursor's plan; execution statistics must have been collected to see actual rows. <a href="https://docs.oracle.com/database/121/ARPLS/d_xplan.htm">Oracle DBMS_XPLAN</a>.</p>
 <p>Oracle diagnostic recipe; requires an Oracle schema, suitable privileges and matching version, and is not claimed executed here:</p>
-<pre><code class="language-sql">EXPLAIN PLAN FOR
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-sql">EXPLAIN PLAN FOR
 SELECT id FROM payments WHERE tenant_id=42 AND status='SETTLED';
 SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY());
 
@@ -508,7 +508,7 @@ SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
 <p>A Saga coordinates local transactions with recovery actions. For an order: reserve stock, authorize payment, confirm order. If confirmation cannot complete, compensation might release stock and void authorization. Compensation is a new business action, not a time machine that guarantees restoration of every external effect. Captured money may require a refund with its own failure path.</p>
 <p>Choreography lets services react to events; it reduces central coordination but can hide cycles and lifecycle ownership. Orchestration uses an explicit coordinator and durable state; it makes progress visible but needs its own recovery design. Choose based on the workflow's complexity and responsibility boundaries.</p>
 <p>Outbox solves a specific dual-write gap. Save the local state change and outgoing event in one database transaction. A relay publishes later; it may publish twice after a crash. An inbox/deduplication record on the receiving side, committed with the business effect, makes duplicate handling safe. A unique event ID alone is insufficient unless its check and effect share the required atomic boundary.</p>
-<pre><code class="language-python"># lab: InboxReplay
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: InboxReplay
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.executescript('CREATE TABLE inbox(id TEXT PRIMARY KEY); CREATE TABLE tally(value INTEGER); INSERT INTO tally VALUES(0);')
@@ -595,7 +595,7 @@ print('Business update and dedup marker roll back together, then replay applies 
 <p>Test money edge cases, payload conflicts, duplicate requests, rollback, lock ordering, exhausted retry, authorization and empty pages. Use assertThrows for the intended exception; do not merely catch and ignore any exception. Prefer deterministic coordination such as latches/barriers over arbitrary sleeps in concurrency tests. Check failure propagation from submitted tasks.</p>
 <p>Automation includes unit tests, database integration tests, API/consumer-contract tests, browser journeys, accessibility checks, performance/recovery scenarios and CI. Contract tests catch incompatible interfaces but do not prove the whole workflow works. Browser tests cover selected journeys but are slower and more fragile than focused tests. Keep clocks, IDs and dependencies controllable where that improves reproducibility. Testcontainers needs a working container engine; do not silently substitute H2 and claim MySQL/Oracle behavior was tested.</p>
 <p>Run the actual workshop from the library root:</p>
-<pre><code class="language-shell">mvn -f labs/interview-workshop/pom.xml test
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-shell">mvn -f labs/interview-workshop/pom.xml test
 python run_notebook_labs.py --book 31-java-microservices-interview-masterclass
 </code></pre>
 <p>The first command needs Java 21+, Maven and initial dependency downloads. The second needs Python plus JDK tools for Java cells. The chapter's MySQL/Oracle commands remain labelled diagnostic recipes; the executed database tests use H2 and SQLite.</p>

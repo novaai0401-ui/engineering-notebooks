@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -20,7 +20,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>A learner opens a dashboard, signs in, selects a topic, asks a question, receives an explanation with sources, and records completion. Each step has a user-visible result and a possible failure. Begin with these outcomes before drawing microservices.</p>
 <p>React presents forms, progress, and results. A Java service owns users, study records, permissions, and transactional business actions. A Python service handles retrieval, model inference, and model-specific evaluation. A database stores authoritative records. Object storage can hold documents; a search index supports retrieval. A queue can manage long-running jobs.</p>
 <p>This division is an example, not a requirement that Java and Python must both appear in every system. A single language and a modular monolith may meet the same requirements more simply.</p>
-<pre><code class="language-text">Browser / React
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-text">Browser / React
       |
  HTTPS + authenticated request
       v
@@ -38,7 +38,7 @@ Java response ---&gt; React loading/error/success display
 <h2 id="section-22">2. Contracts are agreements between teams</h2>
 <p>An API contract says what inputs are accepted, what outputs mean, how errors are represented, and which guarantees exist. A typed schema is part of it; permissions and timing semantics are also part of it.</p>
 <p>For an explanation request, define question, course ID, request ID, and supported options. Derive identity from the authenticated context. For a response, include status, answer, evidence identifiers, and a request ID. A citation should refer to evidence actually provided, not a made-up URL.</p>
-<pre><code class="language-json">{
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-json">{
   &quot;request_id&quot;: &quot;r-123&quot;,
   &quot;status&quot;: &quot;complete&quot;,
   &quot;answer&quot;: &quot;A gradient describes local rates of change.&quot;,
@@ -50,7 +50,7 @@ Java response ---&gt; React loading/error/success display
 <p><strong>Exercise:</strong> A service returns HTTP 200 with <code>{error:&quot;failed&quot;}</code> to every failure. Why is that harmful? <strong>Answer:</strong> Transport status and business meaning disagree, monitoring becomes misleading, and clients may treat failures as success.</p>
 <h2 id="section-38">3. SQL, keys, joins, and indexes</h2>
 <p>A relational table stores rows with named columns. A primary key identifies a row. A foreign key constrains a relationship. A unique constraint protects a business uniqueness rule. SQL selects, joins, groups, and changes records. Parameterized queries separate data from SQL syntax.</p>
-<pre><code class="language-python"># lab: relational_integrity
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: relational_integrity
 import sqlite3
 db = sqlite3.connect(&quot;:memory:&quot;)
 db.execute(&quot;PRAGMA foreign_keys=ON&quot;)
@@ -86,7 +86,7 @@ print(&quot;Join and uniqueness rule verified&quot;)
 <p><strong>Failure story:</strong> The service reserves a place, publishes an event, then crashes before acknowledging. A retry must not reserve another place. Persistent uniqueness and request identity handle this better than hoping the network delivers exactly once.</p>
 <h2 id="section-66">5. Idempotency and request identity</h2>
 <p>An idempotency key identifies one logical operation. Bind it to the authenticated scope and the operation payload. Reusing the same key for a different request should be rejected rather than returning an unrelated old result.</p>
-<pre><code class="language-python"># lab: idempotent_operation
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: idempotent_operation
 import hashlib, json
 records = {}
 effects = []
@@ -122,7 +122,7 @@ print(&quot;Sequential retry did not duplicate the demonstration effect&quot;)
 <p>Restrict document retrieval by tenant and entitlement before evidence reaches a model or logs. A secret excluded from the final answer can still leak through prompts, telemetry, or caches. Separate secret management from model-visible context.</p>
 <p>Use parameterized SQL, output encoding, controlled file paths, upload limits, and dependency hygiene. An AI feature inherits ordinary application-security responsibilities and adds prompt-injection and model-output risks. A model's generated SQL or code is a proposal, not something to execute with unlimited authority.</p>
 <h2 id="section-91">7. A permission-aware retrieval lab</h2>
-<pre><code class="language-python"># lab: authorized_retrieval
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: authorized_retrieval
 docs = [
     {&quot;id&quot;:&quot;public&quot;,&quot;tenant&quot;:&quot;school-A&quot;,&quot;text&quot;:&quot;gradient slope&quot;, &quot;roles&quot;:{&quot;student&quot;,&quot;teacher&quot;}},
     {&quot;id&quot;:&quot;exam&quot;,&quot;tenant&quot;:&quot;school-A&quot;,&quot;text&quot;:&quot;gradient exam answers&quot;, &quot;roles&quot;:{&quot;teacher&quot;}},

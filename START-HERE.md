@@ -59,18 +59,18 @@ Pair each foundation notebook with its advanced continuation. Work through noteb
 
 ## A learning route that builds understanding
 
-If you are new to programming, begin with Python lessons 1–7, then Java foundations and browser/JavaScript foundations. Learn the agent notebook after functions, classes, exceptions and async make sense. Study algorithms throughout rather than saving them for the end.
+If you are new to programming, begin with Python lessons 1â€“7, then Java foundations and browser/JavaScript foundations. Learn the agent notebook after functions, classes, exceptions and async make sense. Study algorithms throughout rather than saving them for the end.
 
 | Weeks | Focus | Evidence that you understand |
 | --- | --- | --- |
-| 1–3 | Python foundations and basic problem solving | Predict output before running it; explain mutation and loops |
-| 4–6 | Python AI data flow, core algorithms | Build a leakage-safe pipeline; trace BFS and binary search |
-| 7–9 | Agents, graphs, MCP and orchestration | Trace a tool call, stop a loop, explain retries and permissions |
-| 10–12 | Java, Spring and transactions | Run the service tests; explain constructor injection and rollback |
-| 13–15 | JavaScript, React and browser behavior | Change the study app and test it with keyboard interactions |
-| 16–18 | Full-stack boundaries and reliability | Draw a request path, failure path and authorization boundary |
-| 19–21 | Patterns and interview drills | Choose a pattern, explain its cost and reject an unnecessary one |
-| 22–24 | Capstone and mock interviews | Implement an integrated slice and defend its design decisions |
+| 1â€“3 | Python foundations and basic problem solving | Predict output before running it; explain mutation and loops |
+| 4â€“6 | Python AI data flow, core algorithms | Build a leakage-safe pipeline; trace BFS and binary search |
+| 7â€“9 | Agents, graphs, MCP and orchestration | Trace a tool call, stop a loop, explain retries and permissions |
+| 10â€“12 | Java, Spring and transactions | Run the service tests; explain constructor injection and rollback |
+| 13â€“15 | JavaScript, React and browser behavior | Change the study app and test it with keyboard interactions |
+| 16â€“18 | Full-stack boundaries and reliability | Draw a request path, failure path and authorization boundary |
+| 19â€“21 | Patterns and interview drills | Choose a pattern, explain its cost and reject an unnecessary one |
+| 22â€“24 | Capstone and mock interviews | Implement an integrated slice and defend its design decisions |
 
 This is a flexible route, not a promise that everyone learns at the same speed. A useful daily session is 20 minutes reading, 20 tracing, 30 coding, and 10 explaining without notes.
 
@@ -132,3 +132,6 @@ For the supplied Java/Spring interview questions, read [Notebook 31: interview m
 The original six books teach foundations; nine advanced workshops add working implementations and deeper practice. All 23 GoF patterns now have executable small implementations. The Study Coach is a complete local integration with authentication, durable jobs, streamed extractive answers and failure tests. It is a teaching application, not a production-certified service or a deployed generative model. Docker deployment recipes are provided; container execution and external model-provider calls are not claimed as tested unless recorded in the validation report.
 
 No finite collection can include every algorithm, every design pattern or every future framework change, and no book can guarantee every exam result. Advanced compiler work, formal verification, specialist numerical methods, complete cloud operations, every Spring module and every research algorithm are outside this collection. Use the worked examples and exercises to develop the reasoning needed for unfamiliar questions. Check [the validation report](VALIDATION.html) for exactly what ran.
+
+
+For the latest database, TLS/WebSocket, identity, AI evaluation, accessibility and endurance verification commands, see the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md). Results and external requirements are tracked in the [completion audit](COMPLETION-AUDIT.html).

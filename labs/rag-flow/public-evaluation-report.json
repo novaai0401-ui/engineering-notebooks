@@ -1,0 +1,172 @@
+{
+  "classification": "Externally labelled public SQuAD 2.0 development subset. Not hidden holdout, not full SQuAD score; model pretraining contamination possible. Direct supplied-evidence generation, not retrieval.",
+  "attribution": "SQuAD 2.0, Pranav Rajpurkar, Robin Jia and Percy Liang; https://rajpurkar.github.io/SQuAD-explorer/ ; dataset CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/ . Report excerpts/derived selection under the same license.",
+  "model": "qwen2.5:7b-instruct-q4_K_M",
+  "manifest": {
+    "dataset_url": "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/master/dataset/dev-v2.0.json",
+    "dataset_sha256": "80a5225e94905956a6446d296ca1093975c4d3b3260f1d6c8f68bc2ab77182d8",
+    "ids": [
+      "5705e63175f01819005e7724",
+      "5728510f4b864d1900164937",
+      "5730035e04bcaa1900d77002",
+      "572fc8a904bcaa1900d76d1f",
+      "5705e63175f01819005e7720",
+      "5727f7523acd2414000df110",
+      "5ad4d55f5b96ef001a10a278",
+      "5a0c99fcf5590b0018dab4a8",
+      "5acff73377cf76001a68668c",
+      "5a0c7fb2f5590b0018dab446",
+      "5a38d6e6a4b263001a8c1952",
+      "5ad56d3e5b96ef001a10ae87"
+    ],
+    "selection": "Six answerable and six unanswerable examples, SHA256(id) ascending, contexts <=100 words, all answer spans <=40 characters; fixed before generation. Not a random representative benchmark."
+  },
+  "total": 12,
+  "cases": [
+    {
+      "id": "5705e63175f01819005e7724",
+      "article": "Southern_California",
+      "unanswerable": false,
+      "accepted_answers": [
+        "south",
+        "south"
+      ],
+      "passed": true,
+      "answer": "south",
+      "seconds": 61.09
+    },
+    {
+      "id": "5728510f4b864d1900164937",
+      "article": "University_of_Chicago",
+      "unanswerable": false,
+      "accepted_answers": [
+        "four",
+        "four",
+        "four"
+      ],
+      "passed": false,
+      "error": "TimeoutError",
+      "seconds": 90.0
+    },
+    {
+      "id": "5730035e04bcaa1900d77002",
+      "article": "Islamism",
+      "unanswerable": false,
+      "accepted_answers": [
+        "Ismailiyah, Egypt",
+        "Ismailiyah, Egypt",
+        "Egypt"
+      ],
+      "passed": true,
+      "answer": "Ismailiyah, Egypt",
+      "seconds": 50.97
+    },
+    {
+      "id": "572fc8a904bcaa1900d76d1f",
+      "article": "Scottish_Parliament",
+      "unanswerable": false,
+      "accepted_answers": [
+        "type of committee",
+        "committee",
+        "committee"
+      ],
+      "passed": false,
+      "error": "TimeoutError",
+      "seconds": 90.0
+    },
+    {
+      "id": "5705e63175f01819005e7720",
+      "article": "Southern_California",
+      "unanswerable": false,
+      "accepted_answers": [
+        "California",
+        "California",
+        "California"
+      ],
+      "passed": false,
+      "error": "TimeoutError",
+      "seconds": 90.01
+    },
+    {
+      "id": "5727f7523acd2414000df110",
+      "article": "Economic_inequality",
+      "unanswerable": false,
+      "accepted_answers": [
+        "technological changes and globalization",
+        "decline of organized labor",
+        "technological changes and globalization"
+      ],
+      "passed": true,
+      "answer": "decline of organized labor",
+      "seconds": 46.64
+    },
+    {
+      "id": "5ad4d55f5b96ef001a10a278",
+      "article": "Warsaw",
+      "unanswerable": true,
+      "accepted_answers": [
+        "UNKNOWN"
+      ],
+      "passed": false,
+      "answer": "Eastern bloc",
+      "seconds": 37.16
+    },
+    {
+      "id": "5a0c99fcf5590b0018dab4a8",
+      "article": "Amazon_rainforest",
+      "unanswerable": true,
+      "accepted_answers": [
+        "UNKNOWN"
+      ],
+      "passed": false,
+      "answer": "carbon dioxide",
+      "seconds": 37.52
+    },
+    {
+      "id": "5acff73377cf76001a68668c",
+      "article": "Imperialism",
+      "unanswerable": true,
+      "accepted_answers": [
+        "UNKNOWN"
+      ],
+      "passed": false,
+      "answer": "Orientalism",
+      "seconds": 32.97
+    },
+    {
+      "id": "5a0c7fb2f5590b0018dab446",
+      "article": "Amazon_rainforest",
+      "unanswerable": true,
+      "accepted_answers": [
+        "UNKNOWN"
+      ],
+      "passed": true,
+      "answer": "UNKNOWN",
+      "seconds": 33.94
+    },
+    {
+      "id": "5a38d6e6a4b263001a8c1952",
+      "article": "1973_oil_crisis",
+      "unanswerable": true,
+      "accepted_answers": [
+        "UNKNOWN"
+      ],
+      "passed": false,
+      "answer": "1981",
+      "seconds": 35.41
+    },
+    {
+      "id": "5ad56d3e5b96ef001a10ae87",
+      "article": "Computational_complexity_theory",
+      "unanswerable": true,
+      "accepted_answers": [
+        "UNKNOWN"
+      ],
+      "passed": true,
+      "answer": "UNKNOWN",
+      "seconds": 14.99
+    }
+  ],
+  "completed": 12,
+  "passed": 5
+}

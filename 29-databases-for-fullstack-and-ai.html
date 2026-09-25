@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -91,7 +91,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-170">3. Tables, keys, types and constraints</h2>
 <p>A row is one fact about one entity. A primary key uniquely names it. A foreign key points to a related row. A unique constraint prevents repeated business identifiers. NOT NULL rejects missing values, and CHECK validates a row-level rule.</p>
 <p>Use exact decimal types or integer minor units for money with an explicit currency; binary floating point is unsuitable for exact monetary accounting. Store instants with clear timezone semantics; retain a user's timezone separately for calendar rules. A generated identifier is not a secret, an authorization check, or a promise of gapless numbering.</p>
-<pre><code class="language-python"># lab: database_constraints
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_constraints
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.execute('PRAGMA foreign_keys=ON')
@@ -120,7 +120,7 @@ print('Foreign key, nonnegative money and unique email rules rejected invalid wr
 <p>Denormalise only for a measured query need and document who refreshes the copy, how stale it may be and how it is rebuilt. A materialized read model requires ownership and repair just like a cache.</p>
 <h2 id="section-198">5. SQL: selecting, joining, grouping and NULL</h2>
 <p>Think of SQL as describing the answer, while the database chooses a physical plan. FROM and JOIN assemble candidate rows, WHERE removes individual rows, GROUP BY gathers piles, HAVING removes piles, SELECT chooses output and ORDER BY establishes order. This is a useful logical model, not a required execution sequence.</p>
-<pre><code class="language-python"># lab: database_joins_and_null
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_joins_and_null
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.executescript('''
@@ -141,7 +141,7 @@ print(rows)
 <p>Know INNER, LEFT, CROSS and self joins. A join can multiply rows: do not fix an accidental many-to-many join by blindly adding DISTINCT. Check cardinalities and the intended grain, meaning what exactly one result row represents.</p>
 <h2 id="section-211">6. Windows, CTEs and pagination</h2>
 <p>A GROUP BY collapses rows. A window function annotates each row while retaining it. ROW_NUMBER assigns positions; RANK leaves gaps for ties; DENSE_RANK does not. A common table expression names an intermediate query. It is not universally a performance improvement.</p>
-<pre><code class="language-python"># lab: database_windows_and_pagination
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_windows_and_pagination
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.executescript('''CREATE TABLE result(id INTEGER PRIMARY KEY, learner TEXT,score INTEGER);
@@ -160,7 +160,7 @@ print('Stable tie-breaking avoids skipping Chen at the page boundary.')
 <p>Offset pagination is simple but large offsets can scan/discard many rows and concurrent inserts can shift pages. Keyset pagination continues after a stable sort tuple. It still needs a stated consistency policy if sort keys change. Opaque cursors must be validated, tenant-bound and, when necessary, signed. Never accept arbitrary column names from an untrusted client; allowlist supported sort orders.</p>
 <h2 id="section-221">7. Transactions and ACID with a transfer</h2>
 <p>Atomicity: move both pieces or neither. Consistency: preserve declared constraints and correctly implemented business invariants. Isolation: define what concurrent operations may observe. Durability: committed data survives the failures covered by the configured storage guarantees.</p>
-<pre><code class="language-python"># lab: database_atomic_transfer
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_atomic_transfer
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.execute('CREATE TABLE account(id INTEGER PRIMARY KEY,balance INTEGER CHECK(balance&gt;=0))')
@@ -187,7 +187,7 @@ print('Rollback restored the debit; successful transfer preserved total money.')
 <p>Optimistic locking adds a version: UPDATE item SET value=?,version=version+1 WHERE id=? AND version=?. Zero changed rows means a conflict. Pessimistic locking locks selected rows before dependent work. Acquire multiple locks in a stable order to reduce deadlocks; keep transactions short and avoid remote calls inside locks. Retry known transient failures with limits and jitter, not every SQL exception.</p>
 <h2 id="section-243">9. Indexes: finding a name without reading the register</h2>
 <p>A B-tree is a sorted branching guide useful for equality and ordered ranges. Hash indexes target equality. GIN supports inverted lookups such as tokens or suitable JSON operators. GiST supports extensible search strategies such as some geometric operations. BRIN summarizes block ranges and can be small when values correlate with physical order. Operator support matters. <a href="https://www.postgresql.org/docs/current/indexes-types.html">PostgreSQL index types</a>.</p>
-<pre><code class="language-python"># lab: database_index_plan
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_index_plan
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.execute('CREATE TABLE event(id INTEGER PRIMARY KEY,owner TEXT,created INTEGER)')
@@ -207,7 +207,7 @@ db.close();print(plan)
 <p>With JPA, an entity is a persistence-managed object, not the public API contract. Lazy relationships can cause N+1: one order query followed by one customer query for every order. Fetch joins, entity graphs, DTO projections or batching can help, with different pagination and memory costs. A collection fetch join combined with pagination needs particular care. Put transaction boundaries around business operations, account for proxy/self-invocation behavior and do not assume readOnly enforces all business restrictions.</p>
 <p>With Python, use parameterized driver calls or SQLAlchemy expressions. A session/connection should have a clear request or job lifetime, commit/rollback handling and guaranteed cleanup. Blocking database access inside an async server can block its event loop; use a compatible async driver or an appropriate bounded offload strategy. Async does not remove connection limits.</p>
 <p>Connection pool example: 10 replicas × 20 maximum connections = 200 possible application connections before background jobs and administrative reserve. More connections can increase contention. Measure acquisition wait and saturation; set query, transaction and pool-acquisition timeouts independently. Never hold a connection while waiting for a slow model response unnecessarily.</p>
-<pre><code class="language-python"># lab: database_parameter_safety
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_parameter_safety
 import sqlite3
 db=sqlite3.connect(':memory:')
 db.execute('CREATE TABLE note(owner TEXT,body TEXT)')
@@ -231,7 +231,7 @@ db.close();print('Values remain values rather than becoming SQL instructions.')
 <p>Include tenant, resource, schema version and relevant permissions in cache keys. Use TTLs, jitter, bounded capacity, invalidation after commit, stampede protection and metrics. A delayed loader can refill stale data after invalidation; version checks or a carefully defined consistency policy address this. Notebook 25 and the real-time cache lab demonstrate the race. Redis eviction policy, persistence and failover settings must match the intended use; a cache configured for eviction should not silently become the only store for irreplaceable records.</p>
 <h2 id="section-314">15. Vector databases and RAG storage</h2>
 <p>An embedding is a list of numbers placing content in a learned geometry. Store document ID, chunk ID, tenant/ACL, source revision, embedding-model version and deletion state alongside it. Vectors from incompatible models should not be mixed simply because their dimensions match.</p>
-<pre><code class="language-python"># lab: database_vector_tenant_filter
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: database_vector_tenant_filter
 from math import sqrt
 rows=[('a','alice',(1.,0.)),('b','bob',(1.,0.)),('c','alice',(0.,1.))]
 def cosine(a,b):

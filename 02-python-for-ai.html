@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -19,7 +19,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-6">1. A program is a careful recipe</h2>
 <p>A variable is a label attached to an object. A function is a reusable recipe. A list stores an ordered collection. A dictionary associates keys with values. A loop repeats work. An exception signals that a requested operation could not complete normally.</p>
 <p>Python indentation marks blocks. <code>=</code> assigns; <code>==</code> compares. Strings hold text. Integers represent whole numbers, floats approximate many real numbers, and Booleans represent true or false. <code>None</code> represents an absent value by convention; it differs from zero, an empty string, and false.</p>
-<pre><code class="language-python"># lab: values_and_functions
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: values_and_functions
 def total_price(count, unit_price, delivery=0):
     if count &lt; 0:
         raise ValueError(&quot;count cannot be negative&quot;)
@@ -36,7 +36,7 @@ print(total)
 <p><strong>Exercise:</strong> What happens when a cart item is absent from the dictionary? <strong>Answer:</strong> Direct lookup raises KeyError. Decide whether missing means invalid, unavailable, or eligible for a default; do not silently treat every missing price as zero.</p>
 <h2 id="section-22">2. Mutability, copying, and common traps</h2>
 <p>Two labels can point to the same list. Changing that list is visible through both names. A shallow copy creates a new outer container while nested mutable objects can remain shared. A deep copy recursively copies more structure, but copying everything is not always the correct design.</p>
-<pre><code class="language-python"># lab: mutation
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: mutation
 original = [[1], [2]]
 shallow = original.copy()
 shallow[0].append(9)
@@ -55,7 +55,7 @@ print(&quot;Each call receives its intended list&quot;)
 <p><strong>Interview check:</strong> Is Python pass-by-value or pass-by-reference? <strong>Answer:</strong> A useful precise account is that arguments bind local names to passed objects. Mutating a shared object can be visible; rebinding a local name does not rebind the caller's variable.</p>
 <h2 id="section-35">3. Iteration, comprehensions, and generators</h2>
 <p><code>enumerate</code> supplies index and value. <code>zip</code> pairs corresponding values but normally stops at the shortest input; use deliberate length checking when silent truncation is wrong. A comprehension builds a collection. A generator yields items on demand, avoiding a full intermediate list.</p>
-<pre><code class="language-python"># lab: batches
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: batches
 from itertools import islice
 
 def batches(items, size):
@@ -74,7 +74,7 @@ print(&quot;Batches preserve the last partial group&quot;)
 <p><code>iter</code> gives a stream of items. <code>islice</code> reads at most the next size items. An empty group signals completion. <code>yield</code> returns one group while preserving the function's continuation. This is useful for documents, embedding requests, and minibatches. A generator can be exhausted; do not expect it to restart automatically.</p>
 <h2 id="section-45">4. Functions, closures, decorators, and types</h2>
 <p>Functions are objects: you can pass a scoring function to a sorter. A closure remembers bindings from an enclosing scope. A decorator accepts a callable or class and returns a replacement or wrapped object; it is how many tool registries register functions.</p>
-<pre><code class="language-python"># lab: function_registry
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: function_registry
 registry = {}
 def register(function):
     registry[function.__name__] = function
@@ -92,7 +92,7 @@ print(sorted(registry))
 <p>Use small pure functions for calculations. A pure function does not secretly read changing global state or perform external effects. File access, network calls, and model loading belong in visible boundaries so tests can substitute controlled implementations.</p>
 <h2 id="section-58">5. Classes, dataclasses, and composition</h2>
 <p>A class groups state and behavior. An instance is one created object. A dataclass generates common record methods from declared fields. Prefer combining objects through explicit interfaces over building deep inheritance trees only to reuse a few lines.</p>
-<pre><code class="language-python"># lab: composition
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: composition
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -115,7 +115,7 @@ print(&quot;A scorer was supplied as a dependency&quot;)
 <p>The protocol states the capability the caller needs. The concrete object supplies it. <code>frozen=True</code> prevents ordinary field reassignment, not every possible deep mutation. Injecting dependencies makes it easy to replace a real model with a deterministic fake during tests.</p>
 <h2 id="section-68">6. Files, JSON, exceptions, and cleanup</h2>
 <p>JSON exchanges basic structured values; it does not safely encode arbitrary executable Python objects. <code>with</code> manages cleanup even when an exception occurs. Catch specific expected failures, preserve useful context, and do not silently turn every failure into a success-shaped empty result.</p>
-<pre><code class="language-python"># lab: json_roundtrip
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: json_roundtrip
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -130,7 +130,7 @@ print(&quot;JSON read back; temporary directory cleaned up&quot;)
 <p>Use explicit encodings. Validate record shape after loading. Treat pickle and other executable serialization formats as trusted-input-only unless you have a deliberately controlled security model. Do not <code>eval</code> user text. Path validation matters when a user chooses filenames; joining a path alone does not prevent traversal outside an allowed directory.</p>
 <h2 id="section-78">7. NumPy: a fast table of numbers</h2>
 <p>An ndarray has a shape and a data type. Think of shape as the box dimensions. <code>(3,2)</code> means three rows with two values each. Vectorization sends work to optimized array routines rather than a Python loop per element. Broadcasting aligns compatible dimensions; it is convenient but can silently create the wrong shape if you do not check.</p>
-<pre><code class="language-python"># lab: numpy_shapes
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: numpy_shapes
 import numpy as np
 X = np.array([[1.,2.],[3.,4.],[5.,6.]])
 w = np.array([2.,-1.])
@@ -146,7 +146,7 @@ print(prediction.tolist())
 <p><strong>Exercise:</strong> Multiply shape <code>(4,3)</code> by <code>(3,2)</code> using <code>@</code>. <strong>Answer:</strong> <code>(4,2)</code>. Explain the shared dimension before doing arithmetic.</p>
 <h2 id="section-94">8. pandas: records, missingness, and joins</h2>
 <p>A DataFrame is a labeled table. It is useful for ingestion and analysis, while tensors or arrays feed many models. Missing is not always zero. A join combines records using keys, and duplicate keys can multiply rows unexpectedly.</p>
-<pre><code class="language-python"># lab: pandas_join
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: pandas_join
 import pandas as pd
 users = pd.DataFrame({&quot;user_id&quot;:[1,2], &quot;group&quot;:[&quot;A&quot;,&quot;B&quot;]})
 events = pd.DataFrame({&quot;user_id&quot;:[1,1,2], &quot;value&quot;:[2,3,4]})
@@ -158,7 +158,7 @@ print(totals)
 <p>The merge attaches a group to each event. <code>validate</code> asserts the expected key relationship. <code>groupby</code> gathers rows by group; selecting <code>value</code> and summing produces group totals. Before training, inspect duplicate identifiers, label availability dates, missing values, and unexpected types. Train-serving consistency begins in these mundane checks.</p>
 <h2 id="section-104">9. scikit-learn: prevent leakage with pipelines</h2>
 <p>Imagine practicing an exam with its answer distribution already revealed. Preprocessing on the whole dataset can create a milder form of that problem. Fit preprocessing only on training examples, including inside each cross-validation fold. Pipelines tie transformations and predictors into one fitting procedure. <a href="https://scikit-learn.org/stable/common_pitfalls.html">Official leakage guidance</a>.</p>
-<pre><code class="language-python"># lab: sklearn_pipeline
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: sklearn_pipeline
 import numpy as np
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -179,7 +179,7 @@ print(&quot;Held-out predictions:&quot;, len(probabilities))
 <p>This toy has an intentionally simple label rule; its score would not prove real-world usefulness. <code>fit</code> learns both scaler and classifier using training only. <code>predict_proba</code> returns columns per class; here column one corresponds to class 1. Real evaluation additionally needs the correct time/group split, metrics, threshold choice, uncertainty, and an untouched final test.</p>
 <h2 id="section-114">10. PyTorch: tensors and gradients</h2>
 <p>A tensor resembles an array with support for devices and automatic differentiation. A computation graph records differentiable operations. <code>backward()</code> computes gradients; an optimizer changes parameters. Those are different responsibilities.</p>
-<pre><code class="language-python"># lab: torch_gradient
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: torch_gradient
 import torch
 w = torch.tensor(7.0, requires_grad=True)
 prediction = w * 2.0
@@ -197,7 +197,7 @@ print(round(w.item(), 2))
 <h2 id="section-127">11. Text, tokens, embeddings, and retrieval in Python</h2>
 <p>A token is a unit from a tokenizer, not necessarily a whole word. An embedding is a numerical representation. A similarity score measures closeness under a representation and metric; it is not automatically a probability of correctness.</p>
 <h3 id="section-133">Lab: retrieval mechanics with transparent word vectors</h3>
-<pre><code class="language-python"># lab: toy_retrieval
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: toy_retrieval
 from collections import Counter
 import math
 def bag(text):
@@ -218,7 +218,7 @@ print(ranking)
 <p>This is lexical bag-of-words retrieval, not a pretrained semantic embedding model. Counters store term frequencies. The numerator combines shared coordinates, and norms normalize vector length. Empty input has an explicit score convention. A full RAG system adds parsing, chunk metadata, authorization, reranking, context selection, generation, citation verification, and evaluation.</p>
 <h2 id="section-140">12. Async, threads, processes, and batching</h2>
 <p>Async is useful when work waits on sockets, files, or other supported asynchronous operations. A coroutine must yield for others to proceed on the same event loop. A blocking call inside it can stall the loop. Threads can help I/O and native routines; ordinary CPU-heavy Python code often needs processes or native kernels for useful parallelism on conventional GIL-enabled builds. Python builds and extensions vary, so benchmark the actual runtime.</p>
-<pre><code class="language-python"># lab: async_limit
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: async_limit
 import asyncio
 async def double_later(value, limit):
     async with limit:
@@ -236,7 +236,7 @@ print(values)
 <p>Notebook code uses top-level <code>await</code>; a normal standalone script can call <code>asyncio.run(run_batch())</code>. Do not call <code>asyncio.run</code> inside an already-running notebook event loop. Bound concurrency and timeouts, distinguish retryable errors, and maintain cancellation semantics. More concurrent requests can cause rate limiting rather than more throughput.</p>
 <h2 id="section-150">13. Architecture and design principles for ML code</h2>
 <p>Separate data ingestion, transformation, training, evaluation, model artifacts, and serving. Keep the feature transformation and model version together. A result should identify its data snapshot and configuration so you can reproduce or diagnose it.</p>
-<pre><code class="language-text">raw records -&gt; validated records -&gt; split -&gt; fitted pipeline -&gt; artifact
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-text">raw records -&gt; validated records -&gt; split -&gt; fitted pipeline -&gt; artifact
                                        |                         |
                                   held-out evaluation       serving adapter
 </code></pre>

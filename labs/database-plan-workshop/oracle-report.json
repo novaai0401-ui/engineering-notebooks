@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "engine": "oracle",
+  "image": "ghcr.io/gvenzl/oracle-free:23-slim",
+  "checks": [
+    "Seeded 1000 rows in isolated schema",
+    "Executed EXPLAIN PLAN and DBMS_XPLAN.DISPLAY",
+    "Gathered optimizer statistics",
+    "Captured executed cursor and ALLSTATS LAST with actual rows",
+    "Observed table scan before and index range scan after"
+  ],
+  "scope": "Disposable actual engine on one local Docker host; 1000 synthetic rows. Oracle Free is not Oracle 19c certification. No production benchmark.",
+  "image_digest": [
+    "ghcr.io/gvenzl/oracle-free@sha256:6d61d267a3b978c24c5ac1790e62e927416a0aec446bd86e4b3a1527562757bd"
+  ],
+  "version": "BANNER_FULL\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\nOracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free\nVersion 23.26.3.0.0"
+}

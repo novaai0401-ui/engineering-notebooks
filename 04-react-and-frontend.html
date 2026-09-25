@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -23,7 +23,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p><strong>Practice:</strong> Does styling a div to look like a button provide keyboard activation automatically? <strong>Answer:</strong> No. Prefer the real button element and preserve focus indication.</p>
 <h2 id="section-21">2. JavaScript essentials for React</h2>
 <p><code>const</code> prevents rebinding a variable; it does not freeze an object. <code>let</code> allows rebinding. Arrays hold ordered values. Objects hold named properties. Destructuring extracts values. Spread makes a shallow copy or expands elements. Arrow functions are concise functions with lexical <code>this</code> behavior.</p>
-<pre><code class="language-javascript">// lab: immutable_update
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-javascript">// lab: immutable_update
 import assert from 'node:assert/strict';
 const oldItems = [{id:1, done:false}, {id:2, done:false}];
 const newItems = oldItems.map(item =&gt;
@@ -37,7 +37,7 @@ console.log('Changed item copied; original state preserved');
 <p><code>===</code> compares without coercing types. <code>null</code> is an explicit empty value; <code>undefined</code> often represents absence. Nullish coalescing <code>??</code> falls back for null or undefined, while <code>||</code> also falls back for other falsy values such as zero. Use the operator matching your intended meaning.</p>
 <h2 id="section-34">3. Closures, promises, and the event loop</h2>
 <p>A closure retains access to variables from an enclosing scope. A promise represents eventual completion or failure. <code>async</code> functions return promises. <code>await</code> pauses that function's continuation, not the whole JavaScript runtime. A long synchronous computation can still block UI responsiveness.</p>
-<pre><code class="language-javascript">// lab: promises
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-javascript">// lab: promises
 import assert from 'node:assert/strict';
 const double = async value =&gt; value * 2;
 const values = await Promise.all([double(2), double(3)]);
@@ -62,7 +62,7 @@ console.log('Results and partial failures are explicit');
 <p>A reducer receives current state and an action and returns next state. Think of an action as a small labeled instruction: add item, toggle item, reset. It should not secretly perform network calls. Pure reducers are easy to test. React's <code>useReducer</code> connects that function to component updates. <a href="https://react.dev/reference/react/useReducer">API reference</a>.</p>
 <h3 id="section-77">Lab: a complete local study list</h3>
 <p>The delivered project uses the following component. The source is included in the notebook; the JavaScript build and DOM interaction checks are recorded separately from standalone Node labs.</p>
-<pre><code class="language-jsx">// lab: StudyApp
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-jsx">// lab: StudyApp
 import React, {useReducer, useState} from 'react';
 
 export function reducer(state, action) {
@@ -111,7 +111,7 @@ export default function StudyApp() {
 <h2 id="section-90">7. Effects synchronize with outside systems</h2>
 <p>Effects are for synchronizing with things outside rendering, such as subscriptions or a network connection. Dependencies describe reactive values used by the effect; suppressing dependency checks to force a desired schedule can capture stale values. Cleanup disconnects or invalidates the previous synchronization. <a href="https://react.dev/learn/synchronizing-with-effects">Effect guidance</a>.</p>
 <h3 id="section-96">Integration recipe: handle a changing query</h3>
-<pre><code class="language-jsx">useEffect(() =&gt; {
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-jsx">useEffect(() =&gt; {
   const controller = new AbortController();
   let active = true;
   setStatus('loading');
@@ -137,7 +137,7 @@ export default function StudyApp() {
 <p>Prefer small components with clear props and composition. A presentational component can receive data and callbacks while a boundary component coordinates fetching. Avoid a rigid rule that every component must be split in two; use boundaries that clarify responsibilities.</p>
 <h2 id="section-121">9. TypeScript and boundary contracts</h2>
 <p>TypeScript checks types during development; the resulting JavaScript still receives real runtime data. A type assertion does not validate a server response. Parse and validate at the boundary.</p>
-<pre><code class="language-typescript">type LoadState&lt;T&gt; =
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-typescript">type LoadState&lt;T&gt; =
   | {status:'loading'}
   | {status:'ready'; data:T}
   | {status:'error'; message:string};

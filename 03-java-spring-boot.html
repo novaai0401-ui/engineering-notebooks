@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -19,7 +19,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-6">1. Java is a typed recipe language</h2>
 <p>A variable has a declared type. A class describes objects and behavior. An object is one instance. A method is a function belonging to a class or object. The compiler translates source into bytecode; the JVM executes it using interpretation and/or runtime compilation. The JDK supplies development tools such as the compiler, not just execution support.</p>
 <p>Primitive types include <code>int</code>, <code>long</code>, <code>double</code>, <code>boolean</code>, and <code>char</code>. Reference variables refer to objects or null. <code>String</code> represents text and is immutable. <code>final</code> prevents reassignment of a variable; it does not magically make a referenced mutable object's contents immutable.</p>
-<pre><code class="language-java">// lab: FirstJava
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: FirstJava
 public class FirstJava {
     static int total(int count, int price, int fee) {
         if (count &lt; 0) throw new IllegalArgumentException(&quot;negative count&quot;);
@@ -38,7 +38,7 @@ public class FirstJava {
 <p><strong>Practice:</strong> Does <code>final List&lt;String&gt;</code> prevent adding an item? <strong>Answer:</strong> No. It prevents changing that variable to refer to another list; the list's own mutability still matters.</p>
 <h2 id="section-22">2. Objects, interfaces, records, and encapsulation</h2>
 <p>Imagine different calculators following one agreement: each can quote a price. An interface expresses that agreement. Implementations supply behavior. Encapsulation protects an object's rules rather than exposing arbitrary writable fields.</p>
-<pre><code class="language-java">// lab: PricingDemo
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: PricingDemo
 public class PricingDemo {
     interface Pricing { int price(int quantity); }
     record FlatPricing(int unitPrice) implements Pricing {
@@ -66,7 +66,7 @@ public class PricingDemo {
 <p>Generics such as <code>List&lt;String&gt;</code> express element types and catch many errors at compilation. Java generics are largely implemented with type erasure; a generic parameter is not always available as runtime type information. A <code>List&lt;Dog&gt;</code> is not a <code>List&lt;Animal&gt;</code> because the latter could permit adding a Cat.</p>
 <p>PECS means producer extends, consumer super: use suitable wildcard bounds when an API reads produced values or accepts consumed ones. Do not add wildcards everywhere; first identify the direction of use.</p>
 <p>Equal objects must have equal hash codes. Mutating a key's equality-relevant fields after insertion can make hash-based lookup fail. Hash collisions are possible and do not imply equality. Arrays use identity-based equality unless you use appropriate array comparison utilities.</p>
-<pre><code class="language-java">// lab: CollectionDemo
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: CollectionDemo
 import java.util.*;
 public class CollectionDemo {
     public static void main(String[] args) {
@@ -94,7 +94,7 @@ public class CollectionDemo {
 <h2 id="section-72">5. JVM, memory, and concurrency</h2>
 <p>Objects are generally managed on the heap; method frames and local execution state use thread stacks, subject to optimization details. Garbage collection reclaims unreachable managed objects; it does not guarantee immediate release of files or sockets. A memory leak can occur when reachable structures retain objects no longer needed.</p>
 <p>Concurrency is overlapping progress. Parallelism is simultaneous execution. A race occurs when outcomes depend on uncontrolled interleaving. <code>volatile</code> supports visibility and ordering for a variable, but <code>count++</code> is a read-modify-write sequence and is not made atomic just by volatile.</p>
-<pre><code class="language-java">// lab: ConcurrentCount
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: ConcurrentCount
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentCount {
@@ -124,7 +124,7 @@ public class ConcurrentCount {
 <p>Singleton scope normally means one bean instance per application context, not a universal JVM or cluster singleton. Request scope ties lifecycle to a request. A singleton with mutable per-user fields can leak or mix concurrent requests. Keep request data in request-specific values, not shared service instance fields.</p>
 <p>Spring Boot adds opinionated setup, dependency management, and conditional auto-configuration. Conditions inspect classes, existing beans, and configuration. Boot does not remove Spring's underlying object lifecycle. Inspect configuration rather than calling unexpected behavior “magic.”</p>
 <h2 id="section-118">8. A layered service</h2>
-<pre><code class="language-text">HTTP request -&gt; controller -&gt; application service -&gt; repository
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-text">HTTP request -&gt; controller -&gt; application service -&gt; repository
                                   |                    |
                              domain rules          database
 HTTP response &lt;- response DTO &lt;---+
@@ -138,7 +138,7 @@ HTTP response &lt;- response DTO &lt;---+
 <p>Validate DTO fields with Bean Validation and enforce business invariants in services and databases. A “positive amount” annotation cannot verify that a user owns an account. Input type validation, authentication, authorization, and business validity solve different problems.</p>
 <h3 id="section-143">Framework recipe: a small controller</h3>
 <p>The delivered <code>labs/spring-demo</code> project contains the complete build and testable controller. This excerpt is the teaching view, not an instruction to place every class into one file.</p>
-<pre><code class="language-java">@RestController
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">@RestController
 @RequestMapping(&quot;/api&quot;)
 class GreetingController {
     @GetMapping(&quot;/greeting&quot;)

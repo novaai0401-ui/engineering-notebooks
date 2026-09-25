@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -27,7 +27,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-30">4. Networking without the localhost trap</h2>
 <p>Inside a container, <code>localhost</code> means that container's network namespace. If Java and Python are separate Compose services, Java must call the Python service name, such as <code>http://ai:8092/answer</code>. Publishing a port exposes a container port on the host. Services on the same private Compose network can communicate without publishing every port.</p>
 <p>Bind development ports to host loopback when external access is unnecessary. A service listening only on 127.0.0.1 inside its container cannot normally be reached through the container network. Study Coach's runtime image sets the server bind address to 0.0.0.0 inside the container while its Compose host port remains loopback-only.</p>
-<pre><code class="language-python"># lab: container_address_reasoning
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: container_address_reasoning
 services={'web':'http://web:8091','ai':'http://ai:8092'}
 java_upstream=services['ai']+'/answer'
 assert java_upstream=='http://ai:8092/answer'
@@ -45,7 +45,7 @@ print('Use service DNS for container-to-container traffic; publish only the inte
 <h2 id="section-64">8. The supplied executable recipe</h2>
 <p><code>labs/study-coach/compose.yaml</code> connects Java and Python and retains H2 data in a volume. <code>container_smoke.py</code> authenticates, obtains CSRF, creates and approves a job, then checks its completed answer. The reference GitHub workflow builds the UI, tests Java, runs native browser/recovery checks, builds containers and invokes that smoke test.</p>
 <p>These files are runnable instructions, not a claim that Docker was executed here. With an available engine, run from the Study Coach directory:</p>
-<pre><code class="language-powershell"># Set fresh COACH_PASSWORD and COACH_SERVICE_TOKEN in your environment first.
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-powershell"># Set fresh COACH_PASSWORD and COACH_SERVICE_TOKEN in your environment first.
 docker compose config
 docker compose build
 docker compose up -d

@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -25,7 +25,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>The Python middleware groups unknown paths into <code>other</code>. It records counts and duration for <code>/answer</code>, <code>/health</code> and <code>/metrics</code>. The Java worker records duration and failure counts. The trace files contain identifiers and timing, not the question text or authorization header.</p>
 <h2 id="section-27">3. Average is a quiet liar</h2>
 <p>If nine requests take 100 milliseconds and one takes 10 seconds, the average is 1.09 seconds. Most users waited 0.1 seconds; one waited 10 seconds. Percentiles show the distribution. For a small nearest-rank sample, p95 means the value at rank ceil(0.95 × n) in sorted order. With only 12 samples that is the maximum, so it is a noisy estimate.</p>
-<pre><code class="language-python"># lab: latency_percentiles
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: latency_percentiles
 import math,statistics
 samples=[100]*9+[10000]
 def percentile(xs,p):
@@ -38,7 +38,7 @@ print({'mean_ms':statistics.mean(samples),'p50_ms':percentile(samples,.5),'p95_m
 <h2 id="section-37">4. Alerts should describe user pain</h2>
 <p>A service-level indicator is a measured property such as successful completed jobs divided by valid submitted jobs. A service-level objective is a target over a specified window. Define what counts as success and what exclusions apply. A job that returns HTTP 200 but later fails should not disappear from your success measurement.</p>
 <p>An error budget is the allowed bad fraction. At 99.9% success, the budget is 0.1%. If the current failure fraction is 1%, the service is consuming that allowance at ten times the target rate. Alert over both short and long windows to avoid reacting to a single noisy minute while still catching rapid damage.</p>
-<pre><code class="language-python"># lab: error_budget_burn
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: error_budget_burn
 def burn(failures,total,target=.999):
     if total&lt;=0 or not 0&lt;target&lt;1 or not 0&lt;=failures&lt;=total:raise ValueError('invalid inputs')
     return (failures/total)/(1-target)

@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -23,7 +23,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p><strong>Worked diagnosis:</strong> Heap use rises during each batch and returns to roughly the same baseline after collection: likely allocation pressure. The post-collection baseline rises steadily with retained request entries: suspect retention. CPU is idle but latency is high and all workers await connections: investigate a saturated connection pool, not only GC.</p>
 <h2 id="section-21">2. Generics, variance, and erasure</h2>
 <p>A <code>List&lt;Integer&gt;</code> is not a <code>List&lt;Number&gt;</code>: if it were, a caller could add a <code>Double</code> into the integer list. A producer that gives you numbers can use <code>? extends Number</code>; a consumer that accepts integers can use <code>? super Integer</code>. This is the idea behind “producer extends, consumer super.” Type erasure means most generic type arguments are unavailable as ordinary runtime class distinctions; do not use unchecked casts as a substitute for validation.</p>
-<pre><code class="language-java">// lab: GenericTransfer
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: GenericTransfer
 import java.util.*;
 public class GenericTransfer {
  static &lt;T&gt; void copy(List&lt;? extends T&gt; source,List&lt;? super T&gt; target){
@@ -43,7 +43,7 @@ public class GenericTransfer {
 <p>Use immutable records for value-like data when their members support the intended immutability. A record containing a mutable list is only shallowly immutable; defensively copy the list if needed. <code>equals</code> and <code>hashCode</code> must agree. Mutating a key field after inserting an object into a hash map can make lookup fail.</p>
 <h2 id="section-31">3. Concurrency: visibility, atomicity and ordering</h2>
 <p><code>count++</code> reads, adds and writes; those operations are not one atomic action. <code>volatile</code> supplies visibility and ordering guarantees for the variable but does not turn arbitrary compound operations into transactions. Locks protect invariants involving several values. Atomic classes support specific atomic operations. A thread-safe collection does not automatically make “check then act” across several calls atomic.</p>
-<pre><code class="language-java">// lab: BoundedPipeline
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: BoundedPipeline
 import java.util.concurrent.*;
 public class BoundedPipeline {
  public static void main(String[] args)throws Exception{
@@ -84,7 +84,7 @@ public class BoundedPipeline {
 <p>An event describes something that happened; a command requests an action. Choose schemas, partition keys and ordering requirements explicitly. A dead-letter queue is a holding area for investigation, not a way to declare lost work successful. Record why an item failed and how it may be replayed safely.</p>
 <h2 id="section-92">8. Cache correctness before cache speed</h2>
 <p>A cache stores a reusable result. Its key must include every input that affects the result, including identity or permission scope where relevant. Omitting the owner from a retrieval cache key can leak another user's data. Decide TTL, size bound, invalidation and behavior during a miss storm. Do not cache failures forever.</p>
-<pre><code class="language-java">// lab: ScopedCache
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-java">// lab: ScopedCache
 import java.util.*;
 public class ScopedCache {
  record Key(String owner,String query){}

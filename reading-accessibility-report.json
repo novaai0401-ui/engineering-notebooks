@@ -1,0 +1,555 @@
+{
+  "scope": "Automated WCAG 2 A/AA and 2.1 A/AA axe checks at desktop and mobile widths. Not physical-device, screen-reader or full manual keyboard certification.",
+  "checks": [
+    {
+      "page": "01-agent-engineering.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "02-python-for-ai.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "03-java-spring-boot.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "04-react-and-frontend.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "05-fullstack-ai-architecture.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "06-algorithms-and-design-patterns.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "07-durable-agents.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "08-remote-mcp.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "09-python-ai-depth.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "10-java-spring-depth.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "11-react-depth.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "12-algorithms-depth.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "13-patterns-workshop.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "14-fullstack-workshop.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "15-interview-practice.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "16-live-model-engineering.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "17-identity-and-deployment.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "18-distributed-systems-lab.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "19-observability-and-browser-quality.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "20-specialist-algorithms-and-math.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "21-assessed-interview-route.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "22-kafka-event-engineering.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "23-docker-and-release-engineering.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "24-kubernetes-from-pods-to-recovery.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "25-cache-management-and-consistency.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "26-websockets-sse-and-realtime-delivery.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "page": "27-reliability-evaluation-and-operations.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "28-fullstack-capstone-and-assessment.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "29-databases-for-fullstack-and-ai.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "30-rag-patterns-and-user-defined-flows.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "31-java-microservices-interview-masterclass.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "32-load-balancing-from-playground-to-production.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "33-production-readiness-and-evidence-workbook.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "COMPLETION-AUDIT.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "index.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "START-HERE.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "STUDY-ON-ANY-DEVICE.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "VALIDATION.html",
+      "width": 1280,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "01-agent-engineering.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "02-python-for-ai.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "03-java-spring-boot.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "04-react-and-frontend.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "05-fullstack-ai-architecture.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 5
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "06-algorithms-and-design-patterns.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 27
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "07-durable-agents.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "08-remote-mcp.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "09-python-ai-depth.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "10-java-spring-depth.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "11-react-depth.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "12-algorithms-depth.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "13-patterns-workshop.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "14-fullstack-workshop.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "15-interview-practice.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "16-live-model-engineering.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "17-identity-and-deployment.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "18-distributed-systems-lab.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "19-observability-and-browser-quality.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "20-specialist-algorithms-and-math.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "21-assessed-interview-route.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "22-kafka-event-engineering.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "23-docker-and-release-engineering.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "24-kubernetes-from-pods-to-recovery.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "25-cache-management-and-consistency.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "26-websockets-sse-and-realtime-delivery.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 5
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "27-reliability-evaluation-and-operations.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "28-fullstack-capstone-and-assessment.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "29-databases-for-fullstack-and-ai.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 9
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "30-rag-patterns-and-user-defined-flows.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 26
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "31-java-microservices-interview-masterclass.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 7
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "32-load-balancing-from-playground-to-production.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 5
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "33-production-readiness-and-evidence-workbook.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "COMPLETION-AUDIT.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 21
+        }
+      ]
+    },
+    {
+      "page": "index.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": []
+    },
+    {
+      "page": "START-HERE.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "STUDY-ON-ANY-DEVICE.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 10
+        }
+      ],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    },
+    {
+      "page": "VALIDATION.html",
+      "width": 390,
+      "violations": [],
+      "incomplete": [],
+      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+    }
+  ],
+  "passed": true
+}

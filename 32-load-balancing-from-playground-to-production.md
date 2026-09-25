@@ -312,3 +312,8 @@ Your answer can choose different products or algorithms if its assumptions, inva
 Six notebook cells explore weighted scheduling, sampled choices/EWMA, rendezvous hashing, queue behavior, draining and percentiles. They are deterministic teaching experiments. The NGINX lab separately tests a real local reverse proxy and two backend processes; consult its report for actual results. TLS deployment, L4 balancing, public ingress, WebSocket tunnelling and independent-host failure are explained but not newly certified by that test.
 
 Continue with Notebook 33 for the cloud deployment acceptance plan, AI-quality scorecards, database plan exercises, accessibility scenarios, identity rotation, disaster recovery and a personal interview schedule. This distinction between understanding, simulation and executed evidence is itself an interview skill.
+
+
+### Additional executed transport checks
+
+The [TLS/WebSocket report](labs/load-balancing/tls-websocket-report.json) now records an actual secure NGINX tunnel: trusted localhost certificate accepted, untrusted certificate rejected, missing authorization and hostile Origin rejected, and bidirectional messages continuing through reload. Follow the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) to reproduce it. A private test certificate does not replace public DNS, certificate renewal or cloud ingress acceptance.

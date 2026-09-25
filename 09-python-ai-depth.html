@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -19,7 +19,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-6">1. Packaging and typed boundaries</h2>
 <p>A notebook is good for exploration. A package gives reusable code a stable address, dependencies, tests and a version. The companion <code>labs/python-package</code> uses a <code>src</code> layout, a <code>pyproject.toml</code>, a typed public function, unit tests and a wheel build. Run <code>python -m build</code> in that folder to create an installable artifact. Type-check with <code>mypy --strict src</code> and run its tests with the package installed.</p>
 <p>The <code>src</code> layout helps catch a common mistake: tests importing a source directory that will not actually be included in the built distribution. A type hint documents and checks a contract for static analysis; it does not automatically validate untrusted runtime JSON. Validate boundary data separately. Prefer a small protocol when you need interchangeable model providers, rather than having domain code import every provider SDK.</p>
-<pre><code class="language-python"># lab: typed_predictor_boundary
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: typed_predictor_boundary
 from typing import Protocol, Sequence
 class Predictor(Protocol):
     def predict(self, rows: Sequence[float]) -&gt; list[float]: ...
@@ -38,7 +38,7 @@ print('Domain code depends on a prediction contract')
 </code></pre>
 <h2 id="section-16">2. Debugging and profiling with a hypothesis</h2>
 <p>Start with the smallest reproducible input. Read the full traceback from the failing operation outward. Inspect shapes, dtypes, missing values and units before changing an optimizer. An array shaped <code>(n,)</code> can broadcast against <code>(n,1)</code> into <code>(n,n)</code>, creating a wrong loss that still runs.</p>
-<pre><code class="language-python"># lab: broadcasting_bug
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: broadcasting_bug
 import numpy as np
 prediction = np.array([[1.], [2.], [3.]])
 target = np.array([1., 2., 3.])
@@ -49,7 +49,7 @@ assert correct.shape == (3,) and np.all(correct == 0)
 print('Shape validation catches a silent broadcasting error')
 </code></pre>
 <p>Use <code>breakpoint()</code> to inspect a local failing state. Use <code>cProfile</code> for Python call costs and a monotonic timer for wall time. Profile representative workloads with warmup where appropriate. A GPU call may be asynchronous, so timing its launch alone does not measure completion. First prove correctness, then identify the dominant cost; replacing readable code with a clever one-liner is not evidence of a speed improvement.</p>
-<pre><code class="language-python"># lab: profile_and_memory
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: profile_and_memory
 import cProfile, io, pstats, tracemalloc
 profiler = cProfile.Profile()
 profiler.enable()
@@ -68,7 +68,7 @@ print('Profile captured; Python allocation peak observed')
 <p><code>tracemalloc</code> does not measure every native or GPU allocation. NumPy slices may be views retaining a large base allocation; <code>.copy()</code> owns separate storage but costs memory. Generators reduce materialization but do not magically release everything their closures reference. Close file handles with <code>with</code>, clear unnecessary references, and measure resident memory for whole-process investigation.</p>
 <h2 id="section-30">3. Floating-point arithmetic and stable transformations</h2>
 <p>A floating-point number has finite precision and range. Adding a tiny value to a huge value may lose the tiny contribution. Exponentiating large logits may overflow. Softmax is unchanged when the same constant is subtracted from every logit, so subtract the maximum before exponentiating. Log-sum-exp uses the same idea.</p>
-<pre><code class="language-python"># lab: stable_probabilities
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: stable_probabilities
 import numpy as np
 def softmax(logits):
     shifted = np.asarray(logits, dtype=float)-np.max(logits)
@@ -88,7 +88,7 @@ print('Large logits produce finite normalized probabilities')
 <h2 id="section-40">4. Statistics that explain uncertainty</h2>
 <p>The population is the collection we care about; the sample is what we observed. A sample mean estimates a population mean. Variance measures spread around the mean. Standard error describes variability of an estimator across repeated samples, not variability of individual observations. Under independent sampling, the mean's estimated standard error is sample standard deviation divided by the square root of sample size.</p>
 <p>A confidence interval is a procedure with long-run coverage under its assumptions, not a probability that a fixed parameter moves around. A p-value is the probability, under a stated null model, of a result at least as incompatible as the observed one according to the test statistic. It is not the probability that the null hypothesis is true. Effect size and uncertainty matter more than a lone threshold.</p>
-<pre><code class="language-python"># lab: bootstrap_mean
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: bootstrap_mean
 import numpy as np
 rng=np.random.default_rng(42)
 sample=np.array([2.,3.,3.,4.,5.,6.,7.,8.])
@@ -101,7 +101,7 @@ print({'mean':sample.mean(),'bootstrap_interval':(round(low,2),round(high,2))})
 <p>For comparing two models, evaluate the same held-out cases so differences can be paired. Stratify important categories, inspect label quality, and avoid treating correlated prompts as independent samples. An accuracy increase on mostly easy cases can coexist with worse behavior on critical rare cases.</p>
 <h2 id="section-56">5. Linear regression from scratch</h2>
 <p>We predict a number with <code>prediction = Xw + b</code>. The mean squared error averages squared mistakes. Its gradient with respect to weights is <code>2 Xᵀ(prediction-y)/n</code>; the bias gradient is twice the mean error. Move opposite these gradients by a small learning rate. Here each feature row has one number, and the true rule is <code>3x+2</code>.</p>
-<pre><code class="language-python"># lab: scratch_linear_regression
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: scratch_linear_regression
 import numpy as np
 X=np.arange(6,dtype=float).reshape(-1,1)/5
 y=3*X[:,0]+2
@@ -116,7 +116,7 @@ print('Recovered slope and intercept:',w.round(3),round(b,3))
 <p>The loss is convex for linear least squares, but convergence speed depends on conditioning and step size. A very large step can diverge. Collinear features can make coefficients non-unique or unstable. Ridge adds a squared-weight penalty; it trades some bias for stability. Prediction quality and interpretability of a coefficient are different questions, especially when features correlate.</p>
 <h2 id="section-66">6. Logistic regression from scratch</h2>
 <p>For a binary label, compute a score <code>z=Xw+b</code>, then sigmoid <code>1/(1+exp(-z))</code>. This models the probability of label one. The cross-entropy gradient with respect to the score is <code>p-y</code>, so weight updates resemble linear regression with a different prediction and loss. A threshold chooses a class; the threshold should reflect costs, not automatically be 0.5.</p>
-<pre><code class="language-python"># lab: scratch_logistic_regression
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: scratch_logistic_regression
 X=np.array([[-2.],[-1.],[1.],[2.]])
 y=np.array([0.,0.,1.,1.]);w=np.zeros(1);b=0.
 for _ in range(1000):
@@ -132,7 +132,7 @@ print('Binary labels learned; stable cross-entropy:',round(float(loss),4))
 <p>On perfectly separable data, unregularized coefficients can keep increasing even when every classification is correct. That is why accuracy alone does not tell you whether optimization is well behaved. Calibration asks whether predicted probabilities correspond to observed frequencies; ranking performance and calibration are different properties.</p>
 <h2 id="section-76">7. Neighbors, clustering, and principal components</h2>
 <p>K-nearest neighbors stores training examples and votes among nearby ones. “Nearby” depends on the distance metric and scaling. K-means alternates assigning each point to its nearest center and replacing each center with its assigned mean. Its objective is within-cluster squared Euclidean distance; it does not discover every possible cluster shape. PCA finds orthogonal directions explaining maximal centered variance; high variance is not automatically high predictive value.</p>
-<pre><code class="language-python"># lab: scratch_knn_kmeans_pca
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: scratch_knn_kmeans_pca
 from collections import Counter
 def knn(train,labels,point,k):
     order=np.argsort(np.sum((train-point)**2,axis=1),kind='stable')[:k]
@@ -156,7 +156,7 @@ print('Neighbors, alternating cluster updates, and PCA projection verified')
 <p>The K-means empty-cluster policy here keeps the previous center; other policies reinitialize it. Try several initializations and compare the objective. For PCA, center using the training mean and reuse that mean at inference. Standardize features when their units would otherwise dominate the variance objective. Singular vectors may flip sign without changing the subspace.</p>
 <h2 id="section-86">8. A recursive decision tree from scratch</h2>
 <p>A tree asks a question, sends examples left or right, and repeats. Classification impurity measures how mixed the labels are. Gini impurity is <code>1 - sum(class_probability²)</code>: zero means all labels agree. Choose a split minimizing weighted child impurity, then stop when labels agree, depth is exhausted, or no useful split exists.</p>
-<pre><code class="language-python"># lab: scratch_decision_tree
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: scratch_decision_tree
 def gini(labels):
     if not len(labels): return 0.
     counts=np.unique(labels,return_counts=True)[1]/len(labels)
@@ -188,7 +188,7 @@ print('Recursive splits represent XOR; one linear boundary cannot')
 <p>This tiny tree intentionally permits an initial split with no immediate impurity improvement, allowing XOR to be represented. Production tree algorithms often use minimum-gain thresholds and additional regularization. Trees overfit with unrestricted depth. Bagging reduces variance by averaging independently perturbed trees; boosting adds learners to correct an objective's current errors. These are different ensemble mechanisms.</p>
 <h2 id="section-96">9. Backpropagation is the chain rule applied repeatedly</h2>
 <p>For a two-layer network, <code>H=tanh(XW1+b1)</code> and <code>Y=HW2+b2</code>. Backward propagation multiplies each upstream derivative by the local derivative. Tanh's derivative is <code>1-H²</code>. A finite-difference check perturbs one parameter slightly and compares the observed loss slope to the analytic gradient. This catches transposes, missing averages and wrong activation derivatives before a long training run.</p>
-<pre><code class="language-python"># lab: manual_backprop_gradient_check
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: manual_backprop_gradient_check
 rng=np.random.default_rng(3)
 X=rng.normal(size=(4,2));target=rng.normal(size=(4,1))
 W1=rng.normal(size=(2,3));W2=rng.normal(size=(3,1))

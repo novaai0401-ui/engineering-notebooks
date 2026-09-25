@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -23,7 +23,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>A tokenizer turns text into integer IDs. An embedding maps each ID to a vector. Transformer layers mix information from earlier positions using attention and transform it with feed-forward layers. The last layer produces one number, called a logit, per possible next token. Softmax turns logits into probabilities. A decoding rule selects a token; the token is appended; the process repeats.</p>
 <p>For logits [2,1,0], subtract the largest value to get [0,-1,-2]. Exponentials are approximately [1,0.368,0.135]. Divide each by their sum 1.503: probabilities are approximately [0.665,0.245,0.090]. Subtracting a common number does not change the probabilities because the same factor cancels from numerator and denominator. It prevents overflow for very large logits.</p>
 <p>Temperature divides logits before softmax. Lower positive temperature sharpens the distribution; higher temperature flattens it. It does not make false facts true. Top-k keeps k candidates; top-p keeps a smallest high-probability set whose cumulative probability reaches p. A seed and zero temperature still do not guarantee identical results across hardware and implementations.</p>
-<pre><code class="language-python"># lab: stable_decoding
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: stable_decoding
 import math
 def softmax(values):
     if not values: raise ValueError('empty vocabulary')
@@ -41,7 +41,7 @@ print([round(x,3) for x in softmax([2,1,0])])
 <p>Give the helper a small purse. The live definition example allows at most two model calls, one tool call and 256 generated tokens in total, with at most 128 per call. Input bytes are also bounded. These are distinct controls: a token limit does not limit wall-clock time, and a timeout does not cap spending if a remote provider keeps computing after disconnection.</p>
 <p>For a paid provider, estimated cost is input_tokens × input_price_per_token + output_tokens × output_price_per_token. Include cached-input pricing only if the provider reports it. Reserve a budget before launching parallel calls; atomically reconcile actual usage afterwards. Otherwise four workers can each believe they own the same remaining budget.</p>
 <p>Our local report records zero API spend because it invokes a local service. Hardware, electricity and time still have costs. The generated-token count comes from the model server's usage field, not a count of words.</p>
-<pre><code class="language-python"># lab: atomic_budget_model
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: atomic_budget_model
 class Budget:
     def __init__(self,limit):self.remaining=limit
     def reserve(self,amount):

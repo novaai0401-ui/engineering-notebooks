@@ -1,4 +1,4 @@
--- MySQL 8.4 teaching recipe. NOT executed in the recorded local environment.
+-- Executed on MySQL 8.4.11; see mysql-report.json and mysql-plans.txt.
 -- Select a disposable schema first. No DROP commands; a second run intentionally
 -- stops on existing object names instead of deleting someone else's data.
 CREATE TABLE nb_tickets (

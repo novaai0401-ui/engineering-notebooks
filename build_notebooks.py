@@ -33,7 +33,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -57,6 +57,7 @@ def render_markdown(text):
             if token.tag=='h2': sections.append({'anchor':anchor,'label':label,'children':[]})
             elif token.tag=='h3' and sections: sections[-1]['children'].append((anchor,label))
     body=md.renderer.render(tokens,md.options,{})
+    body=body.replace('<pre>', '<pre tabindex="0" role="region" aria-label="Code or output">')
     body=body.replace('<table>', '<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>').replace('</table>','</table></div>')
     toc='<ul>'
     for section in sections:
@@ -171,9 +172,9 @@ for source_path in SOURCES:
     downloads='<p class="downloads"><a href="'+stem+'.ipynb">Jupyter notebook</a><a href="'+stem+'.md">Markdown source</a><a href="index.html">Library home</a></p>'
     (ROOT/(stem+'.html')).write_text(page(title,body,toc,downloads),encoding='utf-8')
     REPORT['books'].append({'name':stem,'title':title,'words':len(text.split()),'chapters':chapters})
-    cards.append('<article class="card"><h2><a href="'+stem+'.html">'+html.escape(title)+'</a></h2><p>'+str(chapters)+' lessons · '+f'{len(text.split()):,}'+' words</p><p><a href="'+stem+'.ipynb">Notebook</a> · <a href="'+stem+'.md">Text source</a></p></article>')
+    cards.append('<article class="card"><h2><a href="'+stem+'.html">'+html.escape(title)+'</a></h2><p>'+str(chapters)+' lessons Â· '+f'{len(text.split()):,}'+' words</p><p><a href="'+stem+'.ipynb">Notebook</a> Â· <a href="'+stem+'.md">Text source</a></p></article>')
 
-summary='<h1>Your engineering learning notebooks</h1><p>Stories first. Small examples next. Then code, design, failure cases, and interview practice.</p><p class="notice">'+str(len(SOURCES))+' original, self-contained workbooks. Read these HTML editions offline. Jupyter editions include recorded lab outputs. Running code needs the stated runtimes and dependencies; integration reports distinguish actual service checks from reference configurations.</p><p><a href="START-HERE.html">Start here and choose your learning route</a> · <a href="VALIDATION.html">Validation and coverage report</a></p><div class="cards">'+''.join(cards)+'</div>'
+summary='<h1>Your engineering learning notebooks</h1><p>Stories first. Small examples next. Then code, design, failure cases, and interview practice.</p><p class="notice">'+str(len(SOURCES))+' original, self-contained workbooks. Read these HTML editions offline. Jupyter editions include recorded lab outputs. Running code needs the stated runtimes and dependencies; integration reports distinguish actual service checks from reference configurations.</p><p><a href="START-HERE.html">Start here and choose your learning route</a> Â· <a href="VALIDATION.html">Validation and coverage report</a></p><div class="cards">'+''.join(cards)+'</div>'
 (ROOT/'index.html').write_text(page('Engineering Notebook Library',summary),encoding='utf-8')
 (ROOT/'validation.json').write_text(json.dumps(REPORT,indent=2),encoding='utf-8')
 (ROOT/'requirements-tested.txt').write_text('\n'.join(f'{n}=={v}' for n,v in REPORT['packages'].items() if v!='unavailable')+'\n',encoding='utf-8')

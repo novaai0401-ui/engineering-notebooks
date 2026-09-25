@@ -1,4 +1,4 @@
--- Oracle 19c-style teaching recipe. NOT executed in the recorded environment.
+-- Oracle 19c-style recipe executed on Oracle Free 23.26.3; not 19c certification.
 -- Use a disposable schema. DDL has implicit-commit implications; do not run
 -- this inside a transaction containing unrelated work. No DROP commands.
 CREATE TABLE nb_tickets (

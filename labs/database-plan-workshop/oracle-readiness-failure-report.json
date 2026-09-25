@@ -1,0 +1,12 @@
+{
+  "status": "failed",
+  "engine": "oracle",
+  "image": "ghcr.io/gvenzl/oracle-free:23-slim",
+  "checks": [],
+  "scope": "Disposable actual engine on one local Docker host; 1000 synthetic rows. Oracle Free is not Oracle 19c certification. No production benchmark.",
+  "image_digest": [
+    "ghcr.io/gvenzl/oracle-free@sha256:6d61d267a3b978c24c5ac1790e62e927416a0aec446bd86e4b3a1527562757bd"
+  ],
+  "version": "BANNER_FULL\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\nOracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free\nVersion 23.26.3.0.0",
+  "error": "Docker operation failed: \nSession altered.\n\nCREATE USER nb_lab NO AUTHENTICATION\n*\nERROR at line 1:\nORA-01109: database not open\nHelp: https://docs.oracle.com/error-help/db/ora-01109/\n\n\n"
+}

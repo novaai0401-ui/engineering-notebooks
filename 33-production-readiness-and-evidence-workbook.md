@@ -155,7 +155,7 @@ An independent evaluation exercise should use a reviewer who did not tune the pr
 
 Mira sees “database slow” on a dashboard. Before creating an index, capture the query shape, bind types, data distribution, execution frequency, returned row count, concurrency, isolation level, waits and plan. Determine whether time is spent waiting for a lock, scanning rows, sorting, doing random I/O or waiting for a connection pool. An index does not solve every one of those problems.
 
-Use a disposable schema and representative synthetic data. The supplied `labs/database-plan-workshop/mysql.sql` and `oracle.sql` create clearly named teaching tables, seed a dataset and show before/after plan procedures. They do not contain credentials or delete an existing schema. Run them only in a chosen lab schema and record the actual engine/version and output. They have not been executed against those two engines in this environment.
+Use a disposable schema and representative synthetic data. The supplied `labs/database-plan-workshop/mysql.sql` and `oracle.sql` create clearly named teaching tables, seed a dataset and show before/after plan procedures. They do not contain credentials or delete an existing schema. Run them only in a chosen lab schema and record the actual engine/version and output. The MySQL recipe has now run on MySQL 8.4.11, including a verified backup restore. Oracle Free 23.26.3 also passed its estimated and executed plan exercises. The reports contain raw plans and exact versions; Oracle Free is not Oracle 19c certification.
 
 The schema models tenant, ticket ID, status, creation time and price. A candidate index `(tenant_id,status,created_at,id)` fits a particular equality-plus-ordering query. Test another query that omits status and observe how that changes available ordering/access paths. The same index need not serve both optimally.
 
@@ -357,3 +357,12 @@ Answer outline: reduce nonessential load; preserve status visibility; use existi
 | GitHub CI | Lesson 22 and the linked successful prior run | Each new commit's own hosted result |
 
 You can now study these topics without chasing another book to understand the basic mechanism, tradeoffs and exercises. Optional official links support version checks; executing external systems still requires their runtimes and access. No finite notebook can include every future research result or guarantee every interview. The useful target is clear reasoning, reproducible experiments and honest evidence.
+
+
+### Read the latest drill results
+
+The [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) connects these lessons to actual database, secure WebSocket, process-crash, secret-rotation, evaluation and accessibility experiments. In the MySQL run, the original query inspected a 1,000-row table and sorted matches. The composite index supplied the requested order and let the query stop after 20 returned rows. Removing the status equality brought sorting back. This is the difference between memorizing that indexes are fast and explaining why a particular query benefits.
+
+The accessibility drill found that visually scrollable code was not keyboard-focusable. The shared renderer now exposes these regions to keyboard users and shows focus clearly. We test arrow-key scrolling and Tab leaving the region. A zero automated-violation count still needs the physical-device observations from the manual worksheet.
+
+The new 16-case model evaluation passed 12. One role-spoofing example returned the attacker-requested value. That is a concrete reason to keep the default extractive path and keep model-selected actions constrained; more polished prose does not repair a trust boundary. The externally labelled evaluation uses a separate fixed SQuAD subset and keeps its own denominator. Its first completed run passed 5 of 12, including three timeouts and four incorrect answers to unanswerable questions. That small public subset is not a representative benchmark or an estimate of overall model accuracy.

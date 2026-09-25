@@ -32,11 +32,28 @@ The original strict eight-case factual baseline passed five; tutor review identi
 
 [Original baseline](labs/rag-flow/factual-holdout-report.json), [bounded retest](labs/rag-flow/bounded-generation-report.json), [development regression](labs/rag-flow/development-regression-report.json). Earlier incorrect Study Coach generation remains in its factual review. Extractive output stays the default. The new fallback repairs availability during generation failure; it does not repair arbitrary model reasoning. Broader independent factual adjudication remains needed before relying on generated answers without review.
 
+## Additional acceptance execution
+
+| Check | Recorded result | Evidence |
+| --- | --- | --- |
+| Automated accessibility across reading pages | passed within stated scope | [Report](reading-accessibility-report.json) |
+| TLS and WebSocket proxy | passed | [Report](labs/load-balancing/tls-websocket-report.json) |
+| Spring process-crash revocation | passed within stated scope | [Report](labs/study-coach/durable-spring-crash-report.json) |
+| Expired delivery after process restart | passed within stated scope | [Report](labs/study-coach/durable-spring-expiry-report.json) |
+| Provider secret overlap and retirement | passed | [Report](labs/study-coach/secret-overlap-report.json) |
+| MySQL execution and restore | passed | [Report](labs/database-plan-workshop/mysql-report.json) |
+| Oracle execution plans | passed | [Report](labs/database-plan-workshop/oracle-report.json) |
+| Thirty-minute endurance | passed within stated scope | [Report](labs/realtime-cache/endurance-1800-report.json) |
+| Expanded tutor-authored evaluation | 12/16 passed; 16 completed | [Report](labs/rag-flow/expanded-evaluation-report.json) |
+| Externally labelled public evaluation subset | 5/12 passed; 12 completed | [Report](labs/rag-flow/public-evaluation-report.json) |
+
+See [Acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) for reproducible commands, interpretation and boundaries. The expanded evaluation retains output-format, over-abstention and instruction-following failures; extractive output remains the default. These results do not certify unrestricted generation.
+
 ## Acceptance work that still requires input or access
 
-The written curriculum now covers each previously pending area in [Notebook 33: production readiness](33-production-readiness-and-evidence-workbook.html). The MySQL/Oracle scripts are supplied but have not been run on those engines. Multi-host, public TLS, longer-duration and provider-specific recovery checks remain bounded by the target environment. Added explanations and simulations are not relabelled as external acceptance.
+The written curriculum now covers each previously pending area in [Notebook 33: production readiness](33-production-readiness-and-evidence-workbook.html). Database execution status is recorded in the additional acceptance table above; any failed image download leaves that engine unverified. Multi-host, public TLS, longer-duration and provider-specific recovery checks remain bounded by the target environment. Added explanations and simulations are not relabelled as external acceptance.
 
-Hosted CI for prior commit bc63933215c492cfe2e2a9edd2f2cd1e87111443 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36097858718). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
+Hosted CI for prior commit 7261590f77f83df0128eb35ff2d226c292a83d44 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36099146135). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
 
 1. **Actual public-cloud deployment:** provide the authorized account/project, region and spending limit. Local Docker/K3s execution is real, but it is not a cloud rollout. No destination or budget has been supplied.
 2. **Physical-device and manual screen-reader audit:** use an actual device with Safari/VoiceOver or the chosen mobile browser/screen reader and record the tasks in [Manual acceptance](labs/MANUAL-ACCEPTANCE.md). Desktop WebKit and narrow viewports cannot establish physical iPhone behavior.
@@ -48,7 +65,7 @@ These remain open, not silently marked completed. The tutorial package is usable
 
 All broker, Redis and cluster nodes share one computer/VM. Tests do not certify independent-host partitions, disk destruction or multi-day endurance. H2 uses one writer and Kubernetes Recreate with a local persistent volume; scaling this profile to multiple database writers is not supported. Cloud ingress, production OIDC deployment and production storage require destination-specific configuration.
 
-The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; it was not an application-process crash with shared sessions. The historical intermittent-login root cause remains a hypothesis, even though the mitigation passed repeated checks. Expired-token reconciliation and zero-downtime secret overlap are not claimed. Initial failing evidence is retained.
+The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; the original test was not an application-process crash. The additional crash variant now kills and restarts the real Spring instance; shared persistent sessions remain outside this profile. The historical intermittent-login root cause remains a hypothesis, even though the mitigation passed repeated checks. The added crash and expiry experiments test fail-closed in-memory sessions; they do not reconcile a shared persistent session store. Provider-level secret overlap is tracked separately above and does not certify a zero-downtime Spring rollout. Initial failing evidence is retained.
 
 The graph pipeline is a small custom implementation, not Microsoft GraphRAG. Normalized name matching is not full entity resolution; extractive community summaries and quote-presence validation are not factual entailment proofs. The original offline RAG routes remain intentionally transparent teaching components alongside separately tested real integrations.
 

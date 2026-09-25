@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -85,7 +85,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <h2 id="section-156">3. Chunking, embeddings and similarity</h2>
 <p>Fixed-size chunks are easy to implement but may split meaning. Recursive splitting follows separators such as sections and paragraphs. Structure-aware splitting respects headings, code blocks and tables. Parent-child retrieval finds a small child passage and supplies its larger parent context. Overlap preserves boundary information but duplicates storage and can crowd results.</p>
 <p>An embedding maps content to a numerical vector. Cosine similarity measures direction: dot product divided by both vector lengths. Similar direction can suggest semantic relation; it does not prove a factual relationship. Keep embedding model/version and dimension with the index. Re-embedding is an explicit migration, not merely changing an environment variable.</p>
-<pre><code class="language-python"># lab: rag_cosine_geometry
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: rag_cosine_geometry
 from math import sqrt
 def cosine(a,b):
     if len(a)!=len(b):raise ValueError('Incompatible dimensions')
@@ -104,7 +104,7 @@ print('Same direction: 1; perpendicular: 0; opposite: -1. These are geometry, no
 <h2 id="section-181">5. Hybrid retrieval RAG</h2>
 <p>Hybrid retrieval combines lexical matching and semantic matching. Keyword search is strong for E104, invoice identifiers and exact technical names; semantic search can connect “reimbursement” with “refund.” Retrieve both lists, deduplicate, combine ranks and optionally rerank the merged set.</p>
 <p>BM25 is a lexical scoring family using term frequency, document length normalization and inverse document frequency. Common words should not dominate merely because a long document repeats them. Its scores and cosine scores have different scales; simply adding them without calibration can be misleading. Reciprocal rank fusion combines positions instead.</p>
-<pre><code class="language-python"># lab: rag_reciprocal_rank_fusion
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: rag_reciprocal_rank_fusion
 from collections import Counter
 def rrf(rankings,k=60):
     result=Counter()
@@ -123,7 +123,7 @@ print(rrf([['exact-code','shared'],['semantic','shared']]))
 <h2 id="section-209">7. Multi-Hop RAG</h2>
 <p>Multi-hop retrieval resolves a question through multiple pieces of evidence. Hop one asks who maintains Orion and finds Payments. Hop two asks who leads Payments and finds Mira. The final answer must preserve both links; skipping the first link can produce the right name for the wrong reason.</p>
 <p>Multi-hop can use a graph, but it can also use sequential text retrieval, SQL or APIs. A true dynamic planner can derive the next query from the previous result. Our user-defined version makes the subquestions explicit so you can see and edit the plan. It does not pretend to have autonomously discovered the second query.</p>
-<pre><code class="language-json">{
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-json">{
   &quot;mode&quot;: &quot;multi_hop&quot;,
   &quot;top_k&quot;: 2,
   &quot;max_steps&quot;: 3,
@@ -234,7 +234,7 @@ print(rrf([['exact-code','shared'],['semantic','shared']]))
 <p>Open <code>labs/rag-flow/flow.json</code>. Set mode to simple, hybrid, graph, multi_hop, agentic or adaptive. Change top_k, max_steps, context_chars and subquestions. The program validates known modes and bounds; it does not evaluate arbitrary Python from configuration. Every run outputs an inspectable trace from authorization to context assembly.</p>
 <p>The teaching context budget counts characters. A production model budget must use the selected model's tokenizer and reserve space for instructions, tool messages and the answer. The optional local-model fixture uses a 2,048-token context setting; increasing context_chars alone does not increase that model limit. Keep the small fixture budget or implement explicit tokenizer-aware packing before using larger documents.</p>
 <p>Run from the library root:</p>
-<pre><code class="language-shell">python labs/rag-flow/rag_flow.py --config labs/rag-flow/flow.json --question &quot;Who leads the team maintaining Orion?&quot; --user alice
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-shell">python labs/rag-flow/rag_flow.py --config labs/rag-flow/flow.json --question &quot;Who leads the team maintaining Orion?&quot; --user alice
 python labs/rag-flow/test_flow.py
 </code></pre>
 <p>The CLI's --user is a classroom fixture, not authentication. A web API must derive the user from a verified session. The example never lets a model choose the effective user's identity. To try a new corpus, edit the explicit DOCS fixture, preserve IDs/ownership/entities and extend tests before trusting results.</p>
@@ -245,7 +245,7 @@ python labs/rag-flow/test_flow.py
 <p>Java can remain the public authenticated API and job owner; Python runs the RAG pipeline. Kafka transports durable work notifications, PostgreSQL stores job/source state, Redis caches versioned safe projections, and SSE streams progress to React. MCP may expose retrieval to different agents. This is one possible architecture, not a requirement to install every tool for a small RAG application.</p>
 <h2 id="section-471">13. Retrieval and answer evaluation</h2>
 <p>Retrieval recall@k asks how much relevant evidence appears among k candidates. Precision@k asks how many returned candidates are relevant. Reciprocal rank rewards the position of the first relevant result. For a multi-hop question, include a metric requiring every needed hop. Evaluate with tenant filters and production-like document revisions.</p>
-<pre><code class="language-python"># lab: rag_evidence_metrics
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: rag_evidence_metrics
 relevant={'d1','d2'};retrieved=['d1','d7','d3']
 hits=len(relevant.intersection(retrieved))
 precision=hits/len(retrieved);recall=hits/len(relevant)

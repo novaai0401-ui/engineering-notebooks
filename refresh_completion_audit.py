@@ -68,4 +68,31 @@ Extract Engineering-Notebooks.zip and open engineering-notebooks/index.html for 
 
 Model weights, dependencies, private credentials, runtime databases and the WSL virtual disk are excluded from the reading archive. Reading needs no external website; executing optional frameworks and infrastructure requires the listed installed runtimes and initial downloads.
 '''
+updates=[]
+for label,relative in [
+ ('Automated accessibility across reading pages','reading-accessibility-report.json'),
+ ('TLS and WebSocket proxy','labs/load-balancing/tls-websocket-report.json'),
+ ('Spring process-crash revocation','labs/study-coach/durable-spring-crash-report.json'),
+ ('Expired delivery after process restart','labs/study-coach/durable-spring-expiry-report.json'),
+ ('Provider secret overlap and retirement','labs/study-coach/secret-overlap-report.json'),
+ ('MySQL execution and restore','labs/database-plan-workshop/mysql-report.json'),
+ ('Oracle execution plans','labs/database-plan-workshop/oracle-report.json'),
+ ('Thirty-minute endurance','labs/realtime-cache/endurance-1800-report.json'),
+ ('Expanded tutor-authored evaluation','labs/rag-flow/expanded-evaluation-report.json'),
+ ('Externally labelled public evaluation subset','labs/rag-flow/public-evaluation-report.json')]:
+ candidate=root/relative
+ if not candidate.exists():continue
+ data=json.loads(candidate.read_text(encoding='utf-8'))
+ if 'total' in data:result=str(data.get('passed',0))+'/'+str(data['total'])+' passed; '+str(data.get('completed',0))+' completed'
+ elif data.get('status'):result=data['status']
+ elif data.get('passed') is True or isinstance(data.get('passed'),list) and data['passed']:result='passed within stated scope'
+ else:result='incomplete or failed'
+ updates.append('| '+label+' | '+result+' | [Report]('+relative+') |')
+section='## Additional acceptance execution\n\n| Check | Recorded result | Evidence |\n| --- | --- | --- |\n'+'\n'.join(updates)+'\n\nSee [Acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) for reproducible commands, interpretation and boundaries. The expanded evaluation retains output-format, over-abstention and instruction-following failures; extractive output remains the default. These results do not certify unrestricted generation.\n\n'
+text=text.replace('## Acceptance work that still requires input or access',section+'## Acceptance work that still requires input or access')
+text=text.replace('The MySQL/Oracle scripts are supplied but have not been run on those engines.','Database execution status is recorded in the additional acceptance table above; any failed image download leaves that engine unverified.')
+text=text.replace('Expired-token reconciliation and zero-downtime secret overlap are not claimed.','The added crash and expiry experiments test fail-closed in-memory sessions; they do not reconcile a shared persistent session store. Provider-level secret overlap is tracked separately above and does not certify a zero-downtime Spring rollout.')
+text=text.replace('it was not an application-process crash with shared sessions.','the original test was not an application-process crash. The additional crash variant now kills and restarts the real Spring instance; shared persistent sessions remain outside this profile.')
+text=text.replace('bc63933215c492cfe2e2a9edd2f2cd1e87111443','7261590f77f83df0128eb35ff2d226c292a83d44').replace('36097858718','36099146135')
+
 (root/'COMPLETION-AUDIT.md').write_text(text,encoding='utf-8')

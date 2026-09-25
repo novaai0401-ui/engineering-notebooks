@@ -8,7 +8,7 @@ main{max-width:1060px;margin-left:290px;padding:60px 55px 90px}h1,h2,h3{font-fam
 h1{font-size:43px}h2{font-size:29px;margin-top:65px;border-top:2px solid var(--line);padding-top:25px}h3{font-size:22px;margin-top:35px}
 pre{font:13.5px/1.65 Consolas,monospace;white-space:pre;overflow:auto;padding:20px;background:#e9f0f2;border-left:4px solid var(--accent)}
 p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding:2px 4px;overflow-wrap:anywhere}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
+:focus-visible{outline:3px solid #005f73;outline-offset:3px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font:14px/1.55 system-ui,sans-serif;margin:24px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top;text-align:left}th{background:#e1edeb}
 .meta,.downloads,.notice{font:14px/1.6 system-ui,sans-serif;color:var(--muted)}.notice{background:#edf3f2;border-left:4px solid var(--accent);padding:16px}.downloads a{margin-right:15px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.card{border:1px solid var(--line);padding:22px;background:white}.card h2{font-size:22px;border:0;margin:0;padding:0}
 .index{margin:0 auto;max-width:1150px}.skip{position:absolute;top:-70px;left:10px}.skip:focus{top:10px;background:white;padding:10px}
@@ -23,7 +23,7 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 <p>PostgreSQL owns durable business records. Kafka can carry replayable events. Redis can cache permitted projections or support a specifically designed shared session mechanism. Object storage can hold large original files while PostgreSQL stores metadata and access rules. A vector index supports retrieval. Each component adds operational responsibility; use it only when a requirement justifies it.</p>
 <h2 id="section-21">3. Contracts before frameworks</h2>
 <p>Define identifiers, ownership, schema versions, timestamps, status transitions, error codes, retryability and idempotency. A job may be queued, running, completed, failed or cancelled; decide which transitions are legal and who can make them. A completed result should not be overwritten by a late retry from an earlier worker generation.</p>
-<pre><code class="language-python"># lab: capstone_state_machine
+<pre tabindex="0" role="region" aria-label="Code or output"><code class="language-python"># lab: capstone_state_machine
 allowed={'queued':{'running','cancelled'},'running':{'completed','failed','cancelled'},
          'failed':{'queued'},'completed':set(),'cancelled':set()}
 job={'state':'queued','version':0}

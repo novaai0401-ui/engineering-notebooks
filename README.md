@@ -35,3 +35,8 @@ Recorded local checks include Docker, Kubernetes, Redis failover, durable logout
 Local execution is not a public-cloud deployment or physical-device accessibility audit. Personal interview grading requires unaided learner answers. Generative model evaluation retains failures: the latest eight-case development regression passed six cases. Extractive answers remain the default; no universal exam or model-accuracy guarantee is made.
 
 Private credentials, model weights, virtual environments, runtime databases and the WSL virtual disk are excluded from Git. The repository contains the verified portable package's files plus this README and Git ignore rules. GitHub's Download ZIP option provides a copy for offline study.
+
+
+For the latest database, TLS/WebSocket, identity, AI evaluation, accessibility and endurance verification commands, see the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md). Results and external requirements are tracked in the [completion audit](COMPLETION-AUDIT.html).
+
+Latest added model checks: **12/16** on new tutor-authored factual/adversarial cases and **5/12** on a fixed externally labelled public SQuAD subset. These are separate diagnostic sets, not combined accuracy or production acceptance. Failures are retained in the reports; generated output still requires review.
