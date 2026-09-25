@@ -39,6 +39,8 @@ jobs:
           python-version: '3.11'
       - name: Install service test dependencies
         run: python -m pip install fastapi==0.135.2 uvicorn==0.42.0 scikit-learn==1.8.0 httpx==0.28.1 prometheus-client==0.25.0 opentelemetry-sdk==1.41.1 opentelemetry-exporter-otlp-proto-http==1.41.1
+      - name: AI publication boundary and transport fallback
+        run: python labs/study-coach/python/test_generation_boundary.py
       - name: Build typed UI and install browsers
         working-directory: labs/study-coach/frontend
         run: |

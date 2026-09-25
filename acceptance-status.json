@@ -2,6 +2,16 @@
   "scope": "Local evidence register, not automatic production certification. A passing provider test is not a passing production rollout. External requirements are not inferred from local simulations.",
   "local_checks": [
     {
+      "area": "Generated-draft publication boundary",
+      "evidence": "labs/study-coach/python/generation-boundary-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Controlled identity session race",
+      "evidence": "labs/study-coach/identity-session-race-report.json",
+      "status": "passed"
+    },
+    {
       "area": "MySQL execution and restore",
       "evidence": "labs/database-plan-workshop/mysql-report.json",
       "status": "passed"

@@ -7,8 +7,8 @@ Updated on 25 September 2026; individual reports include retained earlier eviden
 | Check | Result |
 | --- | --- |
 | Notebook execution | 153 passed; no failed cells |
-| Reading material | 33 notebooks, 425 lessons, 79,343 words |
-| Connected Java service | 8 integration tests passed |
+| Reading material | 33 notebooks, 425 lessons, 79,455 words |
+| Connected Java service | 11 tests passed: 8 integration and 3 session-race component tests |
 | Original Spring starter | 3 tests passed in foundation validation |
 | React unit/DOM/hydration | 3 tests passed |
 | Connected browser tests | 12 passed across Chromium, Firefox and WebKit, including failure journeys and axe checks |
@@ -2038,7 +2038,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 9768
+      "milliseconds": 5514
     },
     {
       "round": 0,
@@ -2046,7 +2046,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 2998
+      "milliseconds": 2312
     },
     {
       "round": 1,
@@ -2054,7 +2054,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 1035
+      "milliseconds": 1472
     },
     {
       "round": 1,
@@ -2062,7 +2062,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 843
+      "milliseconds": 1384
     },
     {
       "round": 2,
@@ -2070,7 +2070,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 740
+      "milliseconds": 1214
     },
     {
       "round": 2,
@@ -2078,7 +2078,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 674
+      "milliseconds": 1441
     },
     {
       "round": 3,
@@ -2086,7 +2086,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 724
+      "milliseconds": 1432
     },
     {
       "round": 3,
@@ -2094,7 +2094,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 748
+      "milliseconds": 1452
     },
     {
       "round": 4,
@@ -2102,7 +2102,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 722
+      "milliseconds": 1222
     },
     {
       "round": 4,
@@ -2110,7 +2110,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 834
+      "milliseconds": 1285
     }
   ],
   "client_authentication_probe": "Rotated client secret accepted; deliberately invalid authorization code rejected with invalid_grant",
@@ -3251,12 +3251,49 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
 }
 ```
 
+### labs/study-coach/identity-session-race-report.json
+
+```json
+{
+  "status": "passed",
+  "tests": 3,
+  "cases": [
+    "competingAnonymousSessionCannotRecoverTheAuthorizationRequest",
+    "wrongStateRemainsRejectedEvenWithTheCorrectSession",
+    "nullRequestCacheDoesNotCreateACompetingAnonymousSession"
+  ],
+  "scope": "Actual Spring Security request-cache and OAuth2 authorization-request repository components with mock servlet requests and explicitly chosen session ordering. This proves the simulated session-selection failure mechanism and NullRequestCache behavior, not the precise historical network race or original incident root cause."
+}
+```
+
+### labs/study-coach/python/generation-boundary-report.json
+
+```json
+{
+  "status": "passed",
+  "tests": 8,
+  "failures": 0,
+  "errors": 0,
+  "scope": "Actual adapter and ASGI route with injected provider events/failure. Tests publication boundaries and authorized fallback; does not establish factual accuracy or live provider availability."
+}
+```
+
 ### acceptance-status.json
 
 ```json
 {
   "scope": "Local evidence register, not automatic production certification. A passing provider test is not a passing production rollout. External requirements are not inferred from local simulations.",
   "local_checks": [
+    {
+      "area": "Generated-draft publication boundary",
+      "evidence": "labs/study-coach/python/generation-boundary-report.json",
+      "status": "passed"
+    },
+    {
+      "area": "Controlled identity session race",
+      "evidence": "labs/study-coach/identity-session-race-report.json",
+      "status": "passed"
+    },
     {
       "area": "MySQL execution and restore",
       "evidence": "labs/database-plan-workshop/mysql-report.json",
@@ -4455,10 +4492,10 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
 ```json
 {
   "conclusion": "success",
-  "headSha": "7261590f77f83df0128eb35ff2d226c292a83d44",
+  "headSha": "3a4fcf0c0c543fad26877d14f9a0278e3e04ef05",
   "name": "Study Coach verification",
   "status": "completed",
-  "url": "https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36099146135",
+  "url": "https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36106251472",
   "scope": "Verified prior commit only; later changes require their own CI result"
 }
 ```

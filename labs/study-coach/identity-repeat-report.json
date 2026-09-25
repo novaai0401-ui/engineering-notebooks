@@ -6,7 +6,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 9768
+      "milliseconds": 5514
     },
     {
       "round": 0,
@@ -14,7 +14,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 2998
+      "milliseconds": 2312
     },
     {
       "round": 1,
@@ -22,7 +22,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 1035
+      "milliseconds": 1472
     },
     {
       "round": 1,
@@ -30,7 +30,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 843
+      "milliseconds": 1384
     },
     {
       "round": 2,
@@ -38,7 +38,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 740
+      "milliseconds": 1214
     },
     {
       "round": 2,
@@ -46,7 +46,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 674
+      "milliseconds": 1441
     },
     {
       "round": 3,
@@ -54,7 +54,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 724
+      "milliseconds": 1432
     },
     {
       "round": 3,
@@ -62,7 +62,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 748
+      "milliseconds": 1452
     },
     {
       "round": 4,
@@ -70,7 +70,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 722
+      "milliseconds": 1222
     },
     {
       "round": 4,
@@ -78,7 +78,7 @@
       "passed": true,
       "anonymous_api_probes": 4,
       "anonymous_api_session_cookie": false,
-      "milliseconds": 834
+      "milliseconds": 1285
     }
   ],
   "client_authentication_probe": "Rotated client secret accepted; deliberately invalid authorization code rejected with invalid_grant",

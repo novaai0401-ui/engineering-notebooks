@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "tests": 8,
+  "failures": 0,
+  "errors": 0,
+  "scope": "Actual adapter and ASGI route with injected provider events/failure. Tests publication boundaries and authorized fallback; does not establish factual accuracy or live provider availability."
+}

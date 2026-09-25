@@ -58,7 +58,7 @@ These remain open, not silently marked completed. The tutorial package is usable
 
 All broker, Redis and cluster nodes share one computer/VM. Tests do not certify independent-host partitions, disk destruction or multi-day endurance. H2 uses one writer and Kubernetes Recreate with a local persistent volume; scaling this profile to multiple database writers is not supported. Cloud ingress, production OIDC deployment and production storage require destination-specific configuration.
 
-The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; it was not an application-process crash with shared sessions. The historical intermittent-login root cause remains a hypothesis, even though the mitigation passed repeated checks. Expired-token reconciliation and zero-downtime secret overlap are not claimed. Initial failing evidence is retained.
+The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; it was not an application-process crash with shared sessions. The historical intermittent-login root cause remains unproven. Three added Spring component tests now demonstrate the possible competing-session mechanism and NullRequestCache behavior; ten further real browser logins and forty anonymous probes passed. A controlled mechanism test is not a replay of the historical network incident. Expired-token reconciliation and zero-downtime secret overlap are not claimed. Initial failing evidence is retained.
 
 The graph pipeline is a small custom implementation, not Microsoft GraphRAG. Normalized name matching is not full entity resolution; extractive community summaries and quote-presence validation are not factual entailment proofs. The original offline RAG routes remain intentionally transparent teaching components alongside separately tested real integrations.
 
@@ -70,6 +70,8 @@ Model weights, dependencies, private credentials, runtime databases and the WSL 
 '''
 updates=[]
 for label,relative in [
+ ('Generated-draft publication and fallback','labs/study-coach/python/generation-boundary-report.json'),
+ ('Controlled identity session-race mechanism','labs/study-coach/identity-session-race-report.json'),
  ('Automated accessibility across reading pages','reading-accessibility-report.json'),
  ('TLS and WebSocket proxy','labs/load-balancing/tls-websocket-report.json'),
  ('Spring process-crash revocation','labs/study-coach/durable-spring-crash-report.json'),
@@ -93,6 +95,6 @@ text=text.replace('## Acceptance work that still requires input or access',secti
 text=text.replace('The MySQL/Oracle scripts are supplied but have not been run on those engines.','Database execution status is recorded in the additional acceptance table above; any failed image download leaves that engine unverified.')
 text=text.replace('Expired-token reconciliation and zero-downtime secret overlap are not claimed.','The added crash and expiry experiments test fail-closed in-memory sessions; they do not reconcile a shared persistent session store. Provider-level secret overlap is tracked separately above and does not certify a zero-downtime Spring rollout.')
 text=text.replace('it was not an application-process crash with shared sessions.','the original test was not an application-process crash. The additional crash variant now kills and restarts the real Spring instance; shared persistent sessions remain outside this profile.')
-text=text.replace('bc63933215c492cfe2e2a9edd2f2cd1e87111443','7261590f77f83df0128eb35ff2d226c292a83d44').replace('36097858718','36099146135')
+text=text.replace('bc63933215c492cfe2e2a9edd2f2cd1e87111443','3a4fcf0c0c543fad26877d14f9a0278e3e04ef05').replace('36097858718','36106251472')
 
 (root/'COMPLETION-AUDIT.md').write_text(text,encoding='utf-8')

@@ -3,6 +3,7 @@ import asyncio
 import hmac
 import json
 import os
+import httpx
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -56,8 +57,10 @@ async def answer(body: Question, authorization: str = Header(default='')):
             try:
                 async for event in generate_evidence(body.question,evidence):
                     yield json.dumps(event)+'\n'
-            except (ValueError,TimeoutError) as error:
-                yield json.dumps({'error':'generation or citation validation failed'})+'\n'
+            except (ValueError,TimeoutError,httpx.HTTPError):
+                text='Generation unavailable or rejected; showing authorized source excerpts only.\n'+'\n'.join(f"[{item['id']}] {item['text']}" for item in evidence)
+                yield json.dumps({'delta':text,'mode':'extractive-fallback'})+'\n'
+                yield json.dumps({'done':True,'sources':[item['id'] for item in evidence],'mode':'extractive-fallback','quality':'Source excerpts only; not a generated answer'})+'\n'
         return StreamingResponse(generated(),media_type='application/x-ndjson')
     text = (' '.join(f"[{x['id']}] {x['text']}" for x in evidence)
             if evidence else 'No supporting evidence was found in your authorized documents.')

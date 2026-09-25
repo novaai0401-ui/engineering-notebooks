@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "tests": 3,
+  "cases": [
+    "competingAnonymousSessionCannotRecoverTheAuthorizationRequest",
+    "wrongStateRemainsRejectedEvenWithTheCorrectSession",
+    "nullRequestCacheDoesNotCreateACompetingAnonymousSession"
+  ],
+  "scope": "Actual Spring Security request-cache and OAuth2 authorization-request repository components with mock servlet requests and explicitly chosen session ordering. This proves the simulated session-selection failure mechanism and NullRequestCache behavior, not the precise historical network race or original incident root cause."
+}

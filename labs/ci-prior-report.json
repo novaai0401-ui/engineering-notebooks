@@ -1,8 +1,8 @@
 {
   "conclusion": "success",
-  "headSha": "7261590f77f83df0128eb35ff2d226c292a83d44",
+  "headSha": "3a4fcf0c0c543fad26877d14f9a0278e3e04ef05",
   "name": "Study Coach verification",
   "status": "completed",
-  "url": "https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36099146135",
+  "url": "https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36106251472",
   "scope": "Verified prior commit only; later changes require their own CI result"
 }

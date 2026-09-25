@@ -28,8 +28,11 @@ class Budget:
         self.model_calls+=1
         return min(128,remaining)
     def record(self,response):
-        self.generated_tokens+=int(response.get('eval_count',0))
-        self.prompt_tokens+=int(response.get('prompt_eval_count',0))
+        for field in ('eval_count','prompt_eval_count'):
+            value=response.get(field,0)
+            if type(value) is not int or value<0:raise ValueError('malformed usage count')
+        self.generated_tokens+=response.get('eval_count',0)
+        self.prompt_tokens+=response.get('prompt_eval_count',0)
         if self.generated_tokens>self.max_generated:raise ValueError('provider exceeded output budget')
 
 def execute_tool(call,budget):
@@ -59,7 +62,10 @@ async def tool_answer(question):
         return {'answer':last['message']['content'],'budget':vars(budget),'tool_used':True,'tool_result':result}
 
 async def generate_evidence(question,evidence):
-    """Yield actual generated tokens. A final event reports usage and citation validity."""
+    """Buffer the bounded draft until completion and citation-format checks pass.
+
+    These checks do not establish factual truth. Published drafts require review.
+    """
     if not evidence:
         yield {'delta':'No supporting evidence was found in your authorized documents.'}
         yield {'done':True,'sources':[],'mode':'no-evidence','generated_tokens':0}
@@ -76,12 +82,17 @@ async def generate_evidence(question,evidence):
                 async for line in response.aiter_lines():
                     if not line:continue
                     event=json.loads(line)
+                    if not isinstance(event,dict):raise ValueError('malformed model event')
+                    if 'done' in event and type(event['done']) is not bool:raise ValueError('malformed completion marker')
                     if 'error' in event:raise ValueError('model service error')
-                    delta=event.get('message',{}).get('content','')
+                    message=event.get('message',{})
+                    if not isinstance(message,dict):raise ValueError('malformed model message')
+                    delta=message.get('content','')
+                    if not isinstance(delta,str):raise ValueError('malformed model content')
                     if delta:
                         text+=delta
                         if len(text.encode('utf-8'))>8000:raise ValueError('output byte limit')
-                        yield {'delta':delta,'mode':'generated-draft'}
+                        # Do not publish a draft that a later validation step may reject.
                     if event.get('done'):
                         budget.record(event);completed=True
     if not completed:raise ValueError('incomplete model response')
@@ -89,4 +100,5 @@ async def generate_evidence(question,evidence):
     citations=re.findall(r'\[([^\]]+)\]',text)
     valid=bool(citations) and all(cite in sources for cite in citations)
     if not valid:raise ValueError('generated answer failed citation-format gate')
-    yield {'done':True,'sources':sources,'mode':'ollama-generated','generated_tokens':budget.generated_tokens,'prompt_tokens':budget.prompt_tokens,'citation_gate':True}
+    yield {'delta':'Generated draft; requires factual review.\n'+text,'mode':'generated-draft','requires_review':True}
+    yield {'done':True,'sources':sources,'requires_review':True,'mode':'ollama-generated','generated_tokens':budget.generated_tokens,'prompt_tokens':budget.prompt_tokens,'citation_gate':True}

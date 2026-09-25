@@ -36,6 +36,8 @@ The original strict eight-case factual baseline passed five; tutor review identi
 
 | Check | Recorded result | Evidence |
 | --- | --- | --- |
+| Generated-draft publication and fallback | passed | [Report](labs/study-coach/python/generation-boundary-report.json) |
+| Controlled identity session-race mechanism | passed | [Report](labs/study-coach/identity-session-race-report.json) |
 | Automated accessibility across reading pages | passed within stated scope | [Report](reading-accessibility-report.json) |
 | TLS and WebSocket proxy | passed | [Report](labs/load-balancing/tls-websocket-report.json) |
 | Spring process-crash revocation | passed within stated scope | [Report](labs/study-coach/durable-spring-crash-report.json) |
@@ -53,7 +55,7 @@ See [Acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) for reproducible commands, 
 
 The written curriculum now covers each previously pending area in [Notebook 33: production readiness](33-production-readiness-and-evidence-workbook.html). Database execution status is recorded in the additional acceptance table above; any failed image download leaves that engine unverified. Multi-host, public TLS, longer-duration and provider-specific recovery checks remain bounded by the target environment. Added explanations and simulations are not relabelled as external acceptance.
 
-Hosted CI for prior commit 7261590f77f83df0128eb35ff2d226c292a83d44 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36099146135). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
+Hosted CI for prior commit 3a4fcf0c0c543fad26877d14f9a0278e3e04ef05 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36106251472). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
 
 1. **Actual public-cloud deployment:** provide the authorized account/project, region and spending limit. Local Docker/K3s execution is real, but it is not a cloud rollout. No destination or budget has been supplied.
 2. **Physical-device and manual screen-reader audit:** use an actual device with Safari/VoiceOver or the chosen mobile browser/screen reader and record the tasks in [Manual acceptance](labs/MANUAL-ACCEPTANCE.md). Desktop WebKit and narrow viewports cannot establish physical iPhone behavior.
@@ -65,7 +67,7 @@ These remain open, not silently marked completed. The tutorial package is usable
 
 All broker, Redis and cluster nodes share one computer/VM. Tests do not certify independent-host partitions, disk destruction or multi-day endurance. H2 uses one writer and Kubernetes Recreate with a local persistent volume; scaling this profile to multiple database writers is not supported. Cloud ingress, production OIDC deployment and production storage require destination-specific configuration.
 
-The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; the original test was not an application-process crash. The additional crash variant now kills and restarts the real Spring instance; shared persistent sessions remain outside this profile. The historical intermittent-login root cause remains a hypothesis, even though the mitigation passed repeated checks. The added crash and expiry experiments test fail-closed in-memory sessions; they do not reconcile a shared persistent session store. Provider-level secret overlap is tracked separately above and does not certify a zero-downtime Spring rollout. Initial failing evidence is retained.
+The identity receiver was unavailable through a 503 proxy while its real Spring session stayed alive; the original test was not an application-process crash. The additional crash variant now kills and restarts the real Spring instance; shared persistent sessions remain outside this profile. The historical intermittent-login root cause remains unproven. Three added Spring component tests now demonstrate the possible competing-session mechanism and NullRequestCache behavior; ten further real browser logins and forty anonymous probes passed. A controlled mechanism test is not a replay of the historical network incident. The added crash and expiry experiments test fail-closed in-memory sessions; they do not reconcile a shared persistent session store. Provider-level secret overlap is tracked separately above and does not certify a zero-downtime Spring rollout. Initial failing evidence is retained.
 
 The graph pipeline is a small custom implementation, not Microsoft GraphRAG. Normalized name matching is not full entity resolution; extractive community summaries and quote-presence validation are not factual entailment proofs. The original offline RAG routes remain intentionally transparent teaching components alongside separately tested real integrations.
 

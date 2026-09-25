@@ -4,6 +4,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 checks=[]
 for name,relative in [
+ ('Generated-draft publication boundary','labs/study-coach/python/generation-boundary-report.json'),
+ ('Controlled identity session race','labs/study-coach/identity-session-race-report.json'),
  ('MySQL execution and restore','labs/database-plan-workshop/mysql-report.json'),
  ('Oracle execution plans','labs/database-plan-workshop/oracle-report.json'),
  ('TLS and WebSocket proxy','labs/load-balancing/tls-websocket-report.json'),

@@ -81,3 +81,29 @@ The 30-minute workload writes, retries with the same idempotency key, reads snap
 Cloud account/project, region and budget select the actual deployment target. Public TLS and provider disaster recovery need that target. Independent-host failure tests need independent hosts. A physical screen reader needs the device and a person recording observations. Interview grading needs the learner's original answers. These are acceptance inputs, not gaps that can be closed by generating more prose.
 
 After the Linux tests finish, stop only the classroom distribution with `wsl --terminate EngineeringNotebookLab-13e66a98`. Do not stop a model server or unrelated service that the learner owns.
+
+## 8. Keep a failed draft inside the envelope
+
+Imagine a tutor reading an unchecked letter aloud, then discovering at the bottom that it cites the wrong textbook. Saying “ignore that” cannot undo what the student heard. The original optional model adapter had this problem: it streamed a draft before checking its final citations.
+
+The adapter now keeps a bounded draft in memory until the provider finishes and the structural, usage and citation-ID checks pass. It then publishes the draft with a visible factual-review label. An interrupted, oversized or malformed answer, or an answer citing an unavailable document, publishes no draft. A provider connection failure returns explicitly labelled excerpts from the already-authorized retrieval result. Cancellation still propagates rather than being converted into success.
+
+```powershell
+.venv/Scripts/python.exe labs/study-coach/python/test_generation_boundary.py
+```
+
+Eight tests exercise the actual adapter and ASGI route with injected failures. They also check malformed usage counters, completion markers and cross-user evidence boundaries. Buffering increases time to first answer and sacrifices token-by-token draft display. That is deliberate: the application can withhold an invalid draft only before publishing it.
+
+**Critical distinction:** a correct citation ID does not prove the sentence is supported. A draft that passes these mechanical checks can still be false. The earlier 12/16 and 5/12 quality failures remain open; these eight tests do not replace them with an accuracy score.
+
+## 9. Two session tickets, one browser
+
+Mira starts signing in and receives session ticket A. Her pending authorization request is stored under A. A separate anonymous request has no ticket and creates ticket B. If its delayed response makes the browser use B, the login callback cannot find the authorization request stored under A.
+
+The new `IdentitySessionRaceTests` use actual Spring Security components with mock servlet requests and an explicit ordering. They show that a competing session loses the saved authorization request, that `NullRequestCache` does not create the extra anonymous session, and that a forged state is still rejected even with the correct session. Run them with:
+
+```shell
+mvn -q -f labs/study-coach/java/pom.xml test
+```
+
+These are three component tests alongside the eight application integration tests. They establish a possible mechanism and the behavior of the mitigation. They do not replay the original network incident or prove that it had this cause. Fresh real-browser login repetitions remain a separate integration check; neither test should be relabelled as conclusive historical attribution.

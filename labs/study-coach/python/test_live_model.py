@@ -16,13 +16,13 @@ async def main():
         events=[event async for event in generate_evidence(question,evidence)]
         answer=''.join(x.get('delta','') for x in events)
         assert events[-1]['done'] and events[-1]['citation_gate']
-        assert events[-1]['generated_tokens']<=128 and len([x for x in events if 'delta' in x])>1
+        assert events[-1]['generated_tokens']<=128 and len([x for x in events if 'delta' in x])==1 and events[-1]['requires_review']
         report['cases'].append({'question':question,'answer':answer,'usage':events[-1]})
     for call in [{'function':{'name':'delete_files','arguments':{}}},{'function':{'name':'lookup_definition','arguments':{'term':'checkpoint','owner':'bob'}}}]:
         try:execute_tool(call,Budget())
         except ValueError:pass
         else:raise AssertionError('untrusted tool request accepted')
-    report['passed']=['actual model tool call','bounded two-call harness','actual streamed generated output','citation-ID gate','unknown tool and forged argument rejection']
+    report['passed']=['actual model tool call','bounded two-call harness','actual generation buffered until citation-format checks complete','citation-ID gate','unknown tool and forged argument rejection']
     report['seconds']=round(time.monotonic()-began,2)
     report['quality_limit']='Two development questions and mechanical gates; not a broad factuality benchmark. Read the actual answers for semantic review.'
     (root/'live-model-report.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
