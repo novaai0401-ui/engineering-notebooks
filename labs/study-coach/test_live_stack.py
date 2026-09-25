@@ -3,7 +3,7 @@ import json,os,re,secrets,socket,subprocess,sys,time
 from pathlib import Path
 import httpx
 ROOT=Path(__file__).resolve().parent;RUN=ROOT.parents[1]/'.runtime'/('live-stack-'+secrets.token_hex(4));RUN.mkdir(parents=True)
-env=os.environ.copy();env.update(COACH_PASSWORD=secrets.token_urlsafe(24),COACH_SERVICE_TOKEN=secrets.token_urlsafe(32),COACH_PORT='8098',COACH_AI_URL='http://127.0.0.1:8099/answer',COACH_AI_MODE='ollama',COACH_LEASE_MS='200000',COACH_AI_READ_TIMEOUT_MS='180000',COACH_AI_DEADLINE_MS='185000',COACH_DB='jdbc:h2:file:'+str(RUN/'coach').replace('\\','/'))
+env=os.environ.copy();env.update(COACH_PASSWORD=secrets.token_urlsafe(24),COACH_SERVICE_TOKEN=secrets.token_urlsafe(32),COACH_PORT='8098',COACH_AI_URL='http://127.0.0.1:8099/answer',COACH_AI_MODE='ollama',COACH_LEASE_MS='200000',COACH_AI_READ_TIMEOUT_MS='190000',COACH_AI_DEADLINE_MS='195000',COACH_DB='jdbc:h2:file:'+str(RUN/'coach').replace('\\','/'))
 processes=[];logs=[]
 def start(args,cwd,name):
  log=(RUN/(name+'.log')).open('w');logs.append(log)
@@ -34,9 +34,9 @@ try:
    partial=partial or (job['status']=='running' and bool(job['answer']))
    if job['status'] in ('done','failed'):break
    time.sleep(.25)
-  assert job['status']=='done' and '[checkpoint]' in job['answer'],job
-  report={'passed':['Authenticated approval produced an actual Ollama-generated answer through Java and Python','Final citation identifier belongs to retrieved evidence'],'answer':job['answer'],'attempts':job['attempt'],'partial_observed':partial,'elapsed_seconds':time.perf_counter()-began,'limitations':'One local integration case; citation syntax is not a semantic accuracy guarantee; read deadline and lease enlarged for bounded model inference.'}
-  (ROOT/'live-stack-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+  assert job['status']=='done' and '[checkpoint]' in job['answer'] and job['answer'].startswith('Generated draft; requires factual review.'),job
+  report={'passed':['Authenticated approval produced an actual Ollama-generated answer through Java and Python','Buffered draft passed completion/citation-format checks and carries a visible factual-review label'],'answer':job['answer'],'attempts':job['attempt'],'partial_observed':partial,'elapsed_seconds':time.perf_counter()-began,'limitations':'One local integration case; citation syntax is not a semantic accuracy guarantee; read deadline and lease enlarged for bounded model inference.'}
+  (ROOT/'live-stack-buffered-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 finally:
  for p in reversed(processes):
   if p.poll() is None:subprocess.run(['taskkill','/PID',str(p.pid),'/T','/F'],capture_output=True);p.wait(timeout=15)

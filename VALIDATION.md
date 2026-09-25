@@ -3251,6 +3251,26 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
 }
 ```
 
+### labs/study-coach/live-stack-buffered-report.json
+
+```json
+{
+  "passed": [
+    "Authenticated approval produced an actual Ollama-generated answer through Java and Python",
+    "Buffered draft passed completion/citation-format checks and carries a visible factual-review label"
+  ],
+  "answer": "Generated draft; requires factual review.\nA checkpoint saves workflow state so a process can resume after a restart, ensuring side effects are idempotent [checkpoint].",
+  "attempts": 1,
+  "partial_observed": false,
+  "elapsed_seconds": 39.004643800028134,
+  "limitations": "One local integration case; citation syntax is not a semantic accuracy guarantee; read deadline and lease enlarged for bounded model inference.",
+  "semantic_review": {
+    "passed": false,
+    "finding": "The answer incorrectly implies checkpointing ensures side-effect idempotency. Checkpoints save workflow state; idempotency requires separate controls such as deduplication keys or transactional writes."
+  }
+}
+```
+
 ### labs/study-coach/identity-session-race-report.json
 
 ```json

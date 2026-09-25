@@ -3370,6 +3370,21 @@
       "version": "v1.37.0+k3s1",
       "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
     },
+    "labs/study-coach/live-stack-buffered-report.json": {
+      "passed": [
+        "Authenticated approval produced an actual Ollama-generated answer through Java and Python",
+        "Buffered draft passed completion/citation-format checks and carries a visible factual-review label"
+      ],
+      "answer": "Generated draft; requires factual review.\nA checkpoint saves workflow state so a process can resume after a restart, ensuring side effects are idempotent [checkpoint].",
+      "attempts": 1,
+      "partial_observed": false,
+      "elapsed_seconds": 39.004643800028134,
+      "limitations": "One local integration case; citation syntax is not a semantic accuracy guarantee; read deadline and lease enlarged for bounded model inference.",
+      "semantic_review": {
+        "passed": false,
+        "finding": "The answer incorrectly implies checkpointing ensures side-effect idempotency. Checkpoints save workflow state; idempotency requires separate controls such as deduplication keys or transactional writes."
+      }
+    },
     "labs/study-coach/identity-session-race-report.json": {
       "status": "passed",
       "tests": 3,
