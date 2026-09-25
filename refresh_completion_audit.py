@@ -80,6 +80,7 @@ for label,relative in [
  ('MySQL execution and restore','labs/database-plan-workshop/mysql-report.json'),
  ('Oracle execution plans','labs/database-plan-workshop/oracle-report.json'),
  ('Thirty-minute endurance','labs/realtime-cache/endurance-1800-report.json'),
+ ('Prompt revision: authored live adapter regression','labs/study-coach/python/semantic-regression-report.json'),
  ('Expanded tutor-authored evaluation','labs/rag-flow/expanded-evaluation-report.json'),
  ('Externally labelled public evaluation subset','labs/rag-flow/public-evaluation-report.json')]:
  candidate=root/relative
@@ -96,5 +97,6 @@ text=text.replace('The MySQL/Oracle scripts are supplied but have not been run o
 text=text.replace('Expired-token reconciliation and zero-downtime secret overlap are not claimed.','The added crash and expiry experiments test fail-closed in-memory sessions; they do not reconcile a shared persistent session store. Provider-level secret overlap is tracked separately above and does not certify a zero-downtime Spring rollout.')
 text=text.replace('it was not an application-process crash with shared sessions.','the original test was not an application-process crash. The additional crash variant now kills and restarts the real Spring instance; shared persistent sessions remain outside this profile.')
 text=text.replace('bc63933215c492cfe2e2a9edd2f2cd1e87111443','3a4fcf0c0c543fad26877d14f9a0278e3e04ef05').replace('36097858718','36106251472')
+text=text.replace('3a4fcf0c0c543fad26877d14f9a0278e3e04ef05','a85ebbdfa3325060675158f757b466a06406d878').replace('36106251472','36108136069')
 
 (root/'COMPLETION-AUDIT.md').write_text(text,encoding='utf-8')

@@ -46,6 +46,7 @@ The original strict eight-case factual baseline passed five; tutor review identi
 | MySQL execution and restore | passed | [Report](labs/database-plan-workshop/mysql-report.json) |
 | Oracle execution plans | passed | [Report](labs/database-plan-workshop/oracle-report.json) |
 | Thirty-minute endurance | passed within stated scope | [Report](labs/realtime-cache/endurance-1800-report.json) |
+| Prompt revision: authored live adapter regression | 3/4 passed; 4 completed | [Report](labs/study-coach/python/semantic-regression-report.json) |
 | Expanded tutor-authored evaluation | 12/16 passed; 16 completed | [Report](labs/rag-flow/expanded-evaluation-report.json) |
 | Externally labelled public evaluation subset | 5/12 passed; 12 completed | [Report](labs/rag-flow/public-evaluation-report.json) |
 
@@ -55,7 +56,7 @@ See [Acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) for reproducible commands, 
 
 The written curriculum now covers each previously pending area in [Notebook 33: production readiness](33-production-readiness-and-evidence-workbook.html). Database execution status is recorded in the additional acceptance table above; any failed image download leaves that engine unverified. Multi-host, public TLS, longer-duration and provider-specific recovery checks remain bounded by the target environment. Added explanations and simulations are not relabelled as external acceptance.
 
-Hosted CI for prior commit 3a4fcf0c0c543fad26877d14f9a0278e3e04ef05 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36106251472). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
+Hosted CI for prior commit a85ebbdfa3325060675158f757b466a06406d878 passed: [GitHub run](https://github.com/novaai0401-ui/engineering-notebooks/actions/runs/36108136069). This closes the previously unchecked result for that exact commit. New commits require their own CI result; this statement is not a claim about an unobserved run.
 
 1. **Actual public-cloud deployment:** provide the authorized account/project, region and spending limit. Local Docker/K3s execution is real, but it is not a cloud rollout. No destination or budget has been supplied.
 2. **Physical-device and manual screen-reader audit:** use an actual device with Safari/VoiceOver or the chosen mobile browser/screen reader and record the tasks in [Manual acceptance](labs/MANUAL-ACCEPTANCE.md). Desktop WebKit and narrow viewports cannot establish physical iPhone behavior.

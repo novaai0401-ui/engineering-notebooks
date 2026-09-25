@@ -371,3 +371,12 @@ The new 16-case model evaluation passed 12. One role-spoofing example returned t
 ### A rejected draft must never reach the reader
 
 The optional model adapter now buffers its bounded draft until completion and citation-format checks pass. Invalid citations, interrupted streams and malformed events no longer leave partial model text in the answer. A provider failure produces explicitly labelled, authorized source excerpts. This trades immediate token display for the ability to withhold a failed draft. A valid citation can still accompany a false statement, so released drafts visibly require factual review. The [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) explains the eight regression tests and the separate controlled Spring session-race experiment. Neither mechanical validation nor a reproduced possible failure mechanism proves general model accuracy or the historical login root cause.
+
+
+### A bookmark cannot stop you paying twice
+
+Imagine a bookmark showing where you stopped reading a recipe. That bookmark is a checkpoint. If the next instruction is “pay the shop,” reopening the book does not tell the shop whether it already received your money. An idempotency key is a receipt number the shop recognizes: the same payment request with the same number must not create a second charge. The bookmark and receipt solve different problems.
+
+Our real model once said a checkpoint “ensures” idempotent effects, despite citing a source that required separate keys. The citation was valid; the claim was wrong. The adapter now explicitly asks the model to preserve limitations and distinguish separate safeguards. That is a prompt improvement, not a mathematical guarantee. The source-only mode remains the default.
+
+Practice the same reasoning elsewhere: replication copies accidental deletions too, so it does not replace historical backups. Encryption keeps a message private, while authorization decides who may act. A cache TTL says nothing about a payment timeout unless the evidence explicitly connects them. Read the [live semantic regression report](labs/study-coach/python/semantic-regression-report.json) for the actual answers and review criteria. These are development cases, not an independent benchmark.

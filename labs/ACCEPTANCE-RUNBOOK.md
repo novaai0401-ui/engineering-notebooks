@@ -107,3 +107,10 @@ mvn -q -f labs/study-coach/java/pom.xml test
 ```
 
 These are three component tests alongside the eight application integration tests. They establish a possible mechanism and the behavior of the mitigation. They do not replay the original network incident or prove that it had this cause. Fresh real-browser login repetitions remain a separate integration check; neither test should be relabelled as conclusive historical attribution.
+
+
+## 10. Preserve the small words that change a guarantee
+
+Run `.venv/Scripts/python.exe labs/study-coach/python/test_semantic_regression.py` from the notebook root with the configured Ollama model available. This uses the actual buffered adapter with four authored evidence cases. The runner records outputs for review; process exit alone is not an accuracy pass. Re-running resets manual review to pending.
+
+After the prompt revision, tutor review accepted 3/4 answers: checkpoint versus idempotency, replication versus backup, and encryption versus permission. The absent-payment-timeout case was rejected by adapter validation and counts as a failed answer. Earlier 12/16 authored and 5/12 public evaluations are unchanged and were not rerun. This regression set is development evidence, not independent confirmation or a production accuracy guarantee.
