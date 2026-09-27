@@ -1,0 +1,4 @@
+
+# Preserve document bytes; PDF offsets must not undergo line-ending conversion.
+*.pdf binary
+*.epub binary
