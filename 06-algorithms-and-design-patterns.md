@@ -43,6 +43,23 @@ print("Pair indices found without reusing one item")
 
 The invariant is that `seen` contains only earlier indices. Checking before insertion prevents using one item twice. Expected time is O(n), auxiliary space O(n), with ordinary hash-table assumptions. Decide how to handle multiple valid answers; this returns the first found under its traversal.
 
+### Why the complement lookup is enough
+
+**Prerequisites:** indexing, subtraction, dictionary lookup, and the difference between a value and its position. The brute-force method examines n(n−1)/2 distinct pairs: with four values, six pairs. The dictionary changes the question from “which earlier number works?” to “has this one required number appeared?”
+
+| Step | Value | Required complement | Dictionary before lookup | Action |
+| --- | --- | --- | --- | --- |
+| 0 | 2 | 7 | empty | Save 2 → 0 |
+| 1 | 7 | 2 | 2 → 0 | Return indices 0 and 1 |
+
+**Why it is correct:** For any valid pair at indices i < j, value i is in the dictionary when j is processed, unless the function already returned another valid pair. Thus the lookup at j finds a partner. Checking before insertion ensures the partner is strictly earlier. Duplicate values are allowed: the two 3s in [3,3] are different positions.
+
+**Tradeoff:** The brute-force method needs constant auxiliary memory but quadratic work. Sorting plus two pointers can reduce memory requirements for some value-based variants, but sorting changes positions; preserve original indices when the answer requires them. Hash lookup has expected linear work under the dictionary assumptions, not an unconditional worst-case promise.
+
+**Try it:** Trace [4,1,5,3] with target 6. What is returned, and why is a one-element [3] insufficient for target 6?
+
+**Answer:** Index 2 finds the earlier 1 at index 1, so (1,2) is returned. The single 3 is checked before it is saved, preventing reuse of the same element.
+
 ## 4. Two pointers and sliding windows
 
 Two pointers move through data while preserving a relationship. For a sorted array and target sum, compare endpoints. If their sum is too small, advance the lower pointer; if too large, decrease the upper pointer. Sorted order justifies eliminating candidates.
@@ -67,6 +84,29 @@ print("Longest window lengths verified")
 ```
 
 `last` remembers the most recent index. The left boundary never moves backward. After the update, the current window has no repeated character. Each index advances once, giving O(n) expected time. Python characters here are code points; user-perceived grapheme clusters require more text processing.
+
+### Why the window boundary cannot move backward
+
+**Prerequisites:** contiguous substrings, zero-based indices, and a dictionary of last-seen positions. A substring is contiguous; a subsequence need not be. This algorithm solves the former.
+
+Trace `abba`:
+
+| right | character | previous position | left after update | current window | best |
+| --- | --- | --- | --- | --- | --- |
+| 0 | a | absent | 0 | a | 1 |
+| 1 | b | absent | 0 | ab | 2 |
+| 2 | b | 1 | 2 | b | 2 |
+| 3 | a | 0 | 2 | ba | 2 |
+
+At the final a, setting left to previous+1 without `max` would move it back to 1 and admit `bba`, which contains duplicate b. The old a is already outside the active window; it should not affect left.
+
+**Proof idea:** Before adding the new character, the active window has no duplicates. Only the new character can introduce a duplicate. Moving left past its latest occurrence removes that duplicate without adding any earlier elements. The longest valid suffix ending at each right position is considered, so taking the maximum covers the optimum.
+
+**Cost:** Each character causes a bounded number of expected dictionary operations. The nested-loop appearance of other window implementations does not automatically imply quadratic time: if each pointer moves forward at most n times, total pointer movements are linear.
+
+**Failure boundary:** A sum-based window that shrinks when the sum is too large usually relies on nonnegative elements. Negative numbers can make extending the window decrease its sum, invalidating that elimination rule. Do not transfer the technique without proving its condition.
+
+**Try it:** What is the result for `aaaa`? **Answer:** 1. Every new a forces left past the previous a. The empty string returns 0 because no window is visited.
 
 ## 5. Binary search and boundary thinking
 
@@ -125,6 +165,20 @@ print("Split, sort, merge")
 ```
 
 Each recursive call handles a smaller list. During merging, the result contains the smallest consumed values in order. Taking left first on ties preserves relative order under compatible key handling. Python slicing in this teaching version creates extra objects; explain actual implementation costs if asked to optimize.
+
+### Derive merge sort's cost and stability
+
+**Prerequisites:** recursion, the base case, sorted order, and auxiliary storage. Split [4,1,3,1] into [4,1] and [3,1], then singleton lists. Merge [4] with [1] to get [1,4]. Merge [3] with [1] to get [1,3]. Finally compare the fronts: take left 1, right 1, right 3, then remaining 4.
+
+**Why merging is correct:** The smallest remaining element of each sorted input is at its front. The smaller front is therefore the smallest remaining element overall. Append it and advance only that input. Repeating maintains a sorted result. Once one input is exhausted, the other's remaining suffix is already sorted and may be appended.
+
+**Why n log n:** At a recursion level, subproblem sizes sum to n, so merging across that level costs O(n). Balanced halving creates O(log n) levels. Hence total comparison work is O(n log n). The base case stops empty and singleton lists. The recurrence is T(n)=2T(n/2)+O(n) for balanced equal-sized reasoning; uneven halves do not change the asymptotic result.
+
+**Why the tie matters:** Label equal values by original identity, such as 1-left and 1-right. Taking from the left on equality preserves their original cross-half order. Recursive stability within each half plus stable merging yields stability overall. Replacing `<=` with `<` can reverse cross-half ties.
+
+**Implementation cost:** This Python version copies slices and allocates merged lists. Peak auxiliary storage is O(n) for the usual sequential execution, plus O(log n) recursive frames; cumulative allocations across all levels are larger. An iterative merge sort avoids recursive calls but still normally needs a merge buffer.
+
+**Try it:** Is an already sorted input processed in linear time by this exact implementation? **Answer:** No. It still splits and merges at each level. A specially implemented sorted-run check or an adaptive sorting algorithm can exploit existing order; this code does not contain that optimization.
 
 ## 7. Stacks, monotonic structures, and intervals
 

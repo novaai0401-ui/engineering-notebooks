@@ -7,7 +7,7 @@ Updated on 25 September 2026; individual reports include retained earlier eviden
 | Check | Result |
 | --- | --- |
 | Notebook execution | 153 passed; no failed cells |
-| Reading material | 33 notebooks, 458 lessons, 86,911 words |
+| Reading material | 33 notebooks, 458 lessons, 87,795 words |
 | Connected Java service | 11 tests passed: 8 integration and 3 session-race component tests |
 | Original Spring starter | 3 tests passed in foundation validation |
 | React unit/DOM/hydration | 3 tests passed |

@@ -146,3 +146,10 @@ Each notebook now ends with a **Deep workshop**: a concrete scenario, intermedia
 The learning studio lets you explore gradient descent, lower-bound binary search, average in-flight work, or crash-and-retry behaviour depending on the subject. These are explicitly limited teaching simulations, separate from the executed service labs. Change an input and explain the result before reading the explanation.
 
 Notes and sections marked read are stored only in the current browser when storage is available. They do not synchronize between devices, are not uploaded, and are not automatically graded. Copy important notes elsewhere before clearing browser data. The HTML edition contains the interactive controls; Markdown and Jupyter retain the prose and worked examples. The documented runtime requirements still apply to executing code.
+
+
+## Our acceptance standard: understand, explain, apply
+
+The goal is self-contained understanding of this library's stated curriculum. A topic is not considered deep enough merely because it has a definition or an executable snippet. Check each topic for prerequisites, the problem it solves, mechanism and reasoning, a fully traced example, implementation decisions, failure boundaries, alternatives, and an exercise with an explained answer. Version-specific external references support maintenance; they must not carry the essential explanation that the lesson omitted.
+
+This is the standard we are working toward, not a declaration that every existing lesson already passes it. Content depth must be reviewed topic by topic; word counts, automatic keyword checks, and passing software tests cannot certify teaching completeness. Reading progress marks indicate what you marked read, not mastery.
