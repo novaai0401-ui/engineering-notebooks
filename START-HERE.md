@@ -153,3 +153,12 @@ Notes and sections marked read are stored only in the current browser when stora
 The goal is self-contained understanding of this library's stated curriculum. A topic is not considered deep enough merely because it has a definition or an executable snippet. Check each topic for prerequisites, the problem it solves, mechanism and reasoning, a fully traced example, implementation decisions, failure boundaries, alternatives, and an exercise with an explained answer. Version-specific external references support maintenance; they must not carry the essential explanation that the lesson omitted.
 
 This is the standard we are working toward, not a declaration that every existing lesson already passes it. Content depth must be reviewed topic by topic; word counts, automatic keyword checks, and passing software tests cannot certify teaching completeness. Reading progress marks indicate what you marked read, not mastery.
+
+
+## Complete a section and connect the ideas
+
+Every section ends with the seven-point understanding checklist. These are mandatory teaching criteria: problem and example; prerequisites; internal trace; reasoning and assumptions; implementation and failure handling; alternatives; and practice with explained answers. The checklist makes the requirement visible; it does not claim every section has already passed editorial review.
+
+Select **Complete section and show related lessons** to reveal the next section and related topics with a connection label. Recommendations use topic associations across the library, not an AI judgement of mastery. You stay on the current page until choosing a link. Marking a section unread hides its suggestions again. Progress is stored only in this browser when available.
+
+The palette uses calm reading surfaces, violet or ocean navigation accents, teal for interactive experiments, and amber for answer explanations. Labels and structure carry the meaning too. Night mode remains available. These choices support visual hierarchy and contrast; no palette can guarantee attention or retention for every reader.

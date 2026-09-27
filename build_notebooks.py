@@ -46,7 +46,7 @@ READER_JS = (ROOT/'reader.js').read_text(encoding='utf-8')
 
 def page(title, body, toc='', downloads=''):
     nav = '<nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p>'+toc+'</nav>' if toc else ''
-    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+html.escape(title)+'</title><style>'+CSS+'</style></head><body><a class="skip" href="#content">Skip to content</a>'+nav+'<main id="content"'+(' class="index"' if not toc else '')+'>'+downloads+body+'</main><script>'+READER_JS+'</script></body></html>'
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+html.escape(title)+'</title><style>'+CSS+'</style></head><body><a class="skip" href="#content">Skip to content</a>'+nav+'<main id="content"'+(' class="index"' if not toc else '')+'>'+downloads+body+'</main><script>window.READING_TOPICS='+json.dumps(READING_TOPICS).replace('<','\\u003c')+';</script><script>'+READER_JS+'</script></body></html>'
 
 def render_markdown(text):
     md = MarkdownIt('commonmark', {'html':False}).enable('table')
@@ -70,6 +70,12 @@ def render_markdown(text):
             toc+='<details><summary>Examples and subtopics</summary><ul>'+''.join('<li><a href="#'+a+'">'+html.escape(t)+'</a></li>' for a,t in section['children'])+'</ul></details>'
         toc+='</li>'
     return body,toc+'</ul>',len(sections)
+
+READING_TOPICS=[]
+for source in SOURCES:
+    _, contents, _ = render_markdown(source.read_text(encoding='utf-8'))
+    for anchor,title in re.findall(r'<li><a href="#([^"]+)">([^<]+)</a>', contents):
+        READING_TOPICS.append({'file':source.stem+'.html','id':anchor,'title':html.unescape(title)})
 
 def wrapper(language, source, name):
     if language=='python': return source
