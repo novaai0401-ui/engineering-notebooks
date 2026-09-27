@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import unquote,urlsplit
 ROOT=Path(__file__).resolve().parent
 BLOCKED={'.runtime','.venv','node_modules','target','__pycache__','.git','data','build','test-results'}
-EXTENSIONS={'.html','.css','.js','.mjs','.md','.ipynb','.json','.txt','.py','.java','.xml','.toml','.yaml','.yml','.sql','.png','.svg'}
+EXTENSIONS={'.pdf','.epub','.html','.css','.js','.mjs','.md','.ipynb','.json','.txt','.py','.java','.xml','.toml','.yaml','.yml','.sql','.png','.svg'}
 def resolve_resource(url):
     relative=unquote(urlsplit(url).path).lstrip('/') or 'index.html'
     parts=Path(relative).parts
@@ -21,7 +21,7 @@ class Handler(BaseHTTPRequestHandler):
         path=resolve_resource(self.path)
         if path is None:self.send_error(404);return
         content=path.read_bytes()
-        kind=mimetypes.guess_type(path.name)[0] or 'text/plain'
+        kind={'.pdf':'application/pdf','.epub':'application/epub+zip'}.get(path.suffix.lower()) or mimetypes.guess_type(path.name)[0] or 'text/plain'
         if path.suffix in {'.py','.java','.md','.toml','.yaml','.yml','.sql','.txt'}:kind='text/plain; charset=utf-8'
         self.send_response(200);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(content)))
         self.send_header('X-Content-Type-Options','nosniff');self.send_header('Cache-Control','no-cache');self.end_headers()

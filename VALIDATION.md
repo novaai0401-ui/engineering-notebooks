@@ -1936,6 +1936,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
 {
   "passed": [
     "Index, database HTML, RAG HTML and Jupyter download served over real loopback HTTP",
+    "PDF and EPUB downloads served with correct MIME types and file signatures",
     "Hidden/runtime/dependency directories, traversal attempts and directory listing denied"
   ],
   "limitations": "Loopback tests only. LAN/mobile connectivity depends on the device, trusted Wi-Fi and firewall; no physical phone test was performed."

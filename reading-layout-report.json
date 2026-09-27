@@ -176,6 +176,11 @@
       "passed": true
     },
     {
+      "page": "READ-ANYWHERE.html",
+      "width": 1280,
+      "passed": true
+    },
+    {
       "page": "START-HERE.html",
       "width": 1280,
       "passed": true
@@ -362,6 +367,11 @@
     },
     {
       "page": "index.html",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "page": "READ-ANYWHERE.html",
       "width": 390,
       "passed": true
     },

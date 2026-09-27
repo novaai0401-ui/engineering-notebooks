@@ -5,7 +5,7 @@ const report={scope:'Automated WCAG 2 A/AA and 2.1 A/AA axe checks at desktop an
 try{
  for(const width of [1280,390]){
   const page=await browser.newPage({viewport:{width,height:900}});
-  for(const name of fs.readdirSync(root).filter(x=>/^\d\d-.*\.html$/.test(x)||['index.html','START-HERE.html','VALIDATION.html','STUDY-ON-ANY-DEVICE.html','COMPLETION-AUDIT.html'].includes(x))){
+  for(const name of fs.readdirSync(root).filter(x=>/^\d\d-.*\.html$/.test(x)||['READ-ANYWHERE.html','index.html','START-HERE.html','VALIDATION.html','STUDY-ON-ANY-DEVICE.html','COMPLETION-AUDIT.html'].includes(x))){
    await page.goto(pathToFileURL(path.join(root,name)).href);
    await page.addScriptTag({path:path.join(root,'labs/study-coach/frontend/node_modules/axe-core/axe.min.js')});
    const result=await page.evaluate(async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return {violations:r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))})),incomplete:r.incomplete.map(v=>({id:v.id,count:v.nodes.length}))};});

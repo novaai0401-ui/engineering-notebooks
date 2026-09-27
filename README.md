@@ -1,6 +1,6 @@
 # Engineering notebooks
 
-33 tutorial notebooks covering AI/ML, generative AI, agents, RAG, Python, Java/Spring, React, databases, algorithms, design patterns and full-stack operations. Includes 425 lessons, runnable labs and recorded verification evidence.
+33 tutorial notebooks covering AI/ML, generative AI, agents, RAG, Python, Java/Spring, React, databases, algorithms, design patterns and full-stack operations. Includes 458 lessons, runnable labs and recorded verification evidence.
 
 New: [Java, Spring Batch and microservices interview masterclass](31-java-microservices-interview-masterclass.md), answering the supplied interview questions with simple stories, eight executable examples, a five-test Spring/JUnit/Mockito workshop, answer keys and a question-by-question coverage map.
 
@@ -40,3 +40,14 @@ Private credentials, model weights, virtual environments, runtime databases and 
 For the latest database, TLS/WebSocket, identity, AI evaluation, accessibility and endurance verification commands, see the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md). Results and external requirements are tracked in the [completion audit](COMPLETION-AUDIT.html).
 
 Latest added model checks: **12/16** on new tutor-authored factual/adversarial cases and **5/12** on a fixed externally labelled public SQuAD subset. These are separate diagnostic sets, not combined accuracy or production acceptance. Failures are retained in the reports; generated output still requires review.
+
+
+## Choose your reading format
+
+- [Read all 33 notebooks on GitHub](github/README.md): Markdown, code listings and Previous/Next navigation.
+- [Full print PDF](output/pdf/engineering-notebooks-complete.pdf): all notebooks with bookmarks and a linked contents page.
+- [EPUB reading edition](output/engineering-notebooks.epub): reflowable text for compatible ebook apps.
+- [LinkedIn carousel PDF](output/pdf/linkedin-checkpoints-and-retries.pdf): nine concise pages teaching checkpoints and idempotent retries. This is a companion, not the full curriculum.
+- [Static experiment explanations](output/STATIC-EXPERIMENTS.md): the calculations behind browser sliders and traces.
+
+For interactive reading, download the repository or the complete package and open `index.html`; GitHub previews source rather than running the reading interface. The repository is private: recipients need repository access, or a separately shared downloaded file. Exporting the carousel does not publish it to LinkedIn.

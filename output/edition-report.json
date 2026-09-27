@@ -1,0 +1,39 @@
+{
+  "full_pdf_pages": 219,
+  "carousel_pages": 9,
+  "epub_reading_documents": 34,
+  "github_books": 33,
+  "scope": "Full current notebook prose and code; existing curriculum gaps and evidence limitations remain. Carousel is a concise companion. EPUB XML parsed; reader compatibility and PDF visual review are separate checks.",
+  "epubcheck": {
+    "version": "5.4.0",
+    "errors": 0,
+    "warnings": 0
+  },
+  "pdf_checks": {
+    "pages": 219,
+    "bookmarks": 34,
+    "all_pages_have_text": true,
+    "all_text_within_page_bounds": true,
+    "visual_review": "Full-book pages 1,2,3,31,61,121,181,219 and all nine carousel pages rendered and inspected"
+  },
+  "github_checks": {
+    "all_relative_file_links_resolve": true,
+    "all_fenced_code_matches_canonical_source": true
+  },
+  "http_downloads": "PDF and EPUB MIME types and signatures verified on loopback HTTP",
+  "limitations": "EPUBCheck validates format, not every reader application. No physical-device or assistive-technology certification. Existing content-depth and model-quality limitations remain.",
+  "files": {
+    "output\\pdf\\engineering-notebooks-complete.pdf": {
+      "bytes": 746638,
+      "sha256": "261eb09c2b0beb2f6538bd3638e80b663afb4510924b232f801a3cebc9a90ccc"
+    },
+    "output\\pdf\\linkedin-checkpoints-and-retries.pdf": {
+      "bytes": 82543,
+      "sha256": "260c098a6833bdff9e5c5f8c73d5e390534d431ff04f42e72f647e51b1a4be2f"
+    },
+    "output\\engineering-notebooks.epub": {
+      "bytes": 296084,
+      "sha256": "616ce9b51ea9d3aa945532917651e9e069dc3ffb47047486b70d04d416413d16"
+    }
+  }
+}

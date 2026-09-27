@@ -4,7 +4,7 @@ const root=path.dirname(fileURLToPath(import.meta.url));const browser=await chro
 try{
  for(const width of [1280,390]){
   const page=await browser.newPage({viewport:{width,height:900}});
-  for(const name of fs.readdirSync(root).filter(x=>/^\d\d-.*\.html$/.test(x)||['index.html','START-HERE.html','VALIDATION.html','STUDY-ON-ANY-DEVICE.html','COMPLETION-AUDIT.html'].includes(x))){
+  for(const name of fs.readdirSync(root).filter(x=>/^\d\d-.*\.html$/.test(x)||['READ-ANYWHERE.html','index.html','START-HERE.html','VALIDATION.html','STUDY-ON-ANY-DEVICE.html','COMPLETION-AUDIT.html'].includes(x))){
    await page.goto(pathToFileURL(path.join(root,name)).href);
    const result=await page.evaluate(()=>({title:document.querySelector('h1')?.textContent,overflow:document.documentElement.scrollWidth>innerWidth+2,text:document.querySelector('main')?.textContent?.length||0}));
    if(!result.title||result.text<300||result.overflow)throw Error(JSON.stringify({name,width,...result}));
