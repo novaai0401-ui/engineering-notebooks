@@ -4,200 +4,200 @@
     {
       "name": "01-agent-engineering",
       "title": "Notebook 1 \u2014 Agents, LangChain, LangGraph, Deep Agents, and MCP",
-      "words": 4316,
-      "chapters": 14
+      "words": 4594,
+      "chapters": 15
     },
     {
       "name": "02-python-for-ai",
       "title": "Notebook 2 \u2014 Python for AI, ML, and Generative AI",
-      "words": 2714,
-      "chapters": 15
+      "words": 2981,
+      "chapters": 16
     },
     {
       "name": "03-java-spring-boot",
       "title": "Notebook 3 \u2014 Java and Spring Boot, From Objects to Services",
-      "words": 2839,
-      "chapters": 14
+      "words": 3079,
+      "chapters": 15
     },
     {
       "name": "04-react-and-frontend",
       "title": "Notebook 4 \u2014 React and Frontend Engineering",
-      "words": 2306,
-      "chapters": 14
+      "words": 2546,
+      "chapters": 15
     },
     {
       "name": "05-fullstack-ai-architecture",
       "title": "Notebook 5 \u2014 Full-Stack Java, Python, React, and AI Engineering",
-      "words": 2484,
-      "chapters": 14
+      "words": 2731,
+      "chapters": 15
     },
     {
       "name": "06-algorithms-and-design-patterns",
       "title": "Notebook 6 \u2014 Algorithms, Design Principles, and Patterns",
-      "words": 4320,
-      "chapters": 18
+      "words": 4538,
+      "chapters": 19
     },
     {
       "name": "07-durable-agents",
       "title": "Notebook 7 \u2014 Agents that survive mistakes and restarts",
-      "words": 1812,
-      "chapters": 8
+      "words": 2045,
+      "chapters": 9
     },
     {
       "name": "08-remote-mcp",
       "title": "Notebook 8 \u2014 A remote MCP service you can inspect and test",
-      "words": 1355,
-      "chapters": 8
+      "words": 1571,
+      "chapters": 9
     },
     {
       "name": "09-python-ai-depth",
       "title": "Notebook 9 \u2014 Python engineering, mathematics, and ML from scratch",
-      "words": 1879,
-      "chapters": 10
+      "words": 2085,
+      "chapters": 11
     },
     {
       "name": "10-java-spring-depth",
       "title": "Notebook 10 \u2014 Java and Spring beyond the happy path",
-      "words": 1810,
-      "chapters": 10
+      "words": 2045,
+      "chapters": 11
     },
     {
       "name": "11-react-depth",
       "title": "Notebook 11 \u2014 React, TypeScript, browser behavior and real tests",
-      "words": 1484,
-      "chapters": 10
+      "words": 1713,
+      "chapters": 11
     },
     {
       "name": "12-algorithms-depth",
       "title": "Notebook 12 \u2014 Trees, graphs, backtracking and dynamic programming",
-      "words": 1784,
-      "chapters": 10
+      "words": 1982,
+      "chapters": 11
     },
     {
       "name": "13-patterns-workshop",
       "title": "Notebook 13 \u2014 All 23 classic design patterns, implemented and challenged",
-      "words": 3077,
-      "chapters": 25
+      "words": 3298,
+      "chapters": 26
     },
     {
       "name": "14-fullstack-workshop",
       "title": "Notebook 14 \u2014 Build and defend a complete connected system",
-      "words": 1720,
-      "chapters": 11
+      "words": 1943,
+      "chapters": 12
     },
     {
       "name": "15-interview-practice",
       "title": "Notebook 15 \u2014 Graded interviews, debugging rounds and answer keys",
-      "words": 2123,
-      "chapters": 10
+      "words": 2337,
+      "chapters": 11
     },
     {
       "name": "16-live-model-engineering",
       "title": "16 \u2014 Real models: from a talking helper to a bounded agent",
-      "words": 1426,
-      "chapters": 8
+      "words": 1630,
+      "chapters": 9
     },
     {
       "name": "17-identity-and-deployment",
       "title": "17 \u2014 Identity and deployment: who are you, and where does the app live?",
-      "words": 1256,
-      "chapters": 9
+      "words": 1468,
+      "chapters": 10
     },
     {
       "name": "18-distributed-systems-lab",
       "title": "18 \u2014 Many workers, one trustworthy result",
-      "words": 1247,
-      "chapters": 8
+      "words": 1463,
+      "chapters": 9
     },
     {
       "name": "19-observability-and-browser-quality",
       "title": "19 \u2014 Seeing failures and testing the whole experience",
-      "words": 1081,
-      "chapters": 8
+      "words": 1292,
+      "chapters": 9
     },
     {
       "name": "20-specialist-algorithms-and-math",
       "title": "20 \u2014 Deeper algorithms and mathematics, one small step at a time",
-      "words": 1928,
-      "chapters": 13
+      "words": 2119,
+      "chapters": 14
     },
     {
       "name": "21-assessed-interview-route",
       "title": "21 \u2014 Practice that measures understanding",
-      "words": 1239,
-      "chapters": 9
+      "words": 1446,
+      "chapters": 10
     },
     {
       "name": "22-kafka-event-engineering",
       "title": "22 \u2014 Kafka: a shared notebook that many teams can read",
-      "words": 1539,
-      "chapters": 12
+      "words": 1740,
+      "chapters": 13
     },
     {
       "name": "23-docker-and-release-engineering",
       "title": "23 \u2014 Docker: pack the lunchbox before sending it to school",
-      "words": 1281,
-      "chapters": 11
+      "words": 1495,
+      "chapters": 12
     },
     {
       "name": "24-kubernetes-from-pods-to-recovery",
       "title": "24 \u2014 Kubernetes: a caretaker for running applications",
-      "words": 1392,
-      "chapters": 9
+      "words": 1586,
+      "chapters": 10
     },
     {
       "name": "25-cache-management-and-consistency",
       "title": "25 \u2014 Cache management: keeping photocopies useful",
-      "words": 1295,
-      "chapters": 10
+      "words": 1515,
+      "chapters": 11
     },
     {
       "name": "26-websockets-sse-and-realtime-delivery",
       "title": "26 \u2014 Real-time applications: messages that survive disconnection",
-      "words": 1338,
-      "chapters": 10
+      "words": 1546,
+      "chapters": 11
     },
     {
       "name": "27-reliability-evaluation-and-operations",
       "title": "27 \u2014 Reliability: prove what happens when things go wrong",
-      "words": 1991,
-      "chapters": 12
+      "words": 2189,
+      "chapters": 13
     },
     {
       "name": "28-fullstack-capstone-and-assessment",
       "title": "28 \u2014 Put the pieces together: a full-stack engineering capstone",
-      "words": 1046,
-      "chapters": 8
+      "words": 1257,
+      "chapters": 9
     },
     {
       "name": "29-databases-for-fullstack-and-ai",
       "title": "29 \u2014 Databases: the organised memory of your application",
-      "words": 3605,
-      "chapters": 18
+      "words": 3829,
+      "chapters": 19
     },
     {
       "name": "30-rag-patterns-and-user-defined-flows",
       "title": "30 \u2014 RAG: connect the question to the right evidence",
-      "words": 4259,
-      "chapters": 21
+      "words": 4505,
+      "chapters": 22
     },
     {
       "name": "31-java-microservices-interview-masterclass",
       "title": "Notebook 31 \u2014 Java, Spring Batch and microservices interview masterclass",
-      "words": 7336,
-      "chapters": 23
+      "words": 7540,
+      "chapters": 24
     },
     {
       "name": "32-load-balancing-from-playground-to-production",
       "title": "Notebook 32 \u2014 Load balancing: from a playground queue to production traffic",
-      "words": 4270,
-      "chapters": 20
+      "words": 4482,
+      "chapters": 21
     },
     {
       "name": "33-production-readiness-and-evidence-workbook",
       "title": "Notebook 33 \u2014 The launch room: cloud, AI quality, databases and recovery",
-      "words": 6098,
-      "chapters": 25
+      "words": 6321,
+      "chapters": 26
     }
   ],
   "labs": [
@@ -3370,6 +3370,52 @@
       "version": "v1.37.0+k3s1",
       "limitations": "One local K3s node with actual Study Coach containers, cluster networking, Secret and persistent volume. Not public cloud, production OIDC, TLS ingress, distributed storage or multi-node failure."
     },
+    "interactive-reader-report.json": {
+      "passed": true,
+      "checks": [
+        {
+          "width": 390,
+          "theme": "violet",
+          "axe": "passed"
+        },
+        {
+          "width": 390,
+          "theme": "ocean",
+          "axe": "passed"
+        },
+        {
+          "width": 390,
+          "theme": "night",
+          "axe": "passed"
+        },
+        {
+          "width": 390,
+          "interactions": "passed",
+          "scriptErrors": []
+        },
+        {
+          "width": 1280,
+          "theme": "violet",
+          "axe": "passed"
+        },
+        {
+          "width": 1280,
+          "theme": "ocean",
+          "axe": "passed"
+        },
+        {
+          "width": 1280,
+          "theme": "night",
+          "axe": "passed"
+        },
+        {
+          "width": 1280,
+          "interactions": "passed",
+          "scriptErrors": []
+        }
+      ],
+      "scope": "Chromium desktop/mobile emulation, three palettes, numerical traces, filtering and browser-local persistence. Not physical-device testing."
+    },
     "labs/study-coach/python/semantic-regression-report.json": {
       "classification": "Authored development regression after prompt changes; not independent or representative. Actual production adapter, supplied evidence, no retrieval test.",
       "fixture_sha256": "989037ad4d413611a1baef409343335f7d83ed76ba780ccdca597a79c4161c4d",
@@ -3755,8 +3801,7 @@
           "page": "32-load-balancing-from-playground-to-production.html",
           "width": 1280,
           "violations": [],
-          "incomplete": [],
-          "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+          "incomplete": []
         },
         {
           "page": "33-production-readiness-and-evidence-workbook.html",
@@ -3829,24 +3874,14 @@
           "page": "05-fullstack-ai-architecture.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 5
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {
           "page": "06-algorithms-and-design-patterns.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 27
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {
@@ -3987,7 +4022,7 @@
           "incomplete": [
             {
               "id": "color-contrast",
-              "count": 5
+              "count": 1
             }
           ],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
@@ -4010,48 +4045,28 @@
           "page": "29-databases-for-fullstack-and-ai.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 9
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {
           "page": "30-rag-patterns-and-user-defined-flows.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 26
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {
           "page": "31-java-microservices-interview-masterclass.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 7
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {
           "page": "32-load-balancing-from-playground-to-production.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 5
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {
@@ -4065,12 +4080,7 @@
           "page": "COMPLETION-AUDIT.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 21
-            }
-          ]
+          "incomplete": []
         },
         {
           "page": "index.html",
@@ -4089,12 +4099,7 @@
           "page": "STUDY-ON-ANY-DEVICE.html",
           "width": 390,
           "violations": [],
-          "incomplete": [
-            {
-              "id": "color-contrast",
-              "count": 10
-            }
-          ],
+          "incomplete": [],
           "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
         },
         {

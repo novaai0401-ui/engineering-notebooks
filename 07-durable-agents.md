@@ -207,3 +207,15 @@ The companion `labs/agent-evaluation/evaluate.py` runs an actual versioned 16-ca
 **Follow-up:** Why not just retry the entire graph? Because replay may repeat effects, consume extra budget and invalidate prior approvals. A successful retry also does not prove the original attempt failed.
 
 **Mastery task:** In Study Coach, approve a job, stop the Java process while the status is running, restart with the same database, and watch the attempt count. Cancel another job and verify that a stale worker cannot change it to done. Read the automated restart test before repeating this manually.
+
+
+## Deep workshop — Two durable records and a dangerous gap
+
+A checkpoint is a workflow bookmark. The payment receiver's record is a receipt. They live in different systems, so updating one does not update the other atomically.
+### Failure schedule
+At time 1, save pending operation PAY-17. At time 2, the receiver commits a charge and stores PAY-17 with its result. At time 3, the worker crashes before saving completion. At time 4, recovery reads pending and repeats PAY-17. The receiver returns the old receipt instead of charging again. At time 5, the worker saves completion.
+If the receiver saves its payment and deduplication record separately, a crash between those writes can still duplicate the effect. They need one atomic boundary. Concurrent first attempts require a storage uniqueness constraint; “check whether it exists, then insert” is not sufficient.
+### Approval and replay
+A suspended node may restart from its beginning. Avoid irreversible actions before the interrupt unless independently idempotent. Bind approval to the proposed payload or version. Changing an amount after approval requires a new decision.
+### Migration exercise
+Can a new checkpoint schema simply rename a required field? **No:** paused jobs still hold the old shape. Version persisted state, migrate deliberately, and test resuming an old checkpoint with new code. A fresh-run test cannot establish migration correctness. Keep old checkpoint fixtures and test both forward migration and rejection of unsupported versions.

@@ -277,3 +277,15 @@ Allow 45 minutes. Award two points for each answer: one for the mechanism and on
 Answers: (1) the null-extended joined row is still a row; count the non-null order key. (2) a candidate is (owner, created_at DESC, id DESC), tested against real plans and workload. (3) write skew violated the cross-row invariant; use a suitable serialization/locking design and bounded retries. (4) the external payment is outside the database transaction; use a provider-supported idempotency key and reconciliation. (5) asynchronous replication lag; use an appropriate read-after-write strategy. (6) immutable snapshots or small aggregate data fit; shared mutable and unbounded data may need references. (7) a unique scoped key plus stored request hash in the same atomic workflow. (8) approximate candidate selection and filtering interact; evaluate filtered recall and expansion strategies. (9) add compatible structure, dual-compatible code, backfill, validate, switch and later remove. (10) restore it into a separate environment and verify data, application behavior and recovery objectives.
 
 Next practical assessment: implement an order reservation with a stock invariant and two concurrent buyers. Test with real PostgreSQL, not just SQLite. Explain the observed isolation behavior before presenting the result as production evidence.
+
+
+## Deep workshop — Read a composite index as an ordered notebook
+
+An orders query filters tenant and paid status, orders newest first, and returns 20 rows. An index `(tenant_id,status,created_at,id)` groups by tenant, then status, then time and ID.
+### Connect filters to order
+Equality on tenant and status narrows to a contiguous region. The engine may scan that region in the desired direction and stop after enough qualifying rows, depending on the query and index. ID breaks timestamp ties. Use both fields in the ordering and cursor.
+### Keyset pagination
+The previous page ends at time T and ID 90 in descending order. Next ask for time less than T, or equal to T with ID less than 90, under the same tenant/status filters. This continues from a value boundary. Large OFFSET pagination may scan past many rows and shift under concurrent inserts.
+### Verify the plan
+Inspect actual execution and row counts. A scan may be rational for a small table or unselective predicate. Stale statistics or unsuitable ordering can also affect the plan. Index existence proves neither usage nor improvement.
+Indexes consume storage and increase write work. Covering a query can reduce table lookups but makes the index larger. Test realistic distributions and enforce authorization in the query; retrieving another tenant's rows and filtering afterward is not an acceptable pagination design.

@@ -12,7 +12,8 @@ try{
    const overflowIndex=await page.locator('pre').evaluateAll(nodes=>nodes.findIndex(n=>n.scrollWidth>n.clientWidth+2));
    if(overflowIndex>=0){
     const block=page.locator('pre').nth(overflowIndex);await block.focus();
-    await page.keyboard.press('ArrowRight');await page.waitForTimeout(120);
+    await page.keyboard.press('ArrowRight');
+    await page.waitForFunction(el=>el.scrollLeft>0,await block.elementHandle(),{timeout:2000});
     const moved=await block.evaluate(n=>n.scrollLeft>0);if(!moved)throw Error('Keyboard could not scroll code: '+name);
     await page.keyboard.press('Tab');const trapped=await block.evaluate(n=>document.activeElement===n);if(trapped)throw Error('Code focus trap: '+name);
     result.keyboardScrollableCode='ArrowRight scrolled; Tab left the first overflowing code region';

@@ -253,3 +253,19 @@ Capstone: a book-reservation API with users, books, and reservations. Implement 
 
 
 Advanced continuation: [10-java-spring-depth](10-java-spring-depth.html). The advanced workshop and accompanying projects extend the introductory scope described above.
+
+
+## Deep workshop — Trace a Java request to a database commit
+
+An API transfers 10 credits from A to B. The controller translates HTTP, the service enforces business rules, and the repository persists data. These boundaries let you test accounting without starting a browser and change error formatting without rewriting accounting.
+### Six observable steps
+1. Parse account IDs and amount; reject invalid types and nonpositive amounts.
+2. Authenticate the caller and separately authorize the source account.
+3. Enter the transactional service through its Spring-managed proxy.
+4. Protect balances using a concurrency strategy, such as ordered row locks or conditional updates. Checking the balance outside that boundary can race.
+5. Subtract 10 from A, add 10 to B, and record the operation identity atomically.
+6. Commit before reporting success. A retry with the same intent must not repeat the transfer.
+### Reproduce a failure
+Begin with A=100 and B=20. Inject failure after the debit but before the credit. Query through a new transaction after rollback: balances must remain 100 and 20. An in-memory entity is insufficient evidence because its fields may already have changed.
+### Explain the boundary
+Does `@Transactional` undo an email? **No:** a database rollback cannot unsend a remote message. Commit an outbox record beside the transfer, then deliver it through a retryable worker with duplicate handling. Also state the exception rollback policy: not every exception causes rollback under defaults. A happy-path test cannot establish rollback behaviour.

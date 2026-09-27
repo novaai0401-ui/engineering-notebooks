@@ -49,6 +49,8 @@ jobs:
           npx playwright install --with-deps chromium firefox webkit
       - name: Reading accessibility and keyboard scrolling
         run: node check_accessibility.mjs
+      - name: Interactive reading controls, themes and numerical examples
+        run: node check_interactive_reader.mjs
       - name: Java integration tests and artifact
         working-directory: labs/study-coach/java
         run: mvn -B -ntp package
@@ -70,6 +72,6 @@ jobs:
       - name: Container application smoke test
         run: python labs/study-coach/container_smoke.py
       - name: Stop this CI deployment
-        if: always()
+        if: ${{ always() && env.COACH_SERVICE_TOKEN != '' }}
         working-directory: labs/study-coach
         run: docker compose down

@@ -95,3 +95,15 @@ Question: “Does valid JSON mean the agent is safe?” Answer: syntax validatio
 Exercise: design a refund agent with a maximum refund of 500 units. Answer outline: integer minor units; authenticated customer; server-side order ownership; refundable-balance check inside a transaction; idempotency key tied to request content; human approval above policy threshold; ledger and audit event; retry reconciliation; tests for concurrent refunds and response loss. Do not place the refund authority in the prompt.
 
 API references used while writing: [Ollama chat](https://docs.ollama.com/api/chat) and [tool calling](https://docs.ollama.com/capabilities/tool-calling). The teaching text and examples are contained here; links are provenance, not required reading.
+
+
+## Deep workshop — Separate model output from accepted output
+
+The model emits tokens; the application chooses whether to publish them. Displayed tokens cannot be unseen after later validation fails. Buffering a bounded draft permits rejection before publication but delays the first visible answer.
+### Validate distinct layers
+Check transport completion and output size. Parse structure. Validate citations against authorized source IDs. Then assess whether the claims follow from the sources. The first checks are mechanical; semantic correctness is separate.
+Evidence says checkpoints preserve progress and effects still need idempotency keys. An answer claiming checkpoints guarantee idempotency can cite the correct source and remain false. Preserve that failure rather than loosening the scoring rule.
+### Budget the whole request
+A token cap does not bound wall time. Add connection, read, and overall deadlines, plus input-size limits. A worker lease must accommodate the permitted call or be renewed safely. Propagate cancellation instead of leaving invisible work running.
+### Recovery contract
+After malformed output, return a clear failure or explicitly labelled authorized excerpts. Do not call excerpts a generated answer. Do not expose raw provider errors containing internal details. Factual scores and successful transport tests belong in separate columns: one does not substitute for the other.

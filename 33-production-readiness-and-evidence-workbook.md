@@ -380,3 +380,16 @@ Imagine a bookmark showing where you stopped reading a recipe. That bookmark is 
 Our real model once said a checkpoint “ensures” idempotent effects, despite citing a source that required separate keys. The citation was valid; the claim was wrong. The adapter now explicitly asks the model to preserve limitations and distinguish separate safeguards. That is a prompt improvement, not a mathematical guarantee. The source-only mode remains the default.
 
 Practice the same reasoning elsewhere: replication copies accidental deletions too, so it does not replace historical backups. Encryption keeps a message private, while authorization decides who may act. A cache TTL says nothing about a payment timeout unless the evidence explicitly connects them. Read the [live semantic regression report](labs/study-coach/python/semantic-regression-report.json) for the actual answers and review criteria. These are development cases, not an independent benchmark.
+
+
+## Deep workshop — Replace a green checklist with an evidence ledger
+
+“Tested” must name what ran, where, and what was observed. Three local processes are useful evidence, but not equivalent to independent-machine, zone, or provider failure.
+### State one claim precisely
+Claim: worker crash does not duplicate a charge. Setup: one API, durable job store, and idempotent receiver. Intervention: kill the worker after charge commit but before completion save. Observation: recovery returns the same receipt and one charge exists. Limitation: shared database failure and regional partition were not tested.
+### Separate four labels
+A design explains a mechanism. A runnable example supplies an experiment. A passing test establishes assertions in its setup. Production acceptance checks agreed requirements in the actual environment. Moving a recipe directly to “verified” skips the necessary evidence.
+### Apply this to AI
+Define questions and criteria before reviewing predictions. Keep failures, timeouts, abstentions, and malformed results in the denominator. Tuning on those questions makes them development cases; fresh independent evaluation is needed for generalization.
+### Oral exercise
+Explain one failure, the smallest causal fix, the regression that catches it, and a remaining uncertainty. **Answer standard:** Clear boundaries make the accomplishment more credible. Recognizing unsupported claims is part of engineering expertise, not lack of confidence. Human device testing and your unaided interview answers cannot be inferred from automated success.

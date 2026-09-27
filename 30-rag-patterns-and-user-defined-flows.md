@@ -252,3 +252,16 @@ Imagine the librarian finds the right pages, but the storyteller's microphone st
 Set generation_timeout_seconds in flow.json to a number from 1 to 240; the default is 120. A timeout is a waiting limit, not proof of cancellation inside the model server. No permitted evidence means the model is not called at all. Permissions are applied before both generation and fallback. A successful generated answer still carries a factual-review warning; successful HTTP delivery does not establish truth.
 
 Run `python labs/rag-flow/test_generation_recovery.py` for injected timeout, unavailable-service, malformed-output, permission and configuration checks. These tests deliberately simulate transport failures. They verify recovery behavior, not model intelligence. Run test_flow.py afterward to exercise all six offline routes.
+
+
+## Deep workshop — Choose RAG by the evidence the question needs
+
+Ingestion converts source documents into chunks, metadata, and searchable representations. Query time retrieves authorized evidence, optionally reranks, constructs context, and evaluates the answer. Generation cannot repair evidence that retrieval never supplied.
+### Trace six routes on one question
+“Who leads the team owning Atlas?” A says Atlas belongs to Search. B says Noor leads Search. Simple retrieval may find both. Hybrid retrieval combines lexical matching for Atlas with semantic matching for ownership and leadership. A graph route follows Atlas → owned_by → Search → led_by → Noor, with provenance and permission checks for every supporting edge.
+Multi-hop retrieval first finds Search, then asks for its leader. Agentic retrieval lets a bounded decision-maker choose the second search. Adaptive retrieval selects routes using evidence sufficiency or explicit rules. Labels overlap: an agent can perform multi-hop hybrid searches against a graph-backed system.
+### Inspect the intermediate artifacts
+Record retrieved IDs, source versions, permissions, reranking, and exact supplied context. An unauthorized document cannot become permission to reveal its contents through an inferred graph path.
+For cosine similarity, divide dot product by vector lengths. Query [1,0] and passage [0.8,0.6] have similarity 0.8; both norms are 1. That is a ranking signal, not a calibrated truth probability.
+### Evaluate each connection
+Measure evidence recall, access filtering, claim support, and abstention separately. Conflicting authoritative sources without a resolution policy call for an explanation of conflict, not selection of whichever arrived first.

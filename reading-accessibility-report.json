@@ -201,8 +201,7 @@
       "page": "32-load-balancing-from-playground-to-production.html",
       "width": 1280,
       "violations": [],
-      "incomplete": [],
-      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+      "incomplete": []
     },
     {
       "page": "33-production-readiness-and-evidence-workbook.html",
@@ -275,24 +274,14 @@
       "page": "05-fullstack-ai-architecture.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 5
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "06-algorithms-and-design-patterns.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 27
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
@@ -433,7 +422,7 @@
       "incomplete": [
         {
           "id": "color-contrast",
-          "count": 5
+          "count": 1
         }
       ],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
@@ -456,48 +445,28 @@
       "page": "29-databases-for-fullstack-and-ai.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 9
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "30-rag-patterns-and-user-defined-flows.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 26
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "31-java-microservices-interview-masterclass.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 7
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "32-load-balancing-from-playground-to-production.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 5
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
@@ -511,12 +480,7 @@
       "page": "COMPLETION-AUDIT.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 21
-        }
-      ]
+      "incomplete": []
     },
     {
       "page": "index.html",
@@ -535,12 +499,7 @@
       "page": "STUDY-ON-ANY-DEVICE.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 10
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {

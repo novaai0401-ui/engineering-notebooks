@@ -537,3 +537,15 @@ Total 30. Suggested practice target: 24, with no claim that a timeout proves a p
 | JUnit, Mockito, automation and retrospective | Lessons 21–22 | [Capstone assessment](28-fullstack-capstone-and-assessment.html) |
 
 Reference checks were performed on 25 September 2026. Linked official sources are optional verification material; the teaching explanations, examples and answer keys are included in this notebook. Exact framework pins and executed results are recorded in the workshop, while provider-specific recipes and personal experience remain explicitly distinguished.
+
+
+## Deep workshop — Explain HashMap collisions with actual keys
+
+A hash chooses a candidate bucket; equality distinguishes keys there. Equal hashes do not imply equal keys, so a collision must not overwrite an unrelated entry.
+### Trace insertion
+Insert unequal A and B, both hash 7, with values “first” and “second.” Both must remain distinguishable. Looking up a separately constructed equal copy of A should find “first.” Equal keys must produce equal hashes; unequal keys may still collide.
+### The mutable-key trap
+If hash depends on email, changing email after insertion can send lookup to another bucket. Even the same object reference may then be difficult to find through the normal lookup path. Prefer immutable key identity or controlled removal and reinsertion.
+### Concurrency adds a boundary
+A thread-safe map protects supported operations, not arbitrary check-then-act sequences. Use an appropriate atomic map operation for local creation. That does not coordinate a remote payment transaction or make its side effects safe to repeat.
+What if equals is overridden without hashCode? **Answer:** Distinct equal objects may retain unequal inherited hashes and violate the collection contract. Test separate equal instances, not just the same reference. Discuss the contract before version-specific details such as bucket treeification thresholds.

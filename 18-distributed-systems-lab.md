@@ -73,3 +73,15 @@ In 20 minutes, design a document-processing service for 10,000 jobs per day. Fir
 Scoring out of 10: two for a clear invariant and state machine; two for atomic job/outbox commit; two for duplicates and external effects; two for bounded retries, cancellation and leases; two for metrics and recovery tests. A diagram full of product names without these guarantees earns little credit.
 
 Reference provenance: [Spring JMS integration](https://docs.spring.io/spring-boot/reference/messaging/jms.html). The implementation uses ActiveMQ Classic; it does not claim RabbitMQ-specific acknowledgment behavior.
+
+
+## Deep workshop — Make the outbox solve one atomicity gap
+
+An order update and broker publication normally belong to different transactions. Commit the order first and crash: no event. Publish first and roll back: an event describes an order that never committed.
+### Change the boundary
+Write the order and an outbox row with stable event ID in one database transaction. A separate publisher reads committed rows and sends events, then records publication progress. The order and intention to publish now share atomicity.
+### Duplicates remain possible
+Crash after broker acceptance but before marking sent, and recovery publishes again. The consumer needs duplicate handling at its effect boundary. Store consumed event ID and business update atomically where possible. A check followed by an unrelated write is not atomic deduplication.
+### Ordering and maintenance
+Specify whether order matters per aggregate, partition, or globally. An aggregate version can expose stale updates or gaps. Keep outbox data until the delivery contract permits cleanup. Monitor oldest unpublished age; row count alone can hide one permanently stuck event.
+Why not coordinate every system in a distributed transaction? **Answer:** Participation, availability, and operational costs may make that unsuitable. An outbox offers local atomicity plus eventual delivery, with explicit duplicates, delay, and reconciliation. Name those tradeoffs instead of claiming universal exactly-once behaviour.

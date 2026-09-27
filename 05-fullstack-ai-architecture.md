@@ -244,3 +244,15 @@ Detailed coverage: request paths, contracts, SQL, transactions, idempotency, ide
 
 
 Advanced continuation: [14-fullstack-workshop](14-fullstack-workshop.html). The advanced workshop and accompanying projects extend the introductory scope described above.
+
+
+## Deep workshop — Connect the system with a durable job
+
+A long AI request should not depend on one browser connection staying open. A durable job is a kitchen ticket: closing the menu does not erase the order. The browser displays progress; storage owns the job state.
+### Follow J-42
+The browser submits a question and idempotency key. Java checks identity and ownership, commits pending job J-42, and returns its ID. A worker claims a lease, calls Python with authorized context, and stores a result. The browser may consume SSE, but after reconnecting it can retrieve the durable result with a GET.
+A lease is temporary ownership. A slow old worker can continue after its lease expires and a replacement starts. Protect result writes with a claim/version token and make effects idempotent. Expiry alone does not stop a paused process from waking up.
+### Define the contract
+A create response needs a job ID and status URL. A status response needs stable status values, a version, a completed result, or a safe error code. Distinguish “cancellation requested” from “all work definitely stopped.” These promises require different evidence.
+### Reproduce uncertainty
+Disconnect after commit but before the response. Retry the same payload and key: expect the same job ID. Retry another payload with that key: expect conflict. Scope the key to the caller and operation. A globally unscoped key can expose another user's result. This experiment tests a failure boundary that an ordinary successful POST does not.

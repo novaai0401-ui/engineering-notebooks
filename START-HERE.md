@@ -4,7 +4,7 @@ Start with the story, say the idea in your own words, trace the small example on
 
 ## Choose a notebook
 
-The expanded library contains 30 notebooks. For exact folders and commands, start with [Study on any device](STUDY-ON-ANY-DEVICE.html). The [completion audit](COMPLETION-AUDIT.html) separates executed checks from remaining verification. After the foundation and advanced workshops, continue with:
+The expanded library contains 33 notebooks. For exact folders and commands, start with [Study on any device](STUDY-ON-ANY-DEVICE.html). The [completion audit](COMPLETION-AUDIT.html) separates executed checks from remaining verification. After the foundation and advanced workshops, continue with:
 
 | New notebook | What it adds |
 | --- | --- |
@@ -135,3 +135,14 @@ No finite collection can include every algorithm, every design pattern or every 
 
 
 For the latest database, TLS/WebSocket, identity, AI evaluation, accessibility and endurance verification commands, see the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md). Results and external requirements are tracked in the [completion audit](COMPLETION-AUDIT.html).
+
+
+## Use the interactive edition
+
+Choose Violet, Ocean, or Night in the reading controls. Increase text size or use Focus reading to hide the navigation. Search the library for a subject, or search the lesson list inside a notebook. All reading controls and simulations work without a network connection.
+
+Each notebook now ends with a **Deep workshop**: a concrete scenario, intermediate steps, failure reasoning, and a worked answer. Use the table of contents to jump there. Try the prediction before revealing an answer; a revealed answer is not an assessment of your own work.
+
+The learning studio lets you explore gradient descent, lower-bound binary search, average in-flight work, or crash-and-retry behaviour depending on the subject. These are explicitly limited teaching simulations, separate from the executed service labs. Change an input and explain the result before reading the explanation.
+
+Notes and sections marked read are stored only in the current browser when storage is available. They do not synchronize between devices, are not uploaded, and are not automatically graded. Copy important notes elsewhere before clearing browser data. The HTML edition contains the interactive controls; Markdown and Jupyter retain the prose and worked examples. The documented runtime requirements still apply to executing code.

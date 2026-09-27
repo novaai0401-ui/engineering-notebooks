@@ -151,3 +151,16 @@ Read [Spring's Basic authentication documentation](https://docs.spring.io/spring
 **Task, 20 points:** Design enrollment plus notification under concurrency. Award 4 points for the seat invariant and a valid atomic strategy, 3 for transaction boundaries, 3 for an outbox and idempotent consumer, 3 for JPA query planning, 3 for identity/ownership checks, and 4 for failure tests covering rollback, duplicate delivery and concurrent attempts.
 
 **Follow-up:** Would `synchronized` on one service method solve double booking across three servers? No; its lock exists only in one JVM. **Follow-up:** Would adding `@Transactional` everywhere solve N+1? No; transaction scope and query shape are separate. **Follow-up:** Does a cache always improve latency? A remote cache, serialization overhead or a miss storm can make it worse. Measure the complete path.
+
+
+## Deep workshop — Catch a lost update with a two-person schedule
+
+A stock row holds quantity 1. Two transactions both read 1, both approve a sale, and both write 0. The final row looks reasonable, but two sales were accepted for one item. Inspecting only the final quantity misses the violated invariant.
+### Make the invariant executable
+One strategy is `UPDATE stock SET quantity=quantity-1 WHERE id=? AND quantity>0`. Accept only if one row changed. Predicate and update form one statement under the database's concurrency rules. Alternatives include row locking before reading or optimistic version checks with explicit conflict handling.
+### Find the actual transaction
+A Spring proxy can start a transaction when another object calls the proxied method. A same-object call usually bypasses that proxy. Put the transactional operation behind a separately injected service when that makes the boundary clearer. A public method annotation alone is not evidence of interception.
+### Follow SQL, not annotations
+Loading 20 orders, then reading each customer's lazy details, may issue 21 statements. Measure SQL and latency. Fetch joins, projections, or batch fetching can help, but joining multiple collections can multiply rows and complicate pagination.
+### Retry question
+Should every conflict be retried? **No:** retry only known retryable failures, with a bounded budget and a fresh transaction. Reusing a failed transaction or repeating a remote effect can worsen correctness. Test simultaneous buyers, not just a sequential pair of requests.

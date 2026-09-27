@@ -103,3 +103,15 @@ For a second attempt, change the constraints: limited memory, multiple tenants, 
 You are ready to move beyond a lesson when you can explain it simply, implement the essential mechanism without copying, predict a failure, write a meaningful test, and discuss a reasonable alternative. If you only recognize the terminology, repeat a smaller exercise. If you can implement it but cannot justify it, practice the invariant or tradeoff aloud.
 
 This collection now provides worked material for every requested area, a connected application, and graded practice. It does not claim that every algorithm, employer, exam syllabus or future framework release is covered. Keep an error log and use new problems to measure transfer of understanding rather than counting pages read.
+
+
+## Deep workshop — Answer an interview question as an experiment
+
+Question: “How do you make a payment API idempotent?” First define the boundary: repeated attempts for one intended payment should create one observable payment; distinct intentions remain distinct.
+### Build the answer
+Use an operation key scoped to caller and operation. Store a payload hash so changed arguments conflict. Enforce uniqueness in storage so concurrent first attempts cannot both win. Store processing state and the final result. A retry returns the existing identity rather than creating a second payment.
+If a remote provider is involved, local deduplication does not prove that provider charged only once. Forward a stable provider key or reconcile using its status API. A timeout is uncertainty, not proof of failure.
+### Grade out of ten
+Award two points each for scope, concurrent uniqueness, changed-payload handling, crash/timeout reasoning, and a reproducible test. “Cache the response” leaves eviction, crashes, and concurrent misses unexplained.
+### Follow-up answer
+The first request is still processing. What should the retry receive? **Answer:** Existing processing identity and status, or another documented in-progress response. No final result does not justify another charge. Explain recovery of abandoned work and retention of operation identities. Record whether you answered without hints; reading this answer is practice, not an unaided assessment.

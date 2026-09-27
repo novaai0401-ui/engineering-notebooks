@@ -236,3 +236,15 @@ Worst-case time is `O(VE)`, space `O(V)` excluding input. An unreachable negativ
 **Round D, debugging:** A tree validator accepts a left grandchild greater than the root. The missing invariant is the ancestor bound. A DP returns twice an item's value with only one item available. The likely bug is upward capacity iteration. A path algorithm produces nonsense with a negative cycle. The problem has no finite minimum for affected reachable destinations; changing a heap implementation cannot fix the mathematical issue.
 
 Further specialist topics include balanced-tree rotations, segment/Fenwick trees, strongly connected components, max flow, string matching, suffix structures, randomized algorithms and approximation. This notebook supplies core implementations and proof habits, not a claim that the finite list exhausts algorithm research.
+
+
+## Deep workshop — Why the knapsack loop runs backward
+
+One item has weight 2 and value 3. Bag capacity is 4. In 0/1 knapsack, each item may be used once. Let `dp[c]` mean the best value at capacity c using processed items.
+### Watch the wrong loop
+All entries start at 0. An upward loop sets dp[2]=3. Later dp[4] reads the newly changed dp[2] and becomes 6. The item was used twice: this is an unbounded-reuse calculation, not the requested problem.
+### Preserve the previous layer
+Iterate downward from 4 to 2. At c=4, dp[2] still belongs to the previous item layer and is 0, so dp[4]=3. At c=2, dp[0]=0 and dp[2]=3. Maximum value is 3.
+The recurrence is `best(i,c)=max(best(i-1,c),value[i]+best(i-1,c-weight[i]))` when the item fits. Both alternatives refer to i-1. That dependency explains the direction. Time is O(items*capacity), memory O(capacity). This is pseudo-polynomial because the numeric capacity, not its digit count, controls work.
+### Transfer the reasoning
+Why can an unlimited-coin problem use upward iteration? **Answer:** Reusing the current coin is allowed, so the current layer may depend on itself at a smaller capacity. Derive loop direction from the dependency graph rather than memorizing “DP always runs backward.”

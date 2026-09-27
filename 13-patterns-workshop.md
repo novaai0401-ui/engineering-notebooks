@@ -522,3 +522,15 @@ Adapter changes the interface; decorator preserves it while adding behavior; pro
 **Answer sketch:** Inject a formatter and scoring strategy into an application service. Use snapshots or commands for draft history with explicit version checks. Put publication behind an authenticated service boundary, persist an operation key and return a stable result. A facade may simplify the use case; a singleton is unnecessary. Do not build 23 patterns into one application to prove you know them.
 
 **Mastery exercise:** For each cell, modify one assertion to describe an invalid use, then decide whether the implementation should reject it or the contract should exclude it. Add the appropriate check. Explain one situation where deleting the pattern would improve the code.
+
+
+## Deep workshop — Choose a pattern by identifying what changes
+
+Checkout supports card and bank payments. The varying behaviour is payment execution. Inject a PaymentStrategy into checkout; keep order validation in checkout and payment-specific work in the strategy. The abstraction is useful when behaviours vary independently, not merely because the pattern exists.
+### Distinguish similar wrappers
+An Adapter translates an interface: a legacy gateway takes cents and returns another response shape. A Decorator preserves the interface while adding behaviour, such as timing. A Proxy controls access or defers work, such as checking authorization before a remote call. All can hold another object; their intent and contract distinguish them.
+### Failure ordering matters
+A retry decorator around a non-idempotent payment can duplicate charges. Logging raw payment credentials creates a confidentiality problem. A pattern name does not make side effects safe. Define retryable errors, safe log fields, and stable operation identity.
+### Refactor and test
+First capture existing behaviour with a test. Extract the varying operation, inject one implementation, then add the second. Run common contract tests for both and implementation-specific failure tests separately.
+When is Strategy worse than a conditional? **Answer:** A tiny stable distinction may become harder to understand with extra classes. Independent evolution, different dependencies, and separate testing justify the indirection. Explain the cost as well as the benefit.

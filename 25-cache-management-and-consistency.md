@@ -96,3 +96,15 @@ The test first waits for both replicas to acknowledge a record. It then kills th
 This does not turn Redis replication into synchronous consensus. WAIT measures acknowledgements in that execution; asynchronous replication can still lose data under other failures. A three-process election on one computer is not a three-machine resilience test. Distinguish Sentinel's failover coordination, the client's rediscovery and the durability of your business data. A cache can often be rebuilt; an authoritative payment ledger needs a separately justified durability design.
 
 Run `labs/test_redis_failover.py` inside the named WSL lab using the exact commands in [Reliability extensions](labs/RELIABILITY-EXTENSIONS.md). No cloud account is required for this local exercise.
+
+
+## Deep workshop — Reproduce the late-loader cache race
+
+The database holds profile version 1. Reader A misses cache and reads version 1. Writer B commits version 2 and invalidates cache. A then fills cache with its old version 1. Invalidation happened, yet stale data returned.
+### TTL is a bound, not prevention
+A TTL can bound stale duration under stated assumptions; it does not eliminate this race. A stale display label may be acceptable. Stale authorization or money state may violate the contract. Classify data before choosing cache policy.
+### Strategies and limits
+Version-aware writes can reject older fills if the cache knows a newer version. Versioned keys help if discovering the current version is trustworthy. Coordinating fills and writes requires correct distributed synchronization. Sometimes sensitive decisions should not be cached.
+### Stampede arithmetic
+At expiry, 1,000 simultaneous misses can create 1,000 database reads. Single-flight loading lets one loader refresh while others wait or use explicitly allowed stale values. Bound waiting and handle loader crashes. TTL jitter avoids synchronized expiry across many keys.
+Is an expiring Redis lock enough to stop an old paused writer? **No:** expiry changes ownership but does not stop the process. A fencing token checked by the protected resource can reject stale owners. Include this schedule in tests rather than testing only normal lock release.

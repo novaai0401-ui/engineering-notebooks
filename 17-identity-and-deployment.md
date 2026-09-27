@@ -61,3 +61,15 @@ Symptom: login works locally but loops after deployment. Investigate actual call
 Exercise: a learner can open `/api/admin/status` by typing the URL although the button is hidden. Correct answer: backend authorization is missing or incorrectly matched. Add the role requirement, then test anonymous, learner and admin requests. Frontend tests alone cannot prove access control.
 
 Reference provenance: [Spring OIDC login](https://docs.spring.io/spring-security/reference/servlet/oauth2/login/core.html), [Keycloak import/export](https://www.keycloak.org/server/importExport). Local project: `labs/study-coach/identity` and `test_identity.py`.
+
+
+## Deep workshop — Rotate a secret without confusing identity layers
+
+A client secret authenticates an application to an identity provider. An access token conveys delegated authority to a resource server. A browser session represents a local login. Rotating one does not automatically revoke the others.
+### Follow cutover
+Identify all instances using the old secret. Where overlap is supported, enable the new credential, update instances, verify actual token exchanges, then retire the old credential. Confirm old-secret authentication fails and new-secret authentication succeeds. An invalid authorization code is still an error even if it demonstrates that client authentication was accepted.
+### Revocation is another path
+Logout must reach relevant instances or a shared durable revocation record. An unavailable instance needs retries or reconciliation before accepting affected sessions again. In-memory sessions disappearing on restart does not establish reconciliation of a persistent shared store.
+### Diagnose precisely
+Separate state mismatch, missing authorization request, redirect mismatch, invalid client credentials, expired code, and rejected cookies. All can look like “login failed” while needing different fixes. Record sanitized error codes and timing.
+Do ten successful logins prove yesterday's root cause? **No:** they establish current behaviour under the tested schedule. Historical attribution requires matching evidence. A reproduced possible mechanism remains a hypothesis until the old trace supports it.

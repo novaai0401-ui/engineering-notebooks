@@ -103,3 +103,15 @@ The automated suite checks authentication, CSRF, ownership, idempotency conflict
 **Interview, 20 points:** Explain one complete question from browser to answer (4), identify trust boundaries (4), explain crash recovery and duplicate handling (4), describe a streaming reconnect (3), and state capacity/deployment limitations with a justified next step (5).
 
 **Model answer to “is this production-ready?”:** It is a tested local educational integration. Production readiness requires requirements-specific identity, deployment, storage, capacity, security, monitoring and operational evidence. Its explicit boundaries and failure tests make it a useful foundation, but a passing classroom suite is not a production certification.
+
+
+## Deep workshop — Turn the capstone into a reproducible experiment
+
+Identify the smallest journey: sign in, submit one question, approve it, receive an answer, refresh, and retrieve the same result. Write expected durable state at each boundary before starting every service.
+### Follow the evidence
+Before submission there is no job. Accepted creation commits one pending row with caller and operation key. Approval changes an allowed state; it does not create another job. A claim records ownership and expiry. Completion stores the answer. Refresh queries that record instead of repeating creation as a new intent.
+### Useful integration checks
+Create twice with one key and payload, then compare IDs. Approve, poll with a bounded deadline, and verify authorized sources. Restart the application and retrieve the same job. Use a second user and verify denial. These separately test idempotency, persistence, and ownership.
+### Debug the first broken boundary
+If loading never ends, ask whether the row exists, whether it was claimed, whether Python completed, and whether completion reached the UI. HTTP 200 does not establish that every streamed event was valid. Carry a correlation ID across services without logging credentials or private source text.
+Why are mocked repositories insufficient? **Answer:** They cannot establish migrations, constraints, real transaction boundaries, or restart persistence. Use unit tests for local decisions and real integrations for storage contracts.

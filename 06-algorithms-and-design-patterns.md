@@ -480,3 +480,15 @@ This notebook implements representative recurring techniques and catalogs broade
 
 
 Advanced continuation: [13-patterns-workshop](13-patterns-workshop.html). The advanced workshop and accompanying projects extend the introductory scope described above.
+
+
+## Deep workshop — Derive binary search rather than memorize it
+
+Search `[2,4,4,9,13]` for the first value at least 4. Use a half-open interval `[lo,hi)`: lo is included, hi excluded. Initially lo=0, hi=5. An answer of 5 means no value qualifies.
+### Keep an invariant
+All positions before lo are too small. All positions at or after hi qualify, if they exist. Compute `mid = lo + (hi-lo)//2`. If `a[mid] < target`, set lo=mid+1. Otherwise set hi=mid, retaining mid as a candidate.
+For target 4: mid=2 has 4, so hi=2. Mid=1 has 4, so hi=1. Mid=0 has 2, so lo=1. Now lo=hi=1. Equality did not stop the search; stopping at the first equality might return the second 4.
+### Prove the result
+Every update strictly reduces the nonnegative interval length. On termination, the invariant says every earlier index is too small and the returned index is the first possible match. Halving candidates gives logarithmic comparisons, assuming random-access indexing. Repeatedly walking a linked list to reach mid changes the cost.
+### Practice and answer
+Target 14 returns 5; check the bound before reading the array. An empty array starts with lo=hi=0 and never enters the loop. The interval definition handles both cases without special patches. Write tests for empty input, all-smaller values, all-larger values, and duplicates at both ends.

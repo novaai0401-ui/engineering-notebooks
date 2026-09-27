@@ -249,3 +249,14 @@ For outputs with multiple columns, account for the loss's exact averaging conven
 Award 3 points for an installable package and tests; 3 for boundary validation and types; 4 for leakage-safe evaluation; 4 for a correct from-scratch algorithm and gradient or invariant check; 3 for measured performance with workload details; 3 for a specific limitation. Do not award “production-ready” points merely because training accuracy is 100%.
 
 **Debugging answer:** If loss has shape `(n,n)` and should have shape `(n,)`, fix shapes at the boundary before tuning learning rate. **Statistics answer:** A narrow confidence interval around a biased estimate does not make it correct. **Design answer:** Keep training, prediction, storage and transport separate enough to test independently, but do not create an interface for every single function without a reason.
+
+
+## Deep workshop — Compute a gradient update with every number visible
+
+Fit `prediction = w*x + b` to points (1,2) and (2,4). Begin w=0, b=0. Define mean squared loss as `((p1-y1)^2 + (p2-y2)^2)/2`. Predictions are 0, errors are -2 and -4, and loss is (4+16)/2=10.
+### Derive the movement
+The derivative of squared error with respect to prediction is twice the error. Multiply by x to account for how w changes prediction. Thus `dL/dw = (2/2)*((-2)*1+(-4)*2) = -10`. Likewise `dL/db = (2/2)*(-2-4) = -6`. At learning rate 0.1, subtract the gradient: w=1 and b=0.6.
+New predictions are 1.6 and 2.6. Errors are -0.4 and -1.4, so loss becomes (0.16+1.96)/2=1.06. This update improved training loss. It proves neither generalization nor that every larger learning rate works.
+### Scaling and verification
+A feature measured in millions can dominate gradients relative to a feature measured in fractions. Fit scaling parameters on training data only. Handle constant columns explicitly to avoid division by zero.
+Approximate a derivative with `(L(w+epsilon)-L(w-epsilon))/(2*epsilon)`. Compare with the analytic derivative on a small synthetic example. Extremely tiny epsilon can worsen cancellation; try several values and use tolerance rather than exact equality. A gradient check diagnoses calculus or implementation errors; validation performance diagnoses a different problem.

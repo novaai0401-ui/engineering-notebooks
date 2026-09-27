@@ -7,7 +7,7 @@ Updated on 25 September 2026; individual reports include retained earlier eviden
 | Check | Result |
 | --- | --- |
 | Notebook execution | 153 passed; no failed cells |
-| Reading material | 33 notebooks, 425 lessons, 79,650 words |
+| Reading material | 33 notebooks, 458 lessons, 86,911 words |
 | Connected Java service | 11 tests passed: 8 integration and 3 session-race component tests |
 | Original Spring starter | 3 tests passed in foundation validation |
 | React unit/DOM/hydration | 3 tests passed |
@@ -23,39 +23,39 @@ Updated on 25 September 2026; individual reports include retained earlier eviden
 
 | Notebook | Lessons | Passing executable cells |
 | --- | --- | --- |
-| [Notebook 1 — Agents, LangChain, LangGraph, Deep Agents, and MCP](01-agent-engineering.html) | 14 | 11 |
-| [Notebook 2 — Python for AI, ML, and Generative AI](02-python-for-ai.html) | 15 | 12 |
-| [Notebook 3 — Java and Spring Boot, From Objects to Services](03-java-spring-boot.html) | 14 | 4 |
-| [Notebook 4 — React and Frontend Engineering](04-react-and-frontend.html) | 14 | 2 |
-| [Notebook 5 — Full-Stack Java, Python, React, and AI Engineering](05-fullstack-ai-architecture.html) | 14 | 3 |
-| [Notebook 6 — Algorithms, Design Principles, and Patterns](06-algorithms-and-design-patterns.html) | 18 | 13 |
-| [Notebook 7 — Agents that survive mistakes and restarts](07-durable-agents.html) | 8 | 6 |
-| [Notebook 8 — A remote MCP service you can inspect and test](08-remote-mcp.html) | 8 | 1 |
-| [Notebook 9 — Python engineering, mathematics, and ML from scratch](09-python-ai-depth.html) | 10 | 10 |
-| [Notebook 10 — Java and Spring beyond the happy path](10-java-spring-depth.html) | 10 | 3 |
-| [Notebook 11 — React, TypeScript, browser behavior and real tests](11-react-depth.html) | 10 | 3 |
-| [Notebook 12 — Trees, graphs, backtracking and dynamic programming](12-algorithms-depth.html) | 10 | 8 |
-| [Notebook 13 — All 23 classic design patterns, implemented and challenged](13-patterns-workshop.html) | 25 | 23 |
-| [Notebook 14 — Build and defend a complete connected system](14-fullstack-workshop.html) | 11 | 0 |
-| [Notebook 15 — Graded interviews, debugging rounds and answer keys](15-interview-practice.html) | 10 | 0 |
-| [16 — Real models: from a talking helper to a bounded agent](16-live-model-engineering.html) | 8 | 2 |
-| [17 — Identity and deployment: who are you, and where does the app live?](17-identity-and-deployment.html) | 9 | 0 |
-| [18 — Many workers, one trustworthy result](18-distributed-systems-lab.html) | 8 | 1 |
-| [19 — Seeing failures and testing the whole experience](19-observability-and-browser-quality.html) | 8 | 2 |
-| [20 — Deeper algorithms and mathematics, one small step at a time](20-specialist-algorithms-and-math.html) | 13 | 9 |
-| [21 — Practice that measures understanding](21-assessed-interview-route.html) | 9 | 1 |
-| [22 — Kafka: a shared notebook that many teams can read](22-kafka-event-engineering.html) | 12 | 2 |
-| [23 — Docker: pack the lunchbox before sending it to school](23-docker-and-release-engineering.html) | 11 | 1 |
-| [24 — Kubernetes: a caretaker for running applications](24-kubernetes-from-pods-to-recovery.html) | 9 | 1 |
-| [25 — Cache management: keeping photocopies useful](25-cache-management-and-consistency.html) | 10 | 2 |
-| [26 — Real-time applications: messages that survive disconnection](26-websockets-sse-and-realtime-delivery.html) | 10 | 1 |
-| [27 — Reliability: prove what happens when things go wrong](27-reliability-evaluation-and-operations.html) | 12 | 2 |
-| [28 — Put the pieces together: a full-stack engineering capstone](28-fullstack-capstone-and-assessment.html) | 8 | 1 |
-| [29 — Databases: the organised memory of your application](29-databases-for-fullstack-and-ai.html) | 18 | 7 |
-| [30 — RAG: connect the question to the right evidence](30-rag-patterns-and-user-defined-flows.html) | 21 | 3 |
-| [Notebook 31 — Java, Spring Batch and microservices interview masterclass](31-java-microservices-interview-masterclass.html) | 23 | 8 |
-| [Notebook 32 — Load balancing: from a playground queue to production traffic](32-load-balancing-from-playground-to-production.html) | 20 | 6 |
-| [Notebook 33 — The launch room: cloud, AI quality, databases and recovery](33-production-readiness-and-evidence-workbook.html) | 25 | 5 |
+| [Notebook 1 — Agents, LangChain, LangGraph, Deep Agents, and MCP](01-agent-engineering.html) | 15 | 11 |
+| [Notebook 2 — Python for AI, ML, and Generative AI](02-python-for-ai.html) | 16 | 12 |
+| [Notebook 3 — Java and Spring Boot, From Objects to Services](03-java-spring-boot.html) | 15 | 4 |
+| [Notebook 4 — React and Frontend Engineering](04-react-and-frontend.html) | 15 | 2 |
+| [Notebook 5 — Full-Stack Java, Python, React, and AI Engineering](05-fullstack-ai-architecture.html) | 15 | 3 |
+| [Notebook 6 — Algorithms, Design Principles, and Patterns](06-algorithms-and-design-patterns.html) | 19 | 13 |
+| [Notebook 7 — Agents that survive mistakes and restarts](07-durable-agents.html) | 9 | 6 |
+| [Notebook 8 — A remote MCP service you can inspect and test](08-remote-mcp.html) | 9 | 1 |
+| [Notebook 9 — Python engineering, mathematics, and ML from scratch](09-python-ai-depth.html) | 11 | 10 |
+| [Notebook 10 — Java and Spring beyond the happy path](10-java-spring-depth.html) | 11 | 3 |
+| [Notebook 11 — React, TypeScript, browser behavior and real tests](11-react-depth.html) | 11 | 3 |
+| [Notebook 12 — Trees, graphs, backtracking and dynamic programming](12-algorithms-depth.html) | 11 | 8 |
+| [Notebook 13 — All 23 classic design patterns, implemented and challenged](13-patterns-workshop.html) | 26 | 23 |
+| [Notebook 14 — Build and defend a complete connected system](14-fullstack-workshop.html) | 12 | 0 |
+| [Notebook 15 — Graded interviews, debugging rounds and answer keys](15-interview-practice.html) | 11 | 0 |
+| [16 — Real models: from a talking helper to a bounded agent](16-live-model-engineering.html) | 9 | 2 |
+| [17 — Identity and deployment: who are you, and where does the app live?](17-identity-and-deployment.html) | 10 | 0 |
+| [18 — Many workers, one trustworthy result](18-distributed-systems-lab.html) | 9 | 1 |
+| [19 — Seeing failures and testing the whole experience](19-observability-and-browser-quality.html) | 9 | 2 |
+| [20 — Deeper algorithms and mathematics, one small step at a time](20-specialist-algorithms-and-math.html) | 14 | 9 |
+| [21 — Practice that measures understanding](21-assessed-interview-route.html) | 10 | 1 |
+| [22 — Kafka: a shared notebook that many teams can read](22-kafka-event-engineering.html) | 13 | 2 |
+| [23 — Docker: pack the lunchbox before sending it to school](23-docker-and-release-engineering.html) | 12 | 1 |
+| [24 — Kubernetes: a caretaker for running applications](24-kubernetes-from-pods-to-recovery.html) | 10 | 1 |
+| [25 — Cache management: keeping photocopies useful](25-cache-management-and-consistency.html) | 11 | 2 |
+| [26 — Real-time applications: messages that survive disconnection](26-websockets-sse-and-realtime-delivery.html) | 11 | 1 |
+| [27 — Reliability: prove what happens when things go wrong](27-reliability-evaluation-and-operations.html) | 13 | 2 |
+| [28 — Put the pieces together: a full-stack engineering capstone](28-fullstack-capstone-and-assessment.html) | 9 | 1 |
+| [29 — Databases: the organised memory of your application](29-databases-for-fullstack-and-ai.html) | 19 | 7 |
+| [30 — RAG: connect the question to the right evidence](30-rag-patterns-and-user-defined-flows.html) | 22 | 3 |
+| [Notebook 31 — Java, Spring Batch and microservices interview masterclass](31-java-microservices-interview-masterclass.html) | 24 | 8 |
+| [Notebook 32 — Load balancing: from a playground queue to production traffic](32-load-balancing-from-playground-to-production.html) | 21 | 6 |
+| [Notebook 33 — The launch room: cloud, AI quality, databases and recovery](33-production-readiness-and-evidence-workbook.html) | 26 | 5 |
 
 Architecture and interview workbooks primarily contain guided reading and exercises. Executable cells retain recorded outputs. Java and JavaScript are launched by Python notebook cells and require their own runtimes. Each of the 23 GoF patterns has a small executable implementation and assertion in Notebook 13.
 
@@ -114,7 +114,7 @@ Python 3.11.9; Node.js 24.13.0; Java 26.0.2.1 compiling examples for Java 21; Ma
 
 The default classroom profile uses H2, local identities and extractive retrieval. Optional profiles add a real local model, OIDC login, PostgreSQL and a persistent broker. The advanced evidence section reports which integrations passed. These are local educational deployments, not a public cloud rollout or production security certification. The evidence collection remains deliberately small.
 
-The restart test kills Java and restarts it with the same database. It does not simulate every disk failure or whole-machine power loss. Accessibility testing covers the included completed-page journey, selected automated rules and explicit keyboard interactions; it is not a complete manual certification. H2 tests do not establish another database engineâ€™s semantics.
+The restart test kills Java and restarts it with the same database. It does not simulate every disk failure or whole-machine power loss. Accessibility testing covers the included completed-page journey, selected automated rules and explicit keyboard interactions; it is not a complete manual certification. H2 tests do not establish another database engine’s semantics.
 
 Python validation used a local environment inheriting installed scientific packages; every platform and clean installation has not been tested. Framework APIs were checked against official documentation and installed versions. Pins expose tested versions, but transitive dependencies and future releases need compatibility checks. No finite collection guarantees every interview or covers all published algorithms.
 
@@ -3251,6 +3251,57 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
 }
 ```
 
+### interactive-reader-report.json
+
+```json
+{
+  "passed": true,
+  "checks": [
+    {
+      "width": 390,
+      "theme": "violet",
+      "axe": "passed"
+    },
+    {
+      "width": 390,
+      "theme": "ocean",
+      "axe": "passed"
+    },
+    {
+      "width": 390,
+      "theme": "night",
+      "axe": "passed"
+    },
+    {
+      "width": 390,
+      "interactions": "passed",
+      "scriptErrors": []
+    },
+    {
+      "width": 1280,
+      "theme": "violet",
+      "axe": "passed"
+    },
+    {
+      "width": 1280,
+      "theme": "ocean",
+      "axe": "passed"
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "axe": "passed"
+    },
+    {
+      "width": 1280,
+      "interactions": "passed",
+      "scriptErrors": []
+    }
+  ],
+  "scope": "Chromium desktop/mobile emulation, three palettes, numerical traces, filtering and browser-local persistence. Not physical-device testing."
+}
+```
+
 ### labs/study-coach/python/semantic-regression-report.json
 
 ```json
@@ -3664,8 +3715,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "page": "32-load-balancing-from-playground-to-production.html",
       "width": 1280,
       "violations": [],
-      "incomplete": [],
-      "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
+      "incomplete": []
     },
     {
       "page": "33-production-readiness-and-evidence-workbook.html",
@@ -3738,24 +3788,14 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "page": "05-fullstack-ai-architecture.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 5
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "06-algorithms-and-design-patterns.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 27
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
@@ -3896,7 +3936,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "incomplete": [
         {
           "id": "color-contrast",
-          "count": 5
+          "count": 1
         }
       ],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
@@ -3919,48 +3959,28 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "page": "29-databases-for-fullstack-and-ai.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 9
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "30-rag-patterns-and-user-defined-flows.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 26
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "31-java-microservices-interview-masterclass.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 7
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
       "page": "32-load-balancing-from-playground-to-production.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 5
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
@@ -3974,12 +3994,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "page": "COMPLETION-AUDIT.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 21
-        }
-      ]
+      "incomplete": []
     },
     {
       "page": "index.html",
@@ -3998,12 +4013,7 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
       "page": "STUDY-ON-ANY-DEVICE.html",
       "width": 390,
       "violations": [],
-      "incomplete": [
-        {
-          "id": "color-contrast",
-          "count": 10
-        }
-      ],
+      "incomplete": [],
       "keyboardScrollableCode": "ArrowRight scrolled; Tab left the first overflowing code region"
     },
     {
@@ -5882,4 +5892,4 @@ Recovery through validation: 540 s; recoverable point lag: 90 s
 
 Docker: passed; Kubernetes: passed; Redis failover: passed. Public cloud not deployed.
 
-Physical Safari/iOS and a full manual screen-reader audit have not been completed. Real provider logout with a temporarily unavailable receiver, Redis Sentinel promotion, model-extracted graph maintenance, three-process Kafka recovery and persistent telemetry are documented in the reports. The revised eight-case generative development regression passed six cases; one over-abstained and one timed out. This remains an experimental model path, with extractive answers the default. Personal interview grading requires the learnerâ€™s own submitted answers. No finite library covers every possible algorithm or guarantees every exam. See COMPLETION-AUDIT.html for current scope and limits.
+Physical Safari/iOS and a full manual screen-reader audit have not been completed. Real provider logout with a temporarily unavailable receiver, Redis Sentinel promotion, model-extracted graph maintenance, three-process Kafka recovery and persistent telemetry are documented in the reports. The revised eight-case generative development regression passed six cases; one over-abstained and one timed out. This remains an experimental model path, with extractive answers the default. Personal interview grading requires the learner’s own submitted answers. No finite library covers every possible algorithm or guarantees every exam. See COMPLETION-AUDIT.html for current scope and limits.

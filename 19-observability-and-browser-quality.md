@@ -73,3 +73,16 @@ Question: “The p99 doubled but CPU is low. What next?” Answer: compare trace
 Question: “Why is the graph expensive after adding user labels?” Answer: each distinct label combination creates another series. Remove unbounded labels, aggregate metrics by meaningful bounded dimensions and retain per-request correlation in traces with a privacy policy.
 
 Reference provenance: the native monitoring binary and checksum came from the [official Prometheus download page](https://prometheus.io/download/). The included setup script pins the version and checksum. This reference is optional; the concepts, test and interpretation are provided here.
+
+
+## Deep workshop — Use telemetry to answer a question
+
+A trace follows a request, a metric summarizes a population, and a log records an event. Begin with a question such as “Where does answer latency grow?” rather than collecting everything without purpose.
+### Decompose a request
+Of 2,000 ms, suppose authorization takes 100, retrieval 200, inference 1,500, and storage/delivery 200. Optimizing a 5 ms parser cannot remove the dominant delay. If inference is stable but queue wait grows, inspect admission and saturation.
+### Interpret distributions
+A p95 of 2 seconds means approximately 95 percent of measured observations are at or below it. It does not mean every user waits 2 seconds. Averaging instance p95 values does not calculate global p95. Aggregate compatible distributions or use an appropriate measurement design.
+### Test the observer
+If the collector is down, does the application block? Are dropped spans counted? If storage is called durable, restart it and confirm previously accepted data remains queryable. A dashboard screenshot proves none of that.
+### Connect to the browser
+A successful server trace cannot prove that keyboard users reached Submit or understood an error. Test loading, failure, retry, and completion as user journeys. Use correlation IDs for diagnosis while avoiding secrets and private document text in telemetry.

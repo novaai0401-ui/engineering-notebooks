@@ -235,3 +235,15 @@ Capstone: a study dashboard with topics, completion status, search, and an AI ex
 
 
 Advanced continuation: [11-react-depth](11-react-depth.html). The advanced workshop and accompanying projects extend the introductory scope described above.
+
+
+## Deep workshop — Watch a React render as a photograph
+
+Each render supplies handlers that see that render's values. Calling a setter requests a future render; it does not rewrite the local variable in the current photograph.
+### Trace three updates
+Start at count=0. A handler calls `setCount(count + 1)` three times. Each expression reads the captured 0, so each requests replacement with 1. The next count is 1. Using `setCount(c => c + 1)` three times instead applies transformations: 0 → 1 → 2 → 3. The updater describes a change to pending state.
+### Connect this to a network race
+A user searches “cat,” then “car.” The older cat request finishes last. If every response writes the result, the screen shows cat while the input says car. Use supported cancellation and a request-identity check so only the current request may commit. Cancellation alone does not prove remote work stopped.
+Model idle, loading, success, and error explicitly. Zero results is an empty success, not endless loading. If old results remain during refresh, label them as refreshing. A retry should preserve the query the user meant to submit.
+### Check your design
+Should firstName, lastName, and fullName be independent state? **Usually no:** derive fullName while rendering. Three stored values create synchronization obligations. Keep minimal authoritative state and calculate cheap derived values. Test fast successive input changes with responses resolved in reverse order; an ordinary single-request test misses the race.

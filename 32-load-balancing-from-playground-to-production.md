@@ -317,3 +317,15 @@ Continue with Notebook 33 for the cloud deployment acceptance plan, AI-quality s
 ### Additional executed transport checks
 
 The [TLS/WebSocket report](labs/load-balancing/tls-websocket-report.json) now records an actual secure NGINX tunnel: trusted localhost certificate accepted, untrusted certificate rejected, missing authorization and hostile Origin rejected, and bidirectional messages continuing through reload. Follow the [acceptance runbook](labs/ACCEPTANCE-RUNBOOK.md) to reproduce it. A private test certificate does not replace public DNS, certificate renewal or cloud ingress acceptance.
+
+
+## Deep workshop — Use queueing to explain a slow load balancer
+
+A backend can complete 100 requests per second for a measured workload. Sending 99 leaves little room for bursts and slow requests. Waiting can grow sharply before errors appear. A load balancer redistributes arrivals; it does not create capacity.
+### Calculate in-flight work
+For a stable system, Little's law states average in-flight work L = arrival rate lambda * average time W. At 80 requests/second and 0.25 seconds, L=20. Keep units consistent. This is average accounting under stability assumptions, not a formula for every latency percentile.
+### Algorithm and workload
+Round robin shares counts, not necessarily work. A 5 ms request and a 5 second request differ radically. Least-connections may be distorted by long-lived idle connections. Least-active-request or latency-aware choices need reliable measurements and careful admission of newly healthy instances.
+### Retry safety
+A backend can commit a POST and lose the response. Proxy retry can repeat the effect. Consider method semantics, stable operation IDs, and uncertain outcomes. A healthy socket is not proof of a successful transaction.
+Would consistent hashing fix a hot tenant? **Not necessarily:** stable placement may preserve the hotspot. Limits, repartitioning, cache replication, or changed ownership may be necessary. Explain affinity benefits and capacity risks together.

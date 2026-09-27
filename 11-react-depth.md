@@ -118,3 +118,16 @@ Use pure-function tests for transformations, component tests for rendered behavi
 **Design round, 10 points:** Explain why React state is not the authoritative payment record (3), how the server validates and deduplicates submission (3), how pending/error states are shown accessibly (2), and how retry differs from a new purchase (2).
 
 **Mastery task:** Add a job-history route backed by an owner-filtered API. Preserve keyboard focus when navigating, handle an empty history, test authorization, and avoid keeping one user's cached history after switching users.
+
+
+## Deep workshop — A stale response is a state-management bug
+
+The user selects customer A, then B. B's response arrives first; A's arrives last. Blindly accepting every response displays A while the selector says B.
+### Establish a commit condition
+Assign each request a local increasing number. Completion may update visible state only if its number is still current. A server-state library can manage this through correctly scoped query keys and cancellation behaviour. Include every variable that changes the result, especially customer and tenant identity.
+### Effects and cleanup
+An effect synchronizes with an external system. A subscription effect returns cleanup that removes the subscription. Without it, changed dependencies or unmounting can leave duplicate listeners. Closures still see captured render values; correct dependencies or functional updates are necessary. Suppressing a dependency warning does not repair logic.
+### Hydration is a contract
+Server HTML and initial client output must agree. Independently rendering random numbers or local current time can produce mismatches. Pass a stable initial value or deliberately render browser-only information after hydration.
+### Practice
+A query key contains only `orders`, but the request also depends on customer ID. What fails? **Answer:** Customers share a cache slot. Include identity in the key, scope or clear caches on sign-out, and test reverse response order and back navigation. A correct network response can still be attached to the wrong UI state.

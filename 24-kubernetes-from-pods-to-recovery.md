@@ -121,3 +121,15 @@ The test submits and approves a real job, waits for Java to call Python through 
 The namespace and server are cleaned up after testing. Read kubernetes-report.json for actual outcomes, including partial failures. This is one node on one computer, without public ingress or a cloud load balancer. It teaches real scheduling, reconciliation, service networking and volume reuse while keeping their boundaries explicit.
 
 An actual first-run defect illustrates why node readiness is insufficient. Binding the API only to 127.0.0.1 allowed local kubectl calls and simple Pod reconciliation, but the ClusterIP forwarded in-cluster requests to the node interface. CoreDNS stayed unready and the storage provisioner saw connection refused. The runner now binds the authenticated TLS API to the isolated VM interfaces and explicitly waits for both system Deployments. Application port-forwarding stays loopback-only. A production cluster must also restrict API reachability through its network policy/firewall design. The initial partial report and diagnostic review are retained alongside the rerun.
+
+
+## Deep workshop — A controller keeps correcting reality
+
+A Deployment declares a desired replica count. Kubernetes observes actual state and acts to reduce the difference. Deleting one Pod normally causes replacement; it does not permanently lower desired replicas.
+### Three health questions
+Startup asks whether initialization finished. Readiness asks whether traffic should reach this instance. Liveness asks whether restarting may repair it. Making liveness depend on a briefly unavailable shared database can restart all replicas and worsen the incident.
+### Walk a rollout
+Create new capacity, wait for readiness, stop routing new work to old capacity, drain in-flight work within the termination budget, then stop it. Surge, unavailable, readiness, and termination settings shape the sequence. Process startup alone is insufficient evidence for removing old capacity.
+### Resources and failure
+Requests influence scheduling. Limits constrain usage according to resource semantics. Memory excess can terminate a process; CPU throttling can increase latency without an application exception. Measure before adding retries.
+Will a disruption budget prevent every outage? **No:** it constrains supported voluntary disruptions, not all node failures, bad code, or dependency failures. Verify the user journey during replacement and durable state separately from Pod availability.

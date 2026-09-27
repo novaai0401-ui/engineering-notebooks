@@ -85,3 +85,15 @@ Docker packaging is supplied for reproducibility, but container execution is onl
 **Debugging:** A write timed out and the retry created a duplicate. Find the missing contract. **Answer:** The server and client need a stable operation key, payload binding and durable deduplication; timeout does not establish non-execution.
 
 **Design alternative:** If only your own backend calls one fixed function, ordinary HTTP may be simpler than MCP. Choose MCP when its standardized tool/resource/prompt interface and client ecosystem solve a real interoperability need. A protocol should reduce integration work, not become an extra layer without a purpose.
+
+
+## Deep workshop — An MCP connection is not a permission grant
+
+MCP standardizes discovery and invocation. The server still owns authentication, authorization, validation, and limits. A standard door handle does not decide who receives a key.
+### Walk a remote request
+The client connects, negotiates the protocol, discovers a tool, and submits arguments. The server validates credentials, intended audience, and permissions using its configured authentication mechanism. It binds the principal to the request, validates arguments, applies ownership filters, then executes and returns a bounded result.
+`read_note(note_id="N-4")` may be syntactically valid while N-4 belongs to another user. It must fail. A model-supplied owner parameter cannot override the authenticated principal. Discovery itself may need filtering if tool descriptions reveal sensitive capabilities.
+### Understand timeout uncertainty
+A write can time out after the server committed. Reconnection does not roll back the effect. Use a stable operation identity and queryable status, or an idempotent receiver. Reads and writes need different retry reasoning.
+### Test each boundary
+Try missing credentials, expired credentials, wrong permission, wrong ownership, oversized arguments, and a slow tool. A successful connection proves none of those negative cases. Local classroom credentials and HTTP examples are not production credential management. Explain separately which layer secures transport, which identifies the caller, and which decides access to a particular resource.

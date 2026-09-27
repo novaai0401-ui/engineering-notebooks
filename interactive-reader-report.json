@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "width": 390,
+      "theme": "violet",
+      "axe": "passed"
+    },
+    {
+      "width": 390,
+      "theme": "ocean",
+      "axe": "passed"
+    },
+    {
+      "width": 390,
+      "theme": "night",
+      "axe": "passed"
+    },
+    {
+      "width": 390,
+      "interactions": "passed",
+      "scriptErrors": []
+    },
+    {
+      "width": 1280,
+      "theme": "violet",
+      "axe": "passed"
+    },
+    {
+      "width": 1280,
+      "theme": "ocean",
+      "axe": "passed"
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "axe": "passed"
+    },
+    {
+      "width": 1280,
+      "interactions": "passed",
+      "scriptErrors": []
+    }
+  ],
+  "scope": "Chromium desktop/mobile emulation, three palettes, numerical traces, filtering and browser-local persistence. Not physical-device testing."
+}

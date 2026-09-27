@@ -103,3 +103,15 @@ In Spring applications, `KafkaTemplate` sends records and `@KafkaListener` metho
 Interview: “We have 12 consumers and six partitions. Why are six idle?” Explain partition ownership and distinguish groups. Follow-up: adding partitions may alter key routing. Interview: “The email was sent twice although producer idempotence was enabled.” Explain consumer redelivery and the external-effect boundary. Timed design: preserve per-order processing while scaling across many orders; name your key, partition strategy, retry policy and migration plan.
 
 Reference provenance: [Kafka 4.1 quickstart and linked configuration documentation](https://kafka.apache.org/41/getting-started/quickstart/). The project and explanations here are self-contained; links document API provenance.
+
+
+## Deep workshop — Kafka offsets are positions, not message counts
+
+A partition is an ordered log. A committed consumer offset normally identifies the next position to resume. After processing position 41, committing 42 indicates that earlier positions were handled according to the consumer's contract.
+### Crash on either side
+Commit 42 before applying record 41's effect, then crash: recovery may skip the effect. Apply the effect first, then crash before commit: recovery may apply it again. The latter supports at-least-once processing with duplicate handling at the effect boundary.
+### Ordering meets scaling
+Order is per partition, not automatically global. Keys influence partition routing. Adding partitions can change routing of future records, so key-order assumptions require migration planning. A consumer group distributes partition ownership, but a partition is not ordinarily assigned to multiple group members simultaneously.
+### Poison record policy
+A failing record can block progress. Classify transient errors, bound retries, and define dead-letter information. Moving a record aside changes order/completion semantics. Record that decision instead of silently claiming success.
+Does a Kafka transaction roll back an email? **No:** its atomicity covers supported Kafka operations. A remote effect needs separate idempotency or coordination. Always name the boundary of an exactly-once claim.

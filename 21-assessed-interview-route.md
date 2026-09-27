@@ -74,3 +74,16 @@ Follow-up: how do you distinguish loading initial data from refreshing existing 
 For every attempt record the prompt, time limit, your answer before help, score by criterion, mistakes and retest date. Reattempt a related but different problem after two days and again after a week. Track unaided explanation, implementation, debugging and design separately. One total score can hide a serious weakness.
 
 To receive personal grading, send your diagnostic answers and preferred role. Until then, the supplied keys and rubrics are ready, but a personalized score or claim that you are interview-ready would be fabricated.
+
+
+## Deep workshop — A scoring rubric should reveal the next lesson
+
+Take a 25-minute exercise: return the first index whose sorted value meets a target. Spend three minutes on the contract, twelve implementing, five testing, and five explaining correctness and cost.
+### Score observable work
+Award two points each for interval invariant, boundary updates, empty/duplicate cases, complexity, and explanation. Record what you produced without hints. Repeating a solution after reading it is practice, not independent assessment.
+### Diagnose the error
+Duplicate failures suggest lower-bound confusion. Nontermination suggests interval length is not decreasing. Correct output without explanation suggests proof practice is needed. These are different weaknesses; doing random extra questions may not address them.
+### Transfer round
+Find the first day cumulative production meets a target. There need not be a stored array: binary search works on a monotone predicate. State bounds and whether a solution exists. If production can decrease, the assumed monotonicity may be false and the method needs reconsideration.
+### Evidence of improvement
+Repeat on a new problem after a delay. Keep elapsed time, hints, and failed tests. Higher scores on a memorized example measure familiarity as well as skill. A useful learning plan targets independently demonstrated weaknesses rather than accumulating unchecked completion ticks.

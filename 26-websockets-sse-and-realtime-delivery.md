@@ -93,3 +93,15 @@ The added test_multi_instance.py starts two separate FastAPI processes sharing a
 The test exposed a design issue worth remembering: a lock inside A cannot stop B. If both read maximum sequence 4, both might try to write sequence 5. The write transaction now uses BEGIN IMMEDIATE before reading the sequence and idempotency record. SQLite reserves the writer slot; the next writer reads the committed result before deciding what to do. Database uniqueness constraints remain the final guard.
 
 Two simultaneous submissions of the same logical key returned one durable sequence, and eighty distinct cross-instance writes had eighty distinct sequences. The original single-instance protocol tests also passed after this change. Sessions remain separate and in memory. Independent hosts, shared authentication and larger fanout need a different deployment design; these limits do not invalidate the local concurrency lesson.
+
+
+## Deep workshop — Reconnect a stream without losing the story
+
+SSE carries server-to-client events over HTTP. WebSocket carries bidirectional messages. Job progress often fits SSE; collaboration may need WebSocket. Neither automatically provides durable replay or business ordering.
+### Trace event identity
+A client applies events 10 and 11, then disconnects. It reconnects requesting continuation after 11. A durable log can supply 12 onward. If 11 is repeated, the client recognizes the ID rather than applying the transition twice.
+If retained history begins at 20, the server cannot honestly resume from 11. Send a documented gap/reset signal and obtain a current snapshot with a new cursor. Silently starting at 20 creates a plausible but incomplete screen.
+### Backpressure is a contract
+Bound per-client buffers. Coalescing progress percentages to the latest value may be fine. Dropping financial events is different: disconnect and require durable catch-up, or choose a reliable delivery design. Unbounded queues turn one slow client into memory pressure.
+### Security exercise
+Authenticate the connection, authorize subscriptions and replay, and decide what revocation does to existing connections. Origin checks are not user authorization. If another instance produces the event, shared delivery infrastructure must preserve ownership checks. Test cross-instance production and reconnect, not only one socket on one server.

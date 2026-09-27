@@ -86,3 +86,15 @@ Follow the optional WSL setup in STUDY-ON-ANY-DEVICE, then run `python labs/stud
 The runner creates a uniquely named Compose project and random credentials in excluded .runtime. It checks anonymous rejection, authenticated CSRF handling, duplicate job submission, human approval, a real Java-to-Python answer delivered over SSE and retained data after a web-container restart. It records image IDs in container-report.json. Its final cleanup removes only that test project's services and volume; images stay available for the Kubernetes exercise. An image build or a running container alone is not sufficient acceptance evidence.
 
 This classroom profile uses Basic authentication over local loopback and one H2 writer. It does not claim production identity or a multi-writer database. Initial downloads can be slow, and subsequent cached builds are different performance measurements. Inspect the report for an actual passed result before moving to the cluster capstone. No public-cloud resources are created by this command.
+
+
+## Deep workshop — Build once and configure at runtime
+
+An image packages files and execution configuration. A container is an instance with runtime settings and a writable layer. Rebuilding for every password change mixes code and environment identity and risks exposing secrets.
+### Follow a multi-stage build
+The build stage contains compilers and build dependencies. The runtime stage receives the artifact and necessary runtime. Copy dependency manifests before frequently changing source when useful for cache reuse. Cached builds are a speed mechanism, not evidence of dependency trustworthiness.
+### Separate state and process
+Files in a disposable writable layer may vanish on replacement. Store durable state in an appropriate volume or external service. A volume is not a backup: it can preserve accidental deletion just as effectively as valid data.
+Inside a container, localhost means its own network namespace. Use configured service names to reach other containers. A started process is not necessarily ready to serve requests; test application readiness.
+### Exercise and expected evidence
+Write a record, replace the container, and verify survival. Restore a backup into a separate location and compare records. Survival tests replacement persistence; restoration tests recoverability. Deleting a secret in a later image layer does not remove it from earlier layer history. Supply secrets through the supported runtime mechanism.

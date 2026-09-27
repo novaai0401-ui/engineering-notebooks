@@ -41,9 +41,12 @@ p code,li code,td code{font: .87em Consolas,monospace;background:#e9f0f2;padding
 @media print{nav,.downloads,.skip{display:none}main{margin:0;padding:0;max-width:none}body{font-size:11pt}h1{font-size:28pt}h2{break-before:page;font-size:20pt}h3{break-after:avoid}pre{font-size:8pt;white-space:pre-wrap}table{font-size:8pt}tr{break-inside:avoid}.table-wrap{overflow:visible}}
 '''
 
+CSS += (ROOT/'reader.css').read_text(encoding='utf-8')
+READER_JS = (ROOT/'reader.js').read_text(encoding='utf-8')
+
 def page(title, body, toc='', downloads=''):
     nav = '<nav aria-label="Notebook navigation"><strong>Engineering notebooks</strong><p><a href="index.html">All notebooks</a></p>'+toc+'</nav>' if toc else ''
-    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+html.escape(title)+'</title><style>'+CSS+'</style></head><body><a class="skip" href="#content">Skip to content</a>'+nav+'<main id="content"'+(' class="index"' if not toc else '')+'>'+downloads+body+'</main></body></html>'
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+html.escape(title)+'</title><style>'+CSS+'</style></head><body><a class="skip" href="#content">Skip to content</a>'+nav+'<main id="content"'+(' class="index"' if not toc else '')+'>'+downloads+body+'</main><script>'+READER_JS+'</script></body></html>'
 
 def render_markdown(text):
     md = MarkdownIt('commonmark', {'html':False}).enable('table')
@@ -57,6 +60,7 @@ def render_markdown(text):
             if token.tag=='h2': sections.append({'anchor':anchor,'label':label,'children':[]})
             elif token.tag=='h3' and sections: sections[-1]['children'].append((anchor,label))
     body=md.renderer.render(tokens,md.options,{})
+    body=re.sub(r'<p>((?:(?!</p>).)*?)<strong>Answer:</strong>((?:(?!</p>).)*?)</p>', lambda m: '<p>'+m.group(1)+'</p><details class="answer-reveal"><summary>Reveal the worked answer</summary><p>'+m.group(2)+'</p></details>', body, flags=re.S)
     body=body.replace('<pre>', '<pre tabindex="0" role="region" aria-label="Code or output">')
     body=body.replace('<table>', '<div class="table-wrap" role="region" aria-label="Reference table" tabindex="0"><table>').replace('</table>','</table></div>')
     toc='<ul>'

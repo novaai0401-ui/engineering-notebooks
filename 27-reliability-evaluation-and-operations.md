@@ -113,3 +113,15 @@ The next test connects actual Keycloak-issued signed logout messages to two actu
 Two fresh provider sessions create two events, each delivered to two destinations: four delivery records. Before relay restart, two deliveries were complete and two pending. After recovery, all four were complete and none expired. This verifies the previously missing real application integration. It does not promise immediate revocation during a network partition: the test deliberately observes that temporary gap. Long outages beyond token validity require readiness reconciliation or a different shared-session design.
 
 The first attempt retained old identity-provider sessions and checked the current browser before its event had arrived. That harness failure is recorded. The corrected experiment clears old fixture sessions before creating new ones and waits for the relevant delivery condition. Tests need correct synchronization just as applications do.
+
+
+## Deep workshop — Calculate an error budget
+
+A 99.9 percent success target allows 0.1 percent failures over a defined eligible population and window. With 1,000,000 eligible requests, the budget is 1,000 failures. Define eligibility and success first; excluding inconvenient failures afterward changes the promise.
+### Burn rate by hand
+At observed failure rate 1 percent, divide by allowed 0.1 percent: burn rate is 10. Budget is being spent ten times the target rate. Short spikes and sustained incidents differ, so alerts often combine short and longer windows.
+### Fit retries into a deadline
+Three sequential attempts with five-second timeouts can consume fifteen seconds before backoff and queueing. Use one end-to-end budget. Retry only safe, potentially recoverable operations. Retrying into an overloaded dependency can amplify failure.
+### Design the experiment
+State the invariant, inject one fault, observe the user outcome, restore the component, then verify reconciliation. Count intended operations and durable effects, not merely HTTP successes. Include duplicates, losses, and unresolved outcomes.
+Why is average latency insufficient? **Answer:** It hides tail behaviour and population changes. Inspect distributions, errors, saturation, and whether timeouts were excluded. A successful short load test does not establish day-long endurance or independent-host disaster recovery.

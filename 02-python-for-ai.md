@@ -334,3 +334,15 @@ Detailed coverage: Python values, collections, mutation, functions, decorators, 
 
 
 Advanced continuation: [09-python-ai-depth](09-python-ai-depth.html). The advanced workshop and accompanying projects extend the introductory scope described above.
+
+
+## Deep workshop — Follow Python objects through a training pipeline
+
+A variable is a name attached to an object, not necessarily a private copy. A function that mutates an input list may also change the caller's data. Repeatable experiments require a clear ownership policy.
+### Work the example by hand
+Start with `rows = [[1, 10], [2, 20]]`. Assigning `alias = rows` creates a second name for the same outer list. `alias[0][0] = 9` changes what `rows` sees. Now use `copy = rows[:]`: only the outer list is copied. Changing `copy[0][1]` still changes the original inner list. `[row[:] for row in rows]` copies both levels in this specific structure. Arbitrary nesting needs a deliberate policy, sometimes `deepcopy`.
+Suppose column 0 is a feature and column 1 is the target. A preprocessing function overwrites features with normalized values. If datasets share row objects, one transformation can silently alter another dataset. Split independent records first, fit transformation parameters only on training data, then apply those fixed parameters to validation data.
+### Trace consumption
+For `(x*x for x in range(3))`, consumption produces 0, 1, 4. A second pass produces nothing because the iterator is exhausted. A list retains values; a generator streams them. Recreate the iterator for multiple epochs instead of assuming it rewinds.
+### Predict and explain
+Why does a default argument `items=[]` remember earlier values? **Answer:** The default object is created when the function is defined. Use `items=None`, then allocate inside the function. This is shared ownership, not random Python behaviour. Test by calling the function twice with no argument and checking the second result is independent.

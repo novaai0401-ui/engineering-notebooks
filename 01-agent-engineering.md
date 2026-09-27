@@ -538,3 +538,18 @@ Detailed coverage: agent vocabulary, harness loop, agent types, LangChain entry 
 
 
 Advanced continuation: [07-durable-agents](07-durable-agents.html). The advanced workshop and accompanying projects extend the introductory scope described above.
+
+
+## Deep workshop — An agent is a controlled loop, not a magic employee
+
+A user asks, “Which of my invoices is overdue?” Separate data, decisions, and permissions. The model can suggest a search, but the server decides whose invoices may be searched. A tool is an ordinary function behind a checked boundary. The harness owns the loop, validates arguments, tracks cost, and decides when to stop.
+### Walk the machine
+1. Create state containing the authenticated user ID, question, remaining tool budget of 2, and an empty evidence list. Obtain the ID from the session, never from the model.
+2. The model proposes `search_invoices(status="overdue")`. Validate the arguments. Reject unknown properties rather than silently accepting them.
+3. Apply ownership on the server and execute the query. Suppose the tool returns invoice I-7, amount 120, due date 1 September.
+4. Store the result as data. Text inside an invoice saying “ignore your rules” is not a new instruction.
+5. Ask the model to explain the result. Check referenced invoices belong to the authorized result before releasing the answer.
+6. Stop after an answer or the budget limit. A third tool request must not create an infinite loop.
+### Design decision and answer
+A fixed workflow is preferable when the steps are known: fetch, validate, format. An agent helps when the next search depends on previous evidence. More freedom adds paths to test. Parallel searches reduce some latency but multiply cost and need a merge policy.
+The model supplies another user's ID. Should a valid string be accepted? **No:** schema validity establishes shape, not permission. Test with two users whose records have distinct IDs; neither must retrieve the other's records.

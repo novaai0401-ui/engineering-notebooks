@@ -243,3 +243,15 @@ For graph interviews, extend to Bellman–Ford for negative edges and reachable 
 For ML interviews, explain PCA as a maximum-variance orthogonal projection and SVD as a matrix factorization; EM as alternating posterior inference and parameter optimization; calibration as agreement between predicted probabilities and observed frequencies; causal identification as requiring assumptions beyond correlation. Learn assumptions and failure examples before memorizing formulas.
 
 Timed task: choose between Fenwick and segment tree for point additions plus range sums. A good answer chooses Fenwick for simplicity and space constants, notes that segment trees generalize to more associative summaries, defines inclusive/exclusive indexing and tests negative updates. A weak answer lists both without explaining the operation contract.
+
+
+## Deep workshop — Derive attention with two tokens
+
+Attention mixes value vectors according to query-key compatibility. Let q=[1,0], k1=[1,0], k2=[0,1], v1=[10,0], and v2=[0,10]. The key dimension is 2.
+### Calculate every stage
+Dot products are 1 and 0. Divide by sqrt(2): approximately 0.707 and 0. Softmax exponentiates and normalizes. exp(0.707)≈2.028 and exp(0)=1, so weights are approximately 0.670 and 0.330. The weighted value is [6.70,3.30], a mixture rather than exactly v1.
+### Why scale and mask?
+Scaling moderates magnitude growth with dimension under common assumptions. A causal mask prevents use of later positions in next-token prediction. Conceptually, forbidden logits become negative infinity before softmax and receive probability zero.
+For stable softmax, subtract the largest finite logit before exponentiating. Removing the same constant leaves normalized probabilities unchanged while reducing overflow risk. An entirely masked row needs an explicit policy; negative infinity minus itself is not valid numeric reasoning.
+### Explain the limit
+Do high attention weights prove faithful explanation? **No:** they describe one mixing operation among many learned layers. Evaluate behaviour and explanation quality independently. Attention is neither a truth database nor a guarantee that a cited sentence supports a generated claim.
