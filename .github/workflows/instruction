@@ -1,8 +1,1 @@
-"chat.agent.enabled": true,
-"github.copilot.chat.codeGeneration.useInstructionFiles": true,
-"chat.agentFilesLocations": { "C:\\copilot-kit\\agents": true },
-"chat.promptFilesLocations": { "C:\\copilot-kit\\prompts": true },
-"chat.instructionsFilesLocations": { "C:\\copilot-kit\\instructions": true },
-"github.copilot.chat.codeGeneration.instructions": [
-  { "file": "C:\\copilot-kit\\copilot-instructions.md" }
-]
+
